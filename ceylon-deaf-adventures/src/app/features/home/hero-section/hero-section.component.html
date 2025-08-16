@@ -1,0 +1,54 @@
+<!-- hero-section.component.html -->
+<section class="py-12 px-4 md:px-8 bg-white">
+  <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+    <div class="order-2 md:order-1">
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Travel Without Barriers — belong without bounds</h1>
+      <p class="text-xl mb-8">Sri Lanka's First Deaf Tour Agency</p>
+      
+      <div class="flex flex-col sm:flex-row gap-4">
+        <button 
+          (click)="explorePackages()"
+          class="bg-teal-700 hover:bg-teal-800 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+          aria-label="Explore our tour packages"
+        >
+          Explore Packages
+        </button>
+        
+        <button 
+          (click)="addDeafFriendlyPlace()"
+          class="border-2 border-teal-700 text-teal-700 hover:bg-teal-50 px-6 py-3 rounded-lg font-medium transition-colors"
+          aria-label="Add a deaf-friendly place"
+        >
+          Add Deaf-Friendly Place
+        </button>
+      </div>
+    </div>
+    
+    <div class="order-1 md:order-2">
+      <!-- Lottie animation placeholder -->
+      <div class="bg-gray-100 rounded-xl aspect-video flex items-center justify-center">
+        <p class="text-gray-500">Ayubowan sign animation</p>
+      </div>
+      
+      <!-- Video with controls -->
+      <div class="mt-4">
+        <video 
+          controls
+          muted
+          aria-label="Hero animation: Ayubowan sign-language greeting (captions available)"
+          class="w-full rounded-lg"
+        >
+          <source src="assets/videos/ayubowan-sign.mp4" type="video/mp4">
+          <track 
+            src="assets/videos/ayubowan-sign.vtt" 
+            kind="captions" 
+            srclang="en" 
+            label="English"
+            default
+          >
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,47 @@
+<!-- stays-section.component.html -->
+<section class="py-12 px-4 bg-white">
+  <div class="container mx-auto">
+    <div class="flex justify-between items-center mb-8">
+      <h2 class="text-3xl font-bold">Deaf-Friendly Stays</h2>
+      <button 
+        class="bg-teal-700 hover:bg-teal-800 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+        (click)="openAddStayModal()"
+      >
+        Add your own Deaf-friendly place
+      </button>
+    </div>
+    
+    <div *ngIf="isLoading" class="flex justify-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-700"></div>
+    </div>
+    
+    <div *ngIf="!isLoading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngFor="let stay of stays" class="bg-white rounded-lg shadow-md overflow-hidden">
+        <img 
+          [src]="stay.images?.[0] || 'assets/images/placeholder-stay.jpg'" 
+          [alt]="stay.name" 
+          class="w-full h-48 object-cover"
+        >
+        
+        <div class="p-6">
+          <h3 class="font-bold text-xl mb-2">{{ stay.name }}</h3>
+          <p class="text-gray-600 mb-4">{{ stay.address }}</p>
+          
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span 
+              *ngFor="let tag of stay.tags" 
+              class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded"
+            >
+              {{ tag }}
+            </span>
+          </div>
+          
+          <div *ngIf="stay.rating" class="flex items-center">
+            <span class="text-yellow-500 mr-1">★</span>
+            <span>{{ stay.rating }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

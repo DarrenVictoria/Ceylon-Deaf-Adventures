@@ -1,0 +1,72 @@
+<!-- app.component.html -->
+<div class="min-h-screen flex flex-col">
+  <header class="bg-white shadow-sm">
+    <div class="container mx-auto px-4 py-4">
+      <nav class="flex justify-between items-center">
+        <a routerLink="/" class="text-2xl font-bold text-teal-700">Ceylon Deaf Adventures</a>
+        
+        <div class="hidden md:flex space-x-6">
+          <a routerLink="/" class="hover:text-teal-700">Home</a>
+          <a routerLink="/packages" class="hover:text-teal-700">Packages</a>
+          <a routerLink="/about" class="hover:text-teal-700">About</a>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+          <button *ngIf="!(authService.currentUser$ | async)" 
+                  (click)="authService.signIn()"
+                  class="text-teal-700 hover:underline">
+            Sign In
+          </button>
+          
+          <div *ngIf="authService.currentUser$ | async as user" class="flex items-center">
+            <span class="mr-2">Hi, {{ user.displayName }}</span>
+            <button (click)="authService.signOut()" class="text-teal-700 hover:underline">
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+  
+  <main class="flex-grow">
+    <router-outlet></router-outlet>
+  </main>
+  
+  <footer class="bg-gray-800 text-white py-8">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h3 class="text-xl font-bold mb-4">Ceylon Deaf Adventures</h3>
+          <p>Sri Lanka's First Deaf Tour Agency</p>
+        </div>
+        
+        <div>
+          <h4 class="font-bold mb-4">Quick Links</h4>
+          <ul class="space-y-2">
+            <li><a routerLink="/" class="hover:text-teal-300">Home</a></li>
+            <li><a routerLink="/packages" class="hover:text-teal-300">Packages</a></li>
+            <li><a routerLink="/about" class="hover:text-teal-300">About Us</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="font-bold mb-4">Contact</h4>
+          <p>info@ceylondeafadventures.com</p>
+          <p class="mt-2">+94 76 123 4567</p>
+        </div>
+        
+        <div>
+          <h4 class="font-bold mb-4">Accessibility</h4>
+          <a href="#" class="hover:text-teal-300">Accessibility Statement</a>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-700 mt-8 pt-6 text-center">
+        <p>&copy; {{ currentYear }} Ceylon Deaf Adventures. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+  
+  <app-accessibility-panel></app-accessibility-panel>
+</div>
