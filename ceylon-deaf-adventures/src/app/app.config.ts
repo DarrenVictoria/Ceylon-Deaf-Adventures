@@ -1,29 +1,13 @@
-import type { ApplicationConfig } from "@angular/core"
-import { provideRouter } from "@angular/router"
-import { provideAnimations } from "@angular/platform-browser/animations"
-import { provideFirebaseApp, initializeApp } from "@angular/fire/app"
-import { provideAuth, getAuth } from "@angular/fire/auth"
-import { provideFirestore, getFirestore } from "@angular/fire/firestore"
-import { provideStorage, getStorage } from "@angular/fire/storage"
-import { routes } from "./app.routes"
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { provideRouter } from '@angular/router';
 
-const firebaseConfig = {
-  // Add your Firebase config here
-  apiKey: "your-api-key",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "your-app-id",
-}
+import { routes } from './app.routes';
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { getAuth, provideAuth } from '@angular/fire/auth';
+import { getAnalytics, provideAnalytics, ScreenTrackingService, UserTrackingService } from '@angular/fire/analytics';
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { getStorage, provideStorage } from '@angular/fire/storage';
 
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideRouter(routes),
-    provideAnimations(),
-    provideFirebaseApp(() => initializeApp(firebaseConfig)),
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
-    provideStorage(() => getStorage()),
-  ],
-}
+  providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideFirebaseApp(() => initializeApp({ projectId: "ceylondeafadventures-25", appId: "1:989123629479:web:a5657f5be21a7d31356682", storageBucket: "ceylondeafadventures-25.firebasestorage.app", apiKey: "AIzaSyDtsJc_O7pBB6PAPyklrMupSD1ZxHL069w", authDomain: "ceylondeafadventures-25.firebaseapp.com", messagingSenderId: "989123629479", measurementId: "G-XJT6KYHTZL" })), provideAuth(() => getAuth()), provideAnalytics(() => getAnalytics()), ScreenTrackingService, UserTrackingService, provideFirestore(() => getFirestore()), provideStorage(() => getStorage())]
+};

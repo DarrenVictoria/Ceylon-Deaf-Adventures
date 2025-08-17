@@ -1,18 +1,12 @@
-import { Component } from "@angular/core"
-import { RouterOutlet } from "@angular/router"
-import { AccessibilityPanelComponent } from "./shared/components/accessibility-panel/accessibility-panel.component"
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
-  selector: "app-root",
-  standalone: true,
-  imports: [RouterOutlet, AccessibilityPanelComponent],
-  template: `
-    <div class="min-h-screen bg-white">
-      <router-outlet></router-outlet>
-      <app-accessibility-panel></app-accessibility-panel>
-    </div>
-  `,
+  selector: 'app-root',
+  imports: [RouterOutlet],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = "ceylon-deaf-adventures"
+  title = 'ceylon-deaf-adventures';
 }
