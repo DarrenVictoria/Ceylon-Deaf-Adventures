@@ -1,8 +1,8 @@
-/* Import Tailwind-like utilities */
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
-
+/* Restore some basic browser defaults if needed */
+body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 
 
 /* Custom color palette for Ceylon Deaf Adventures - warm tropical Sri Lankan theme */
