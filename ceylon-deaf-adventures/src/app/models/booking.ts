@@ -1,16 +1,18 @@
 export interface Booking {
     id: string;
-    userId: string;
+    userId?: string; // Made optional
     tourId: string;
-    tourDate: any; // Entered and ask how many days willing to stay
+    tourDate: any; // e.g., Firestore Timestamp for start date
     numPeople: number;
-    totalPrice: number; // allow them to bid 
+    totalPrice: number; // Allow bidding
     status: 'pending' | 'confirmed' | 'rejected' | 'cancelled';
     createdAt: any; // Firestore Timestamp
     paymentRef?: string;
-
-    //Type of stay : [Homestay , Guesthouse, Villa, Hotel 3to5, Camping ]
-    // Any special requests or notes from the user
-    // Guide required: boolean; // If they want a deaf guide or not
-
+    stayType: 'Homestay' | 'Guesthouse' | 'Villa' | 'Hotel3to5' | 'Camping'; // Added
+    specialRequests?: string; // Added
+    guideRequired: boolean; // Added
+    numDays?: number; // Optional, if overriding tour duration
+    guestName?: string; // Added for guest bookings
+    guestEmail?: string; // Added for guest bookings
+    guestPhone?: string; // Added for guest bookings
 }

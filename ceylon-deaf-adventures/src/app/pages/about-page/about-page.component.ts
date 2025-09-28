@@ -1,20 +1,25 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { LucideAngularModule, Heart, Users, Globe, Eye, Handshake, Star, Target } from 'lucide-angular';
+import { MatIconModule } from '@angular/material/icon';
 import { CardComponent, CardContentComponent } from '../../components/ui/card/card.component';
 import { ButtonComponent } from '../../components/ui/button/button.component';
 
 @Component({
   selector: 'app-about-page',
   standalone: true,
-  imports: [RouterLink, LucideAngularModule, CardComponent, CardContentComponent, ButtonComponent],
+  imports: [RouterLink, MatIconModule, CardComponent, CardContentComponent, ButtonComponent],
+  styles: [`
+    mat-icon { width:50px; height:50px; margin-top: 20px;}
+  `],
   template: `
     <!-- Hero Section -->
-    <section class="relative bg-gradient-to-br from-primary/10 to-secondary/10 py-20">
+    <section class="relative py-20 lg:py-32 bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/10">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center space-y-6">
-          <h1 class="text-4xl lg:text-6xl font-bold text-foreground">Connecting Heart and Heritage</h1>
-          <p class="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+        <div class="text-center space-y-8">
+          <h1 class="text-4xl lg:text-6xl font-bold text-foreground leading-tight">
+            Connecting Heart and Heritage
+          </h1>
+          <p class="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
             Born from a passion to create a world where Deaf travelers can explore freely and fully, Ceylon Deaf
             Adventures bridges cultures and communities through accessible tourism.
           </p>
@@ -30,7 +35,7 @@ import { ButtonComponent } from '../../components/ui/button/button.component';
             <h2 class="text-3xl lg:text-4xl font-bold text-foreground">Our Story</h2>
             <div class="space-y-4 text-muted-foreground leading-relaxed">
               <p>
-                In 2014, our founder recognized a gap in Sri Lanka's tourism industry – the lack of truly accessible
+                In 2014, our founder recognized a gap in Sri Lanka's tourism industry the lack of truly accessible
                 experiences for the Deaf community. What started as a personal mission to share Sri Lanka's beauty
                 with Deaf friends from around the world has grown into the country's first dedicated Deaf-friendly
                 tourism company.
@@ -40,7 +45,7 @@ import { ButtonComponent } from '../../components/ui/button/button.component';
                 took precedence over traditional audio-based tours. We discovered that when barriers are removed, the
                 connections formed between travelers and local communities become deeper and more meaningful.
               </p>
-              <p>
+              <p class="font-semibold text-foreground">
                 Today, we're proud to have served over 1,000 Deaf and hearing guests from around the world, each
                 carrying home not just memories, but a piece of Sri Lankan warmth and hospitality.
               </p>
@@ -61,39 +66,39 @@ import { ButtonComponent } from '../../components/ui/button/button.component';
     <section class="py-20 bg-muted/30">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <app-card class="text-center p-8 hover:shadow-lg transition-shadow">
+          <app-card class="text-center p-8  transition-shadow">
             <app-card-content class="space-y-6">
               <div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-                <lucide-icon [name]="'eye'" class="h-10 w-10 text-primary"></lucide-icon>
+                <mat-icon class="text-primary text-3xl">visibility</mat-icon>
               </div>
               <h3 class="text-2xl font-bold text-foreground">Vision</h3>
-              <p class="text-muted-foreground leading-relaxed">
+              <p style="margin-top:1rem;" class="text-muted-foreground leading-relaxed">
                 To become Asia's #1 Deaf adventure tourism company, setting the global standard for inclusive travel
                 experiences that celebrate diversity and cultural exchange.
               </p>
             </app-card-content>
           </app-card>
 
-          <app-card class="text-center p-8 hover:shadow-lg transition-shadow">
+          <app-card class="text-center p-8  transition-shadow">
             <app-card-content class="space-y-6">
               <div class="w-20 h-20 bg-accent/10 rounded-full flex items-center justify-center mx-auto">
-                <lucide-icon [name]="'target'" class="h-10 w-10 text-accent"></lucide-icon>
+                <mat-icon  class="text-accent text-3xl">my_location</mat-icon>
               </div>
               <h3 class="text-2xl font-bold text-foreground">Mission</h3>
-              <p class="text-muted-foreground leading-relaxed">
+              <p style="margin-top:1rem;" class="text-muted-foreground leading-relaxed">
                 To uplift lives and foster true belonging through accessible adventure tourism, creating meaningful
                 connections between the global Deaf community and Sri Lankan culture.
               </p>
             </app-card-content>
           </app-card>
 
-          <app-card class="text-center p-8 hover:shadow-lg transition-shadow">
+          <app-card class="text-center p-8  transition-shadow">
             <app-card-content class="space-y-6">
               <div class="w-20 h-20 bg-secondary/10 rounded-full flex items-center justify-center mx-auto">
-                <lucide-icon [name]="'heart'" class="h-10 w-10 text-secondary"></lucide-icon>
+                <mat-icon class="text-secondary text-3xl">favorite</mat-icon>
               </div>
               <h3 class="text-2xl font-bold text-foreground">Motto</h3>
-              <p class="text-muted-foreground leading-relaxed font-semibold text-lg">
+              <p style="margin-top:1rem;" class="text-muted-foreground leading-relaxed font-semibold text-lg">
                 "Travel Without Barriers, Belong Without Bounds"
               </p>
             </app-card-content>
@@ -119,7 +124,7 @@ import { ButtonComponent } from '../../components/ui/button/button.component';
               <div class="w-4 h-4 bg-primary rounded-full"></div>
             </div>
             <div class="md:w-2/3">
-              <app-card class="p-6">
+              <app-card class="p-6 hover:shadow-lg transition-shadow">
                 <app-card-content>
                   <h3 class="text-xl font-semibold text-foreground mb-2">First Deaf-Friendly Tours</h3>
                   <p class="text-muted-foreground">
@@ -139,7 +144,7 @@ import { ButtonComponent } from '../../components/ui/button/button.component';
               <div class="w-4 h-4 bg-accent rounded-full"></div>
             </div>
             <div class="md:w-2/3">
-              <app-card class="p-6">
+              <app-card class="p-6 hover:shadow-lg transition-shadow">
                 <app-card-content>
                   <h3 class="text-xl font-semibold text-foreground mb-2">Deaf-Friendly Homestay</h3>
                   <p class="text-muted-foreground">
@@ -158,7 +163,7 @@ import { ButtonComponent } from '../../components/ui/button/button.component';
               <div class="w-4 h-4 bg-secondary rounded-full"></div>
             </div>
             <div class="md:w-2/3">
-              <app-card class="p-6">
+              <app-card class="p-6 hover:shadow-lg transition-shadow">
                 <app-card-content>
                   <h3 class="text-xl font-semibold text-foreground mb-2">1,000+ Guests Milestone</h3>
                   <p class="text-muted-foreground">
@@ -178,7 +183,7 @@ import { ButtonComponent } from '../../components/ui/button/button.component';
               <div class="w-4 h-4 bg-primary rounded-full"></div>
             </div>
             <div class="md:w-2/3">
-              <app-card class="p-6">
+              <app-card class="p-6 hover:shadow-lg transition-shadow">
                 <app-card-content>
                   <h3 class="text-xl font-semibold text-foreground mb-2">International Recognition</h3>
                   <p class="text-muted-foreground">
@@ -205,7 +210,7 @@ import { ButtonComponent } from '../../components/ui/button/button.component';
           <app-card class="text-center p-6 hover:shadow-lg transition-shadow">
             <app-card-content class="space-y-4">
               <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-                <lucide-icon [name]="'users'" class="h-8 w-8 text-primary"></lucide-icon>
+                <mat-icon class="text-primary text-2xl">groups</mat-icon>
               </div>
               <h3 class="font-bold text-lg text-foreground">Inclusivity</h3>
               <p class="text-muted-foreground text-sm">
@@ -217,7 +222,7 @@ import { ButtonComponent } from '../../components/ui/button/button.component';
           <app-card class="text-center p-6 hover:shadow-lg transition-shadow">
             <app-card-content class="space-y-4">
               <div class="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto">
-                <lucide-icon [name]="'handshake'" class="h-8 w-8 text-accent"></lucide-icon>
+                <mat-icon class="text-accent text-2xl">handshake</mat-icon>
               </div>
               <h3 class="font-bold text-lg text-foreground">Respect</h3>
               <p class="text-muted-foreground text-sm">
@@ -229,7 +234,7 @@ import { ButtonComponent } from '../../components/ui/button/button.component';
           <app-card class="text-center p-6 hover:shadow-lg transition-shadow">
             <app-card-content class="space-y-4">
               <div class="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto">
-                <lucide-icon [name]="'globe'" class="h-8 w-8 text-secondary"></lucide-icon>
+                <mat-icon class="text-secondary text-2xl">public</mat-icon>
               </div>
               <h3 class="font-bold text-lg text-foreground">Empowerment</h3>
               <p class="text-muted-foreground text-sm">
@@ -240,8 +245,8 @@ import { ButtonComponent } from '../../components/ui/button/button.component';
 
           <app-card class="text-center p-6 hover:shadow-lg transition-shadow">
             <app-card-content class="space-y-4">
-              <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-                <lucide-icon [name]="'star'" class="h-8 w-8 text-primary"></lucide-icon>
+              <div class="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto">
+                <mat-icon class="text-primary text-2xl">star</mat-icon>
               </div>
               <h3 class="font-bold text-lg text-foreground">Excellence</h3>
               <p class="text-muted-foreground text-sm">
@@ -253,116 +258,52 @@ import { ButtonComponent } from '../../components/ui/button/button.component';
       </div>
     </section>
 
-    <!-- Team Showcase -->
+    <!-- Statistics -->
     <section class="py-20">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
-          <h2 class="text-3xl lg:text-4xl font-bold text-foreground mb-4">Meet Our Team</h2>
-          <p class="text-xl text-muted-foreground">Passionate professionals dedicated to accessible tourism</p>
+          <h2 class="text-3xl lg:text-4xl font-bold text-foreground mb-4">Our Impact</h2>
+          <p class="text-xl text-muted-foreground">Numbers that tell our story</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          <app-card class="text-center p-6 hover:shadow-lg transition-shadow">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <app-card class="text-center p-8  transition-shadow">
             <app-card-content class="space-y-4">
-              <div class="w-24 h-24 bg-primary/10 rounded-full mx-auto mb-4 overflow-hidden">
-                <img src="/sri-lankan-tourism-founder.png" alt="Founder and CEO" class="w-full h-full object-cover" />
+              <div class="w-20 h-20 bg-gradient-to-br from-primary to-primary/70 rounded-full flex items-center justify-center mx-auto">
+                <mat-icon class="text-primary-foreground text-2xl">emoji_events</mat-icon>
               </div>
-              <h3 class="font-bold text-lg text-foreground">Founder & CEO</h3>
-              <p class="text-muted-foreground text-sm">Visionary leader in accessible tourism</p>
+              <div class="text-3xl font-bold text-foreground mb-4 mt-5">1st</div>
+              <p class="text-muted-foreground">Deaf-Friendly Provider in Sri Lanka</p>
             </app-card-content>
           </app-card>
 
-          <app-card class="text-center p-6 hover:shadow-lg transition-shadow">
+          <app-card class="text-center p-8  transition-shadow">
             <app-card-content class="space-y-4">
-              <div class="w-24 h-24 bg-accent/10 rounded-full mx-auto mb-4 overflow-hidden">
-                <img src="/deaf-tour-guide-sri-lanka.png" alt="Lead Deaf Guide" class="w-full h-full object-cover" />
+              <div class="w-20 h-20 bg-gradient-to-br from-accent to-accent/70 rounded-full flex items-center justify-center mx-auto">
+                <mat-icon class="text-accent-foreground text-2xl">schedule</mat-icon>
               </div>
-              <h3 class="font-bold text-lg text-foreground">Lead Deaf Guide</h3>
-              <p class="text-muted-foreground text-sm">
-                Expert in visual storytelling and cultural interpretation
-              </p>
+              <div class="text-3xl font-bold text-foreground mb-4 mt-5">10+</div>
+              <p class="text-muted-foreground">Years of Experience</p>
             </app-card-content>
           </app-card>
 
-          <app-card class="text-center p-6 hover:shadow-lg transition-shadow">
+          <app-card class="text-center p-8  transition-shadow">
             <app-card-content class="space-y-4">
-              <div class="w-24 h-24 bg-secondary/10 rounded-full mx-auto mb-4 overflow-hidden">
-                <img
-                  src="/sign-language-interpreter-sri-lanka.png"
-                  alt="Sign Language Interpreter"
-                  class="w-full h-full object-cover"
-                />
+              <div class="w-20 h-20 bg-gradient-to-br from-secondary to-secondary/70 rounded-full flex items-center justify-center mx-auto">
+                <mat-icon class="text-secondary-foreground text-2xl">people</mat-icon>
               </div>
-              <h3 class="font-bold text-lg text-foreground">Sign Language Interpreter</h3>
-              <p class="text-muted-foreground text-sm">Certified interpreter bridging communication</p>
+              <div class="text-3xl font-bold text-foreground mb-4 mt-5">1000+</div>
+              <p class="text-muted-foreground">Happy Guests Served</p>
             </app-card-content>
           </app-card>
 
-          <app-card class="text-center p-6 hover:shadow-lg transition-shadow">
+          <app-card class="text-center p-8  transition-shadow">
             <app-card-content class="space-y-4">
-              <div class="w-24 h-24 bg-primary/10 rounded-full mx-auto mb-4 overflow-hidden">
-                <img
-                  src="/tourism-operations-manager-sri-lanka.png"
-                  alt="Operations Manager"
-                  class="w-full h-full object-cover"
-                />
+              <div class="w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center mx-auto">
+                <mat-icon class="text-primary-foreground text-2xl">thumb_up</mat-icon>
               </div>
-              <h3 class="font-bold text-lg text-foreground">Operations Manager</h3>
-              <p class="text-muted-foreground text-sm">Ensuring seamless accessible travel experiences</p>
-            </app-card-content>
-          </app-card>
-        </div>
-      </div>
-    </section>
-
-    <!-- Impact Stories -->
-    <section class="py-20 bg-muted/30">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl lg:text-4xl font-bold text-foreground mb-4">Impact Stories</h2>
-          <p class="text-xl text-muted-foreground">Real experiences from our global Deaf community</p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          <app-card class="p-8">
-            <app-card-content class="space-y-6">
-              <div class="flex items-center space-x-4">
-                <img
-                  src="/deaf-student-group.png"
-                  alt="Student group"
-                  class="w-15 h-15 rounded-full object-cover"
-                />
-                <div>
-                  <h3 class="font-semibold text-foreground">University Deaf Students Association</h3>
-                  <p class="text-muted-foreground text-sm">Melbourne, Australia</p>
-                </div>
-              </div>
-              <p class="text-muted-foreground italic leading-relaxed">
-                "Our group of 15 Deaf students had the most incredible educational tour. The visual guides helped us
-                understand Sri Lankan history and culture in ways we never experienced before. This trip changed how
-                we think about accessible travel."
-              </p>
-            </app-card-content>
-          </app-card>
-
-          <app-card class="p-8">
-            <app-card-content class="space-y-6">
-              <div class="flex items-center space-x-4">
-                <img
-                  src="/placeholder-bjf16.png"
-                  alt="Elderly couple"
-                  class="w-15 h-15 rounded-full object-cover"
-                />
-                <div>
-                  <h3 class="font-semibold text-foreground">Robert & Helen</h3>
-                  <p class="text-muted-foreground text-sm">Retired Teachers, Canada</p>
-                </div>
-              </div>
-              <p class="text-muted-foreground italic leading-relaxed">
-                "After 40 years of teaching Deaf children, we finally found a travel company that truly understands
-                our community. Ceylon Deaf Adventures gave us the confidence to explore independently while feeling
-                completely supported."
-              </p>
+              <div class="text-3xl font-bold text-foreground mb-4 mt-5">95%</div>
+              <p class="text-muted-foreground">Guest Satisfaction Rate</p>
             </app-card-content>
           </app-card>
         </div>

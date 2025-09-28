@@ -1,20 +1,307 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { LucideAngularModule, Mountain, Waves, Camera, TreePine, Building, Palmtree, Eye, Users, Car, Home } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { CardComponent, CardContentComponent } from '../../components/ui/card/card.component';
 import { ButtonComponent } from '../../components/ui/button/button.component';
+import { ToursService } from '../../services/tours.service';
+import { Tour } from '../../models/tour';
+import { Observable, combineLatest, startWith, Subject, BehaviorSubject } from 'rxjs';
+import { map, takeUntil, debounceTime, distinctUntilChanged, shareReplay } from 'rxjs/operators';
+import { CommonModule } from '@angular/common';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { BookingDialogComponent } from '../../components/booking-dialog/booking-dialog.component';
+import { TourDetailDialogComponent } from '../../components/tour-detail-dialog/tour-detail-dialog.component';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-tours-page',
   standalone: true,
-  imports: [RouterLink, LucideAngularModule, CardComponent, CardContentComponent, ButtonComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    RouterLink,
+    LucideAngularModule,
+    CardComponent,
+    CardContentComponent,
+    ButtonComponent,
+    MatDialogModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatProgressSpinnerModule
+  ],
+  styles: [`
+    .hero-section {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+      padding: 5rem 0;
+    }
+    
+    .hero-title {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: #6b7280;
+      max-width: 48rem;
+      margin: 0 auto;
+      line-height: 1.6;
+      text-align: center;
+    }
+    
+    .filters-section {
+      padding: 2rem 0;
+      background: rgba(243, 244, 246, 0.5);
+    }
+    
+    .filter-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+    
+    .filter-field {
+      flex: 1;
+      min-width: 250px;
+    }
+    
+    .tours-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 2rem;
+      padding: 5rem 0;
+    }
+    
+    .tour-card {
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      background: white;
+    }
+    
+    .tour-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .tour-image-container {
+      position: relative;
+      height: 16rem;
+      overflow: hidden;
+    }
+    
+    .tour-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    .tour-card:hover .tour-image {
+      transform: scale(1.05);
+    }
+    
+    .tour-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+      border-radius: 1rem 1rem 0 0;
+    }
+    
+    .tour-type-badge {
+      position: absolute;
+      bottom: 1rem;
+      left: 1rem;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .tour-content {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .tour-title {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: #1f2937;
+      margin: 0;
+    }
+    
+    .tour-description {
+      color: #6b7280;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.5;
+    }
+    
+    .tour-price {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #3b82f6;
+      margin: 0.5rem 0;
+    }
+    
+    .tour-buttons {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: auto;
+    }
+    
+    .btn-primary {
+      flex: 1;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-primary:hover {
+      background: #2563eb;
+    }
+    
+    .btn-outline {
+      flex: 1;
+      background: white;
+      color: #3b82f6;
+      border: 1px solid #3b82f6;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-outline:hover {
+      background: #3b82f6;
+      color: white;
+    }
+    
+    .loading-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 16rem;
+    }
+    
+    .no-results {
+      text-align: center;
+      color: #6b7280;
+      font-size: 1.125rem;
+      padding: 3rem 0;
+    }
+    
+    .accessibility-section {
+      padding: 5rem 0;
+      background: rgba(243, 244, 246, 0.3);
+    }
+    
+    .accessibility-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+    
+    .accessibility-card {
+      text-align: center;
+      padding: 2rem;
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: box-shadow 0.3s ease;
+    }
+    
+    .accessibility-card:hover {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    .icon-container {
+      width: 4rem;
+      height: 4rem;
+      margin: 0 auto 1rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .icon-primary {
+      background: rgba(59, 130, 246, 0.1);
+      color: #3b82f6;
+    }
+    
+    .icon-accent {
+      background: rgba(99, 102, 241, 0.1);
+      color: #6366f1;
+    }
+    
+    .icon-secondary {
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+    }
+    
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1f2937;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    
+    .section-subtitle {
+      font-size: 1.25rem;
+      color: #6b7280;
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    
+    @media (max-width: 768px) {
+      .filter-form {
+        flex-direction: column;
+      }
+      
+      .filter-field {
+        min-width: 100%;
+      }
+      
+      .tours-grid {
+        grid-template-columns: 1fr;
+        padding: 3rem 0;
+      }
+      
+      .tour-buttons {
+        flex-direction: column;
+      }
+    }
+  `],
   template: `
     <!-- Hero Section -->
-    <section class="relative bg-gradient-to-br from-primary/10 to-secondary/10 py-20">
+    <section class="hero-section">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center space-y-6">
-          <h1 class="text-4xl lg:text-6xl font-bold text-foreground">Accessible Adventures for Everyone</h1>
-          <p class="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+        <div class="space-y-6">
+          <h1 class="hero-title">Accessible Adventures for Everyone</h1>
+          <p class="hero-subtitle">
             From whale watching to cultural immersion — discover Sri Lanka barrier-free with expert visual guides and
             sign language interpretation.
           </p>
@@ -22,389 +309,248 @@ import { ButtonComponent } from '../../components/ui/button/button.component';
       </div>
     </section>
 
-    <!-- Tour Cards Grid -->
-    <section class="py-20">
+    <!-- Filters -->
+    <section class="filters-section">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <!-- Sigiriya Rock Fortress -->
-          <app-card class="overflow-hidden hover:shadow-xl transition-all duration-300 group">
-            <div class="relative">
-              <img
-                src="/placeholder.svg?height=300&width=500"
-                alt="Sigiriya Rock Fortress - UNESCO World Heritage Site"
-                class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-              <div class="absolute bottom-4 left-4 text-white">
-                <lucide-icon [name]="'mountain'" class="h-8 w-8 mb-2"></lucide-icon>
-                <span class="text-sm font-medium">UNESCO Heritage</span>
-              </div>
-            </div>
-            <app-card-content class="p-6 space-y-4">
-              <h3 class="font-bold text-xl text-foreground">Sigiriya Rock Fortress</h3>
-              <p class="text-muted-foreground">
-                Climb the ancient palace with visual storytelling guides who bring 1,500 years of history to life
-                through detailed visual narratives.
-              </p>
-              <div class="flex justify-between items-center">
-                <app-button variant="primary">
-                  <a href="#">Book Now</a>
-                </app-button>
-                <app-button variant="outline">
-                  <a href="#">Learn More</a>
-                </app-button>
-              </div>
-            </app-card-content>
-          </app-card>
+        <form [formGroup]="filterForm" class="filter-form">
+          <mat-form-field appearance="fill" class="filter-field">
+            <mat-label>Search by title or description</mat-label>
+            <input matInput formControlName="searchText">
+          </mat-form-field>
+          <mat-form-field appearance="fill" class="filter-field">
+            <mat-label>Tour Type</mat-label>
+            <mat-select formControlName="selectedType">
+              <mat-option value="">All Types</mat-option>
+              <mat-option value="group">Group</mat-option>
+              <mat-option value="private">Private</mat-option>
+              <mat-option value="deaf_guide">Deaf Guide</mat-option>
+              <mat-option value="adventure">Adventure</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="fill" class="filter-field">
+            <mat-label>Locations (select multiple)</mat-label>
+            <mat-select formControlName="selectedLocations" multiple>
+              @for (loc of uniqueLocations$ | async; track loc) {
+                <mat-option [value]="loc">{{ loc }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </form>
+      </div>
+    </section>
 
-          <!-- Temple of the Sacred Tooth Relic -->
-          <app-card class="overflow-hidden hover:shadow-xl transition-all duration-300 group">
-            <div class="relative">
-              <img
-                src="/placeholder.svg?height=300&width=500"
-                alt="Temple of the Sacred Tooth Relic in Kandy"
-                class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-              <div class="absolute bottom-4 left-4 text-white">
-                <lucide-icon [name]="'building'" class="h-8 w-8 mb-2"></lucide-icon>
-                <span class="text-sm font-medium">Cultural Heritage</span>
+    <!-- Tour Cards Grid -->
+    <section>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        @if (isLoading$ | async) {
+          <div class="loading-container">
+            <mat-spinner diameter="50"></mat-spinner>
+          </div>
+        } @else {
+          @if (filteredTours$ | async; as tours) {
+            @if (tours.length === 0) {
+              <div class="no-results">No tours found matching your criteria.</div>
+            } @else {
+              <div class="tours-grid">
+                @for (tour of tours; track tour.id) {
+                  <div class="tour-card">
+                    <div class="tour-image-container">
+                      <img
+                        [src]="tour.images[0] || '/placeholder.svg?height=300&width=500'"
+                        [alt]="tour.title"
+                        class="tour-image"
+                      />
+                      <div class="tour-overlay"></div>
+                      <div class="tour-type-badge">
+                        <lucide-icon [name]="getIcon(tour.type)" [size]="20"></lucide-icon>
+                        <span style="font-size: 0.875rem; font-weight: 500;">{{ tour.type | titlecase }}</span>
+                      </div>
+                    </div>
+                    <div class="tour-content">
+                      <h3 class="tour-title">{{ tour.title }}</h3>
+                      <p class="tour-description">{{ tour.shortDescription }}</p>
+                      <div class="tour-price"> $ {{ tour.priceDisplay }} {{ tour.currency }}</div>
+                      <div class="tour-buttons">
+                        <button class="btn-primary" (click)="openBookingDialog(tour)">
+                          Book Now
+                        </button>
+                        <button class="btn-outline" (click)="openDetailDialog(tour)">
+                          View Details
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                }
               </div>
-            </div>
-            <app-card-content class="p-6 space-y-4">
-              <h3 class="font-bold text-xl text-foreground">Temple of the Sacred Tooth Relic</h3>
-              <p class="text-muted-foreground">
-                Experience Kandy's most sacred Buddhist temple with cultural interpreters who explain rituals and
-                traditions through visual communication.
-              </p>
-              <div class="flex justify-between items-center">
-                <app-button variant="primary">
-                  <a href="#">Book Now</a>
-                </app-button>
-                <app-button variant="outline">
-                  <a href="#">Learn More</a>
-                </app-button>
-              </div>
-            </app-card-content>
-          </app-card>
-
-          <!-- Ella Hiking Trails -->
-          <app-card class="overflow-hidden hover:shadow-xl transition-all duration-300 group">
-            <div class="relative">
-              <img
-                src="/placeholder.svg?height=300&width=500"
-                alt="Ella hiking trails through tea plantations"
-                class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/极 60 to-transparent"></div>
-              <div class="absolute bottom-4 left-4 text-white">
-                <lucide-icon [name]="'tree-pine'" class="h-8 w-8 mb-2"></lucide-icon>
-                <span class="text-sm font-medium">Mountain Adventure</span>
-              </div>
-            </div>
-            <app-card-content class="p-极 space-y-4">
-              <h3 class="font-bold text-xl text-foreground">Ella Hiking Trails</h3>
-              <p class="text-muted-foreground">
-                Scenic hiking through tea plantations to Little Adam's Peak with visual trail guides and vibration
-                alerts for safety.
-              </p>
-              <div class="flex justify-between items-center">
-                <app-button variant="primary">
-                  <a href="#">Book Now</a>
-                </app-button>
-                <app-button variant="outline">
-                  <a href="#">Learn More</a>
-                </app-button>
-              </div>
-            </app-card-content>
-          </app-card>
-
-          <!-- Yala National Park Safari -->
-          <app-card class="overflow-hidden hover:shadow-xl transition-all duration-300 group">
-            <div class="relative">
-              <img
-                src="/placeholder.svg?height=300&width=500"
-                alt="Yala National Park safari with leopards and elephants"
-                class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-              <div class="absolute bottom-4 left-极 text-white">
-                <lucide-icon [name]="'camera'" class="h-8 w-8 mb-2"></lucide-icon>
-                <span class="text-sm font-medium">Wildlife Safari</span>
-              </div>
-            </div>
-            <app-card-content class="p-6 space-y-4">
-              <h3 class="font-bold text-xl text-foreground">Yala National Park Safari</h3>
-              <p class="text-muted-foreground">
-                Wildlife photography adventure with vibration alerts for animal sightings and visual identification
-                guides for all species.
-              </p>
-              <div class="flex justify-between items-center">
-                <app-button variant="primary">
-                  <a href="#">Book Now</a>
-                </app-button>
-                <app-button variant="outline">
-                  <a href="#">Learn More</a>
-                </app-button>
-              </div>
-            </app-card-content>
-          </app-card>
-
-          <!-- Whale Watching in Mirissa -->
-          <app-card class="overflow-hidden hover:shadow-xl transition-all duration-300 group">
-            <div class="relative">
-              <img
-                src="/placeholder.svg?height=300&width=500"
-                alt="Whale watching tour in Mirissa with blue whales"
-                class="w-full h-64 object-cover group-h极 ver:scale-105 transition-transform duration-300"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-              <div class="absolute bottom-4 left-4 text-white">
-                <lucide-icon [name]="'waves'" class="h-8 w-8 mb-2"></lucide-icon>
-                <span class="text-sm font-medium">Marine Adventure</span>
-              </div>
-            </div>
-            <app-card-content class="p-6 space-y-4">
-              <h3 class="font-bold text-xl text-foreground">Whale Watching in Mirissa</h3>
-              <p class="text-muted-foreground">
-                Experience majestic blue whales and dolphins with sign language marine guides and visual whale
-                identification charts.
-              </p>
-              <div class="flex justify-between items-center">
-                <app-button variant="primary">
-                  <a href="#">Book Now</a>
-                </app-button>
-                <app-button variant="outline">
-                  <a href="#">Learn More</a>
-                </app-button>
-              </div>
-            </app-card-content>
-          </app-card>
-
-          <!-- Galle Fort -->
-          <app-card class="overflow-hidden hover:shadow-xl transition-all duration-300 group">
-            <div class="relative">
-              <img
-                src="/placeholder.svg?height=300&width=500"
-                alt="Galle Fort colonial heritage and cafes"
-                class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-              <div class="absolute bottom-4 left-4 text-white">
-                <lucide-icon [name]="'building'" class="h-8 w-8 mb-2"></lucide-icon>
-                <span class="text-sm font-medium">Colonial Heritage</span>
-              </div>
-            </div>
-            <app-card-content class="p-6 space-y-4">
-              <h3 class="font-bold text-xl text-foreground">Galle Fort</h3>
-              <p class="text-muted-foreground">
-                Explore 400-year-old colonial architecture with historical visual guides and enjoy accessible cafes
-                with written menus.
-              </p>
-              <div class="flex justify-between items-center">
-                <app-button variant="primary">
-                  <a href="#">Book Now</a>
-                </app-button>
-                <app-button variant="outline">
-                  <a href="#">Learn More</a>
-                </app-button>
-              </div>
-            </app-card-content>
-          </app-card>
-
-          <!-- Dambulla Cave Temple -->
-          <app-card class="overflow-hidden hover:shadow-xl transition-all duration-300 group">
-            <div class="relative">
-              <img
-                src="/placeholder.svg?height=300&width=500"
-                alt="Dambulla Cave Temple with ancient Buddhist murals"
-                class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-              <div class="absolute bottom-4 left-4 text-white">
-                <lucide-icon [name]="'mountain'" class="h-8 w-8 mb-2"></lucide-icon>
-                <span class="text-sm font-medium">Ancient Art</span>
-              </div>
-            </div>
-            <app-card-content class="p-6 space-y-4">
-              <h3 class="font-bold text-xl text-foreground">Dambulla Cave Temple</h3>
-              <p class="text-muted-foreground">
-                Marvel at 2,000-year-old Buddhist murals with art historians who explain the stories through detailed
-                visual descriptions.
-              </p>
-              <div class="flex justify-between items-center">
-                <app-button variant="primary">
-                  <a href="#">Book Now</a>
-                </app-button>
-                <app-button variant="outline">
-                  <a href="#">Learn More</a>
-                </app-button>
-              </div>
-            </app-card-content>
-          </app-card>
-
-          <!-- Bentota/Mirissa Beaches -->
-          <app-card class="overflow-hidden hover:shadow-xl transition-all duration-300 group">
-            <div class="relative">
-              <img
-                src="/placeholder.svg?height=300&width=500"
-                alt="Bentota and Mirissa tropical beaches"
-                class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-              <div class="absolute bottom-4 left-4 text-white">
-                <lucide-icon [name]="'palmtree'" class="h-8 w-8 mb-2"></lucide-icon>
-                <span class="text-sm font-medium">Beach Paradise</span>
-              </div>
-            </div>
-            <app-card-content class="p-6 space-y-4">
-              <h3 class="font-bold text-xl text-foreground">Bentota/Mirissa Beaches</h3>
-              <p class="text-muted-foreground">
-                Relax on pristine tropical beaches with accessible facilities, visual safety guides, and water sports
-                with sign language instruction.
-              </p>
-              <div class="flex justify-between items-center">
-                <app-button variant="primary">
-                  <a href="#">Book Now</a>
-                </app-button>
-                <app-button variant="outline">
-                  <a href="#">Learn More</a>
-                </app-button>
-              </div>
-            </app-card-content>
-          </app-card>
-        </div>
+            }
+          }
+        }
       </div>
     </section>
 
     <!-- Accessibility Highlights -->
-    <section class="py-20 bg-muted/30">
+    <section class="accessibility-section">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
-          <h2 class="text-3xl极 lg:text-4xl font-bold text-foreground mb-4">Accessibility Highlights</h2>
-          <p class="text-xl text-muted-foreground">
+          <h2 class="section-title">Accessibility Highlights</h2>
+          <p class="section-subtitle">
             Every tour designed with comprehensive accessibility features
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <app-card class="text-center p-6 hover:shadow-lg transition-shadow">
-            <app-card-content class="space-y-4">
-              <div class="w-16极 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-                <lucide-icon [name]="'eye'" class="h-8 w-8 text-primary"></lucide-icon>
-              </div>
-              <h3 class="font-bold text-lg text-foreground">Sign Language Guides</h3>
-              <p class="text-muted-foreground text-sm">Certified Deaf guides and interpreters for every tour</p>
-            </app-card-content>
-          </app-card>
+        <div class="accessibility-grid">
+          <div class="accessibility-card">
+            <div class="icon-container icon-primary">
+              <lucide-icon name="eye" [size]="32"></lucide-icon>
+            </div>
+            <h3 style="font-weight: 700; font-size: 1.125rem; color: #1f2937; margin-bottom: 1rem;">Sign Language Guides</h3>
+            <p style="color: #6b7280; font-size: 0.875rem;">Certified Deaf guides and interpreters for every tour</p>
+          </div>
 
-          <app-card class="text-center p-6 hover:shadow-lg transition-shadow">
-            <app-card-content class="space-y-4">
-              <div class="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto">
-                <lucide-icon [name]="'users'" class="h-8 w-8 text-accent"></lucide-icon>
-              </div>
-              <h3 class="font-bold text-lg text-foreground">Visual & Written Guides</h3>
-              <p class="text-muted-foreground text-sm">Comprehensive visual materials and written descriptions</p>
-            </app-card-content>
-          </app-card>
+          <div class="accessibility-card">
+            <div class="icon-container icon-accent">
+              <lucide-icon name="users" [size]="32"></lucide-icon>
+            </div>
+            <h3 style="font-weight: 700; font-size: 1.125rem; color: #1f2937; margin-bottom: 1rem;">Visual & Written Guides</h3>
+            <p style="color: #6b7280; font-size: 0.875rem;">Comprehensive visual materials and written descriptions</p>
+          </div>
 
-          <app-card class="text-center p-6 hover:shadow-lg transition-shadow">
-            <app-card-content class="space-y-4">
-              <div class="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto">
-                <lucide-icon [name]="'car'" class="h-8 w-8 text-secondary"></lucide-icon>
-              </div>
-              <h3 class="font-bold text-lg text-foreground">Accessible Transport</h3>
-              <p class="text-muted-foreground text-sm">Comfortable vehicles with visual communication systems</p>
-            </app-card-content>
-          </app-card>
+          <div class="accessibility-card">
+            <div class="icon-container icon-secondary">
+              <lucide-icon name="car" [size]="32"></lucide-icon>
+            </div>
+            <h3 style="font-weight: 700; font-size: 1.125rem; color: #1f2937; margin-bottom: 1rem;">Accessible Transport</h3>
+            <p style="color: #6b7280; font-size: 0.875rem;">Comfortable vehicles with visual communication systems</p>
+          </div>
 
-          <app-card class="text-center p-6 hover:shadow-lg transition-shadow">
-            <app-card-content class="space-y-4">
-              <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-                <lucide-icon [name]="'home'" class="h-8 w-8 text-primary"></lucide-icon>
-              </div>
-              <h3 class="font-bold text-lg text-foreground">Accessible Stays</h3>
-              <p class="text-muted-foreground text极 m">Deaf-friendly accommodations with visual alert systems</p>
-            </app-card-content>
-          </app-card>
+          <div class="accessibility-card">
+            <div class="icon-container icon-primary">
+              <lucide-icon name="home" [size]="32"></lucide-icon>
+            </div>
+            <h3 style="font-weight: 700; font-size: 1.125rem; color: #1f2937; margin-bottom: 1rem;">Accessible Stays</h3>
+            <p style="color: #6b7280; font-size: 0.875rem;">Deaf-friendly accommodations with visual alert systems</p>
+          </div>
         </div>
-      </div>
-    </section>
-
-    <!-- FAQ Preview -->
-    <section class="py-20">
-      <div class="max-w-4xl mx-auto px-4 sm:px-6极 lg:px-8">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl lg:text-4xl font-bold text-foreground mb-4">Frequently Asked Questions</h2>
-          <p class="text-xl text-muted-foreground">Common questions about our accessible tours</p>
-        </div>
-
-        <div class="space-y-6">
-          <app-card class="p-6">
-            <app-card-content>
-              <h3 class="font-semibold text-lg text-foreground mb-3">
-                Do I need to know sign language to join your tours?
-              </h3>
-              <p class="text-muted-foreground">
-                Not at all! Our tours welcome both Deaf and hearing guests. We provide sign language interpreters and
-                visual guides to ensure everyone can fully participate and enjoy the experience together.
-              </p>
-            </app-card-content>
-          </app-card>
-
-          <app-card class="p-6">
-            <app-card-content>
-              <h3 class="font-semibold text-lg text-foreground mb-3">
-                Are your accommodations fully accessible?
-              </h3>
-              <p class="text-muted-foreground">
-                Yes, all our partner accommodations feature visual alert systems, accessible bathrooms, and staff
-                trained in basic sign language. We personally inspect every facility to ensure it meets our
-                accessibility standards.
-              </p>
-            </app-card-content>
-          </app-card>
-
-          <app-card class="p-6">
-            <app-card-content>
-              <h3 class="font-semibold text-lg text-foreground mb-3">
-                What safety measures do you have in place?
-              </h3>
-              <p class="text-muted-foreground">
-                Safety is our priority. We use vibration alerts for emergencies, visual safety briefings, buddy
-                systems, and our guides are trained in both first aid and Deaf cultural awareness.
-              </p>
-            </app-card-content>
-          </app-card>
-
-          <app-card class="p-6">
-            <app-card-content>
-              <h3 class="font-semibold text-lg text-foreground mb-3">
-                Can you accommodate dietary restrictions?
-              </h3>
-              <p class="text-muted-foreground">
-                We work with restaurants that provide visual menus and can accommodate various dietary needs including
-                vegetarian, vegan, halal, and allergy-specific requirements.
-              </p>
-            </app-card-content>
-          </app-card>
-        </div>
-      </div>
-    </section>
-
-    <!-- Closing CTA -->
-    <section class="py-20 bg-gradient-to-br from-primary/10 to-accent/10">
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="text-3xl lg:text-4xl font-bold text-foreground mb-6">Ready for Your Sri Lankan Adventure?</h2>
-        <p class="text-xl text-muted-foreground mb-8 leading-relaxed">
-          Join thousands of satisfied guests who have experienced Sri Lanka without barriers. Your accessible
-          adventure awaits!
-        </p>
-        <app-button size="lg" variant="accent" class="text-lg px-8 py-3">
-          <a href="#">Plan Your Adventure Now</a>
-        </app-button>
       </div>
     </section>
   `
 })
-export class ToursPageComponent { }
+export class ToursPageComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+  isLoading$ = new BehaviorSubject<boolean>(true);
+
+  allTours$!: Observable<Tour[]>;
+  filteredTours$!: Observable<Tour[]>;
+  uniqueLocations$!: Observable<string[]>;
+  filterForm!: FormGroup;
+
+  constructor(
+    private toursService: ToursService,
+    private dialog: MatDialog,
+    private fb: FormBuilder
+  ) { }
+
+  ngOnInit() {
+    this.initializeForm();
+    this.loadTours();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private initializeForm() {
+    this.filterForm = this.fb.group({
+      searchText: [''],
+      selectedType: [''],
+      selectedLocations: [[]]
+    });
+  }
+
+  private loadTours() {
+    // Load tours with caching
+    this.allTours$ = this.toursService.listTours().pipe(
+      shareReplay(1),
+      takeUntil(this.destroy$)
+    );
+
+    // Extract unique locations
+    this.uniqueLocations$ = this.allTours$.pipe(
+      map(tours => [...new Set(tours.flatMap(t => t.location))].sort()),
+      shareReplay(1)
+    );
+
+    // Set up filtered tours with debouncing
+    this.filteredTours$ = combineLatest([
+      this.allTours$,
+      this.filterForm.valueChanges.pipe(
+        startWith(this.filterForm.value),
+        debounceTime(300),
+        distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))
+      )
+    ]).pipe(
+      map(([tours, filters]) => this.filterTours(tours, filters)),
+      shareReplay(1)
+    );
+
+    // Handle loading state
+    this.allTours$.subscribe(() => {
+      this.isLoading$.next(false);
+    });
+  }
+
+  private filterTours(tours: Tour[], filters: any): Tour[] {
+    return tours.filter(tour => {
+      // Search filter
+      if (filters.searchText) {
+        const searchLower = filters.searchText.toLowerCase();
+        if (!tour.title.toLowerCase().includes(searchLower) &&
+          !tour.shortDescription.toLowerCase().includes(searchLower)) {
+          return false;
+        }
+      }
+
+      // Type filter
+      if (filters.selectedType && tour.type !== filters.selectedType) {
+        return false;
+      }
+
+      // Location filter
+      if (filters.selectedLocations.length &&
+        !tour.location.some(location => filters.selectedLocations.includes(location))) {
+        return false;
+      }
+
+      return true;
+    });
+  }
+
+  openBookingDialog(tour: Tour) {
+    this.dialog.open(BookingDialogComponent, {
+      width: '600px',
+      maxWidth: '95vw',
+      data: { tour },
+      panelClass: 'custom-dialog-container'
+    });
+  }
+
+  openDetailDialog(tour: Tour) {
+    this.dialog.open(TourDetailDialogComponent, {
+      width: '700px',
+      maxWidth: '95vw',
+      data: { tour },
+      panelClass: 'custom-dialog-container'
+    });
+  }
+
+  getIcon(type: string): string {
+    const icons = {
+      adventure: 'mountain',
+      group: 'users',
+      private: 'home',
+      deaf_guide: 'eye'
+    };
+    return icons[type as keyof typeof icons] || 'mountain';
+  }
+}

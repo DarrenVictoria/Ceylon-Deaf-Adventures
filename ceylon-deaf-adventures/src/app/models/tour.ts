@@ -3,8 +3,7 @@ export interface Tour {
     title: string;
     slug: string;
     type: 'group' | 'private' | 'deaf_guide' | 'adventure';
-    //Is tour or not 
-    location: string; //If tour multiple locations array
+    location: string[]; // Updated to array for multiple locations
     shortDescription: string;
     fullDescription: string;
     durationDays: number;
@@ -18,6 +17,4 @@ export interface Tour {
     published: boolean;
     createdAt: any; // Firestore Timestamp
     updatedAt?: any; // Firestore Timestamp
-
-
 }

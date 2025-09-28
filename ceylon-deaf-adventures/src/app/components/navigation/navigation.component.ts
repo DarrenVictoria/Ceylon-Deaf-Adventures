@@ -12,7 +12,7 @@ import { LucideAngularModule, Menu, X } from 'lucide-angular';
         <div class="flex justify-between items-center h-16">
           <!-- Logo (1x1 image) -->
           <a [routerLink]="['/']" class="flex items-center space-x-2">
-            <img src="logo.jpeg" alt="Ceylon Deaf Adventures logo" class="w-14 h-14 rounded-lg object-cover aspect-square" />
+            <img style="max-width:70px" src="logo.png" alt="Ceylon Deaf Adventures logo" class="w-14 h-14 rounded-lg object-cover aspect-square" />
             <div class="hidden sm:block">
               <span class="font-bold text-lg text-foreground">Ceylon Deaf Adventures</span>
             </div>
@@ -23,10 +23,10 @@ import { LucideAngularModule, Menu, X } from 'lucide-angular';
             <a [routerLink]="['/']" class="text-foreground hover:text-primary transition-colors font-medium">
               Home
             </a>
-            <a [routerLink]="['/']" class="text-foreground hover:text-primary transition-colors font-medium">
+            <a [routerLink]="['/about']" class="text-foreground hover:text-primary transition-colors font-medium">
               About Us
             </a>
-            <a [routerLink]="['/']" class="text-foreground hover:text-primary transition-colors font-medium">
+            <a [routerLink]="['/tours']" class="text-foreground hover:text-primary transition-colors font-medium">
               Tours
             </a>
            
@@ -69,14 +69,14 @@ import { LucideAngularModule, Menu, X } from 'lucide-angular';
                 Home
               </a>
               <a
-                [routerLink]="['/']"
+                [routerLink]="['/about']"
                 class="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-muted rounded-md transition-colors"
                 (click)="isOpen = false"
               >
                 About Us
               </a>
               <a
-                [routerLink]="['/']"
+                [routerLink]="['/tours']"
                 class="block px-3 py-2 text-base font-medium text-foreground hover:text-primary hover:bg-muted rounded-md transition-colors"
                 (click)="isOpen = false"
               >

@@ -1,40 +1,41 @@
-import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { Observable, map } from 'rxjs';
-import firebase from 'firebase/compat/app';
+import { Injectable, inject } from '@angular/core';
+import { Firestore, collection, doc, collectionData, docData, addDoc, updateDoc, deleteDoc, query, Query, CollectionReference, QueryConstraint, serverTimestamp } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class FirestoreService {
-    constructor(private afs: AngularFirestore) { }
+    private firestore = inject(Firestore);
 
     doc<T>(path: string): Observable<T | undefined> {
-        return this.afs.doc<T>(path).valueChanges();
+        const docRef = doc(this.firestore, path);
+        return docData(docRef) as Observable<T | undefined>;
     }
 
-    collection<T>(path: string, queryFn?: (ref: any) => any): Observable<T[]> {
-        let colRef = this.afs.collection<T>(path);
-        if (queryFn) {
-            colRef = this.afs.collection<T>(path, queryFn);
-        }
-        return colRef.valueChanges({ idField: 'id' });
+    collection<T>(path: string, queryFn?: (ref: CollectionReference) => Query): Observable<T[]> {
+        const colRef = collection(this.firestore, path);
+        let queryRef = queryFn ? queryFn(colRef) : colRef;
+        return collectionData(queryRef, { idField: 'id' }) as Observable<T[]>;
     }
 
     async create<T>(path: string, data: T): Promise<string> {
-        const docRef = await this.afs.collection(path).add({
+        const colRef = collection(this.firestore, path);
+        const docRef = await addDoc(colRef, {
             ...data,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            createdAt: serverTimestamp()
         });
         return docRef.id;
     }
 
     async update(path: string, data: any): Promise<void> {
-        await this.afs.doc(path).update({
+        const docRef = doc(this.firestore, path);
+        await updateDoc(docRef, {
             ...data,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            updatedAt: serverTimestamp()
         });
     }
 
     async delete(path: string): Promise<void> {
-        await this.afs.doc(path).delete();
+        const docRef = doc(this.firestore, path);
+        await deleteDoc(docRef);
     }
 }

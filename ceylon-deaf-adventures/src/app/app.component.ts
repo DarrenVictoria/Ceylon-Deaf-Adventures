@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { FooterComponent } from './components/footer/footer.component';
+import { environment } from '../environments/environment';
+import { initDummyData } from './scripts/init-data';
 
 @Component({
   selector: 'app-root',
@@ -17,4 +19,10 @@ import { FooterComponent } from './components/footer/footer.component';
 })
 export class AppComponent {
   title = 'ceylon-deaf-adventures';
+
+  ngOnInit() {
+    if (!environment.production) { // Only run in dev
+      initDummyData().then(() => console.log('Dummy data initialized'));
+    }
+  }
 }
