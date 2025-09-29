@@ -1,705 +1,1025 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { CardComponent, CardContentComponent } from '../../components/ui/card/card.component';
-import { ButtonComponent } from '../../components/ui/button/button.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatRippleModule } from '@angular/material/core';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-about-page',
   standalone: true,
-  imports: [RouterLink, MatIconModule, CardComponent, CardContentComponent, ButtonComponent],
+  imports: [
+    CommonModule,
+    RouterLink,
+    MatIconModule,
+    MatButtonModule,
+    MatCardModule,
+    MatRippleModule,
+    MatBadgeModule,
+    MatDividerModule
+  ],
   template: `
     <!-- Hero Section -->
     <section class="hero-section">
-      <div class="container">
-        <div class="text-center space-y-8">
-          <h1 class="text-4xl lg-text-6xl font-bold text-foreground leading-tight">
-            Connecting Heart and Heritage
-          </h1>
-          <p style="color:black;" class="text-xl  text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-            Born from a passion to create a world where Deaf travelers can explore freely and fully, Ceylon Deaf
-            Adventures bridges cultures and communities through accessible tourism.
-          </p>
+      <div class="hero-background"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <div class="container">
+          <div class="hero-text">
+            <h1 class="hero-title">
+              Connecting Heart and <span class="highlight-text">Heritage</span>
+            </h1>
+            <p class="hero-description">
+              Born from a passion to create a world where Deaf travelers can explore freely and fully, 
+              Ceylon Deaf Adventures bridges cultures and communities through accessible tourism.
+            </p>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Founder's Story -->
-    <section class="py-20">
+    <section class="story-section">
       <div class="container">
-        <div class="grid-cols-1 lg-grid-cols-2  items-center">
-          <div class="space-y-6">
-            <h2 class="text-3xl lg-text-4xl font-bold text-foreground">Our Story</h2>
-            <div class="space-y-4 text-muted-foreground leading-relaxed">
-              <p>
-                In 2014, our founder recognized a gap in Sri Lanka's tourism industry the lack of truly accessible
+        <div class="story-grid">
+          <div class="story-content">
+            <h2 class="section-title">Our Story</h2>
+            <div class="story-text">
+              <p class="story-paragraph">
+                In 2014, our founder recognized a gap in Sri Lanka's tourism industry—the lack of truly accessible
                 experiences for the Deaf community. What started as a personal mission to share Sri Lanka's beauty
                 with Deaf friends from around the world has grown into the country's first dedicated Deaf-friendly
                 tourism company.
               </p>
-              <p>
+              <p class="story-paragraph">
                 Our journey began with simple homestay experiences, where visual communication and cultural immersion
                 took precedence over traditional audio-based tours. We discovered that when barriers are removed, the
                 connections formed between travelers and local communities become deeper and more meaningful.
               </p>
-              <p class="font-semibold text-foreground">
-                Today, we're proud to have served over 1,000 Deaf and hearing guests from around the world, each
-                carrying home not just memories, but a piece of Sri Lankan warmth and hospitality.
-              </p>
+              <mat-card class="highlight-card">
+                <mat-card-content>
+                  <mat-icon class="highlight-icon">celebration</mat-icon>
+                  <p class="highlight-text">
+                    Today, we're proud to have served over 1,000 Deaf and hearing guests from around the world, 
+                    each carrying home not just memories, but a piece of Sri Lankan warmth and hospitality.
+                  </p>
+                </mat-card-content>
+              </mat-card>
             </div>
           </div>
-          <div class="relative">
+          <div class="story-image">
             <img
               src="/ceylon-deaf-adventures-family.png"
               alt="Ceylon Deaf Adventures founder with local Sri Lankan family"
-              class="img-rounded shadow-2xl w-full h-auto"
+              class="founder-image"
             />
+            <div class="image-decoration"></div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Mission, Vision, Motto -->
-    <section class="py-20 bg-muted-30">
+    <section class="mission-section">
       <div class="container">
-        <div class="grid-cols-1 md-grid-cols-3 gap-8">
-          <app-card class="text-center p-8 transition-shadow">
-            <app-card-content class="space-y-6">
-              <div class="icon-bg rounded-full flex items-center justify-center mx-auto bg-primary-10">
-                <mat-icon class="text-primary text-3xl">visibility</mat-icon>
+        <div class="mission-grid">
+          <mat-card class="mission-card vision-card" matRipple>
+            <mat-card-content class="mission-content">
+              <div class="mission-icon primary-gradient">
+                <mat-icon>visibility</mat-icon>
               </div>
-              <h3 class="text-2xl font-bold text-foreground">Vision</h3>
-              <p style="margin-top:1rem;" class="text-muted-foreground leading-relaxed">
+              <h3 class="mission-title">Vision</h3>
+              <p class="mission-description">
                 To become Asia's #1 Deaf adventure tourism company, setting the global standard for inclusive travel
                 experiences that celebrate diversity and cultural exchange.
               </p>
-            </app-card-content>
-          </app-card>
+            </mat-card-content>
+          </mat-card>
 
-          <app-card class="text-center p-8 transition-shadow">
-            <app-card-content class="space-y-6">
-              <div class="icon-bg rounded-full flex items-center justify-center mx-auto bg-accent-10">
-                <mat-icon  class="text-accent text-3xl">my_location</mat-icon>
+          <mat-card class="mission-card mission-main-card" matRipple>
+            <mat-card-content class="mission-content">
+              <div class="mission-icon accent-gradient">
+                <mat-icon>my_location</mat-icon>
               </div>
-              <h3 class="text-2xl font-bold text-foreground">Mission</h3>
-              <p style="margin-top:1rem;" class="text-muted-foreground leading-relaxed">
+              <h3 class="mission-title">Mission</h3>
+              <p class="mission-description">
                 To uplift lives and foster true belonging through accessible adventure tourism, creating meaningful
                 connections between the global Deaf community and Sri Lankan culture.
               </p>
-            </app-card-content>
-          </app-card>
+            </mat-card-content>
+          </mat-card>
 
-          <app-card class="text-center p-8 transition-shadow">
-            <app-card-content class="space-y-6">
-              <div class="icon-bg rounded-full flex items-center justify-center mx-auto bg-secondary-10">
-                <mat-icon class="text-secondary text-3xl">favorite</mat-icon>
+          <mat-card class="mission-card motto-card" matRipple>
+            <mat-card-content class="mission-content">
+              <div class="mission-icon secondary-gradient">
+                <mat-icon>favorite</mat-icon>
               </div>
-              <h3 class="text-2xl font-bold text-foreground">Motto</h3>
-              <p style="margin-top:1rem;" class="text-muted-foreground leading-relaxed font-semibold text-lg">
+              <h3 class="mission-title">Motto</h3>
+              <p class="motto-text">
                 "Travel Without Barriers, Belong Without Bounds"
               </p>
-            </app-card-content>
-          </app-card>
+            </mat-card-content>
+          </mat-card>
         </div>
       </div>
     </section>
 
     <!-- Milestones Timeline -->
-    <section class="py-20">
+    <section class="timeline-section">
       <div class="container">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl lg-text-4xl font-bold text-foreground mb-4">Our Journey</h2>
-          <p class="text-xl text-muted-foreground">Key milestones in creating barrier-free tourism</p>
+        <div class="section-header">
+          <h2 class="section-title">Our Journey</h2>
+          <p class="section-subtitle">Key milestones in creating barrier-free tourism</p>
         </div>
 
-        <div class="space-y-12">
-          <div class="flex flex-col md-flex-row items-center gap-8">
-            <div class="md-w-1-4 text-center md-text-right">
-              <div class="text-3xl font-bold text-primary">2014</div>
+        <div class="timeline">
+          <div class="timeline-item" *ngFor="let milestone of milestones; let i = index">
+            <div class="timeline-year">
+              <span class="year-badge" [ngClass]="milestone.colorClass">{{ milestone.year }}</span>
             </div>
-            <div class="md-w-1-12 flex justify-center">
-              <div class="dot bg-primary"></div>
+            <div class="timeline-connector">
+              <div class="timeline-dot" [ngClass]="milestone.colorClass"></div>
+              <div class="timeline-line" *ngIf="i < milestones.length - 1"></div>
             </div>
-            <div class="md-w-2-3">
-              <app-card class="p-6 hover-shadow transition-shadow">
-                <app-card-content>
-                  <h3 class="text-xl font-semibold text-foreground mb-2">First Deaf-Friendly Tours</h3>
-                  <p class="text-muted-foreground">
-                    Launched our pioneering accessible tourism experiences with visual guides and sign language
-                    interpretation.
-                  </p>
-                </app-card-content>
-              </app-card>
-            </div>
-          </div>
-
-          <div class="flex flex-col md-flex-row items-center gap-8">
-            <div class="md-w-1-4 text-center md-text-right">
-              <div class="text-3xl font-bold text-accent">2017</div>
-            </div>
-            <div class="md-w-1-12 flex justify-center">
-              <div class="dot bg-accent"></div>
-            </div>
-            <div class="md-w-2-3">
-              <app-card class="p-6 hover-shadow transition-shadow">
-                <app-card-content>
-                  <h3 class="text-xl font-semibold text-foreground mb-2">Deaf-Friendly Homestay</h3>
-                  <p class="text-muted-foreground">
-                    Established our first fully accessible homestay accommodation with visual communication systems.
-                  </p>
-                </app-card-content>
-              </app-card>
-            </div>
-          </div>
-
-          <div class="flex flex-col md-flex-row items-center gap-8">
-            <div class="md-w-1-4 text-center md-text-right">
-              <div class="text-3xl font-bold text-secondary">2020</div>
-            </div>
-            <div class="md-w-1-12 flex justify-center">
-              <div class="dot bg-secondary"></div>
-            </div>
-            <div class="md-w-2-3">
-              <app-card class="p-6 hover-shadow transition-shadow">
-                <app-card-content>
-                  <h3 class="text-xl font-semibold text-foreground mb-2">1,000+ Guests Milestone</h3>
-                  <p class="text-muted-foreground">
-                    Celebrated serving over 1,000 Deaf and hearing guests from around the world with barrier-free
-                    experiences.
-                  </p>
-                </app-card-content>
-              </app-card>
-            </div>
-          </div>
-
-          <div class="flex flex-col md-flex-row items-center gap-8">
-            <div class="md-w-1-4 text-center md-text-right">
-              <div class="text-3xl font-bold text-primary">2024</div>
-            </div>
-            <div class="md-w-1-12 flex justify-center">
-              <div class="dot bg-primary"></div>
-            </div>
-            <div class="md-w-2-3">
-              <app-card class="p-6 hover-shadow transition-shadow">
-                <app-card-content>
-                  <h3 class="text-xl font-semibold text-foreground mb-2">International Recognition</h3>
-                  <p class="text-muted-foreground">
-                    Partnerships with international Deaf organizations and recognition as a leader in accessible
-                    tourism.
-                  </p>
-                </app-card-content>
-              </app-card>
-            </div>
+            <mat-card class="timeline-card" matRipple>
+              <mat-card-content>
+                <div class="timeline-icon" [ngClass]="milestone.gradient">
+                  <mat-icon>{{ milestone.icon }}</mat-icon>
+                </div>
+                <h3 class="timeline-title">{{ milestone.title }}</h3>
+                <p class="timeline-description">{{ milestone.description }}</p>
+              </mat-card-content>
+            </mat-card>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Core Values -->
-    <section class="py-20 bg-muted-30">
+    <section class="values-section">
       <div class="container">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl lg-text-4xl font-bold text-foreground mb-4">Our Core Values</h2>
-          <p class="text-xl text-muted-foreground">The principles that guide everything we do</p>
+        <div class="section-header">
+          <h2 class="section-title">Our Core Values</h2>
+          <p class="section-subtitle">The principles that guide everything we do</p>
         </div>
 
-        <div class="grid-cols-1 md-grid-cols-2 lg-grid-cols-4 gap-8">
-          <app-card class="text-center p-6 hover-shadow transition-shadow">
-            <app-card-content class="space-y-4">
-              <div class="icon-small rounded-full flex items-center justify-center mx-auto bg-primary-10">
-                <mat-icon class="text-primary text-2xl">groups</mat-icon>
+        <div class="values-grid">
+          <mat-card class="value-card" *ngFor="let value of values" matRipple>
+            <mat-card-content class="value-content">
+              <div class="value-icon" [ngClass]="value.gradient">
+                <mat-icon>{{ value.icon }}</mat-icon>
               </div>
-              <h3 class="font-bold text-lg text-foreground">Inclusivity</h3>
-              <p class="text-muted-foreground text-sm">
-                Creating spaces where everyone belongs, regardless of hearing ability
-              </p>
-            </app-card-content>
-          </app-card>
-
-          <app-card class="text-center p-6 hover-shadow transition-shadow">
-            <app-card-content class="space-y-4">
-              <div class="icon-small rounded-full flex items-center justify-center mx-auto bg-accent-10">
-                <mat-icon class="text-accent text-2xl">handshake</mat-icon>
-              </div>
-              <h3 class="font-bold text-lg text-foreground">Respect</h3>
-              <p class="text-muted-foreground text-sm">
-                Honoring Deaf culture while celebrating Sri Lankan heritage
-              </p>
-            </app-card-content>
-          </app-card>
-
-          <app-card class="text-center p-6 hover-shadow transition-shadow">
-            <app-card-content class="space-y-4">
-              <div class="icon-small rounded-full flex items-center justify-center mx-auto bg-secondary-10">
-                <mat-icon class="text-secondary text-2xl">public</mat-icon>
-              </div>
-              <h3 class="font-bold text-lg text-foreground">Empowerment</h3>
-              <p class="text-muted-foreground text-sm">
-                Enabling independent exploration and meaningful cultural exchange
-              </p>
-            </app-card-content>
-          </app-card>
-
-          <app-card class="text-center p-6 hover-shadow transition-shadow">
-            <app-card-content class="space-y-4">
-              <div class="icon-small rounded-full flex items-center justify-center mx-auto bg-primary-20">
-                <mat-icon class="text-primary text-2xl">star</mat-icon>
-              </div>
-              <h3 class="font-bold text-lg text-foreground">Excellence</h3>
-              <p class="text-muted-foreground text-sm">
-                Delivering exceptional experiences that exceed expectations
-              </p>
-            </app-card-content>
-          </app-card>
+              <h3 class="value-title">{{ value.title }}</h3>
+              <p class="value-description">{{ value.description }}</p>
+            </mat-card-content>
+          </mat-card>
         </div>
       </div>
     </section>
 
     <!-- Statistics -->
-    <section class="py-20">
+    <section class="stats-section">
       <div class="container">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl lg-text-4xl font-bold text-foreground mb-4">Our Impact</h2>
-          <p class="text-xl text-muted-foreground">Numbers that tell our story</p>
+        <div class="section-header">
+          <h2 class="section-title">Our Impact</h2>
+          <p class="section-subtitle">Numbers that tell our story</p>
         </div>
 
-        <div class="grid-cols-1 md-grid-cols-2 lg-grid-cols-4 gap-8">
-          <app-card class="text-center p-8 transition-shadow">
-            <app-card-content class="space-y-4">
-              <div class="icon-large rounded-full flex items-center justify-center mx-auto bg-gradient-primary">
-                <mat-icon class="text-primary-foreground text-2xl">emoji_events</mat-icon>
+        <div class="stats-grid">
+          <mat-card class="stat-card" *ngFor="let stat of statistics" matRipple>
+            <mat-card-content class="stat-content">
+              <div class="stat-icon" [ngClass]="stat.gradient">
+                <mat-icon>{{ stat.icon }}</mat-icon>
               </div>
-              <div class="text-3xl font-bold text-foreground mb-4 mt-5">1st</div>
-              <p class="text-muted-foreground">Deaf-Friendly Provider in Sri Lanka</p>
-            </app-card-content>
-          </app-card>
-
-          <app-card class="text-center p-8 transition-shadow">
-            <app-card-content class="space-y-4">
-              <div class="icon-large rounded-full flex items-center justify-center mx-auto bg-gradient-accent">
-                <mat-icon class="text-accent-foreground text-2xl">schedule</mat-icon>
+              <div class="stat-number">{{ stat.number }}</div>
+              <p class="stat-label">{{ stat.label }}</p>
+              <div class="stat-progress">
+                <div class="progress-bar" [ngClass]="stat.colorClass" [style.width.%]="stat.progress"></div>
               </div>
-              <div class="text-3xl font-bold text-foreground mb-4 mt-5">10+</div>
-              <p class="text-muted-foreground">Years of Experience</p>
-            </app-card-content>
-          </app-card>
-
-          <app-card class="text-center p-8 transition-shadow">
-            <app-card-content class="space-y-4">
-              <div class="icon-large rounded-full flex items-center justify-center mx-auto bg-gradient-secondary">
-                <mat-icon class="text-secondary-foreground text-2xl">people</mat-icon>
-              </div>
-              <div class="text-3xl font-bold text-foreground mb-4 mt-5">1000+</div>
-              <p class="text-muted-foreground">Happy Guests Served</p>
-            </app-card-content>
-          </app-card>
-
-          <app-card class="text-center p-8 transition-shadow">
-            <app-card-content class="space-y-4">
-              <div class="icon-large rounded-full flex items-center justify-center mx-auto bg-gradient-primary-accent">
-                <mat-icon class="text-primary-foreground text-2xl">thumb_up</mat-icon>
-              </div>
-              <div class="text-3xl font-bold text-foreground mb-4 mt-5">95%</div>
-              <p class="text-muted-foreground">Guest Satisfaction Rate</p>
-            </app-card-content>
-          </app-card>
+            </mat-card-content>
+          </mat-card>
         </div>
       </div>
     </section>
 
     <!-- Closing CTA -->
-    <section class="py-20 bg-gradient-primary-accent">
-      <div class="max-w-4xl container text-center">
-        <h2 class="text-3xl lg-text-4xl font-bold text-foreground mb-6">Join Us on a Journey Beyond Barriers</h2>
-        <p class="text-xl text-muted-foreground mb-8 leading-relaxed">
-          Experience Sri Lanka through the lens of accessibility, cultural exchange, and genuine human connection.
-        </p>
-        <app-button size="lg" variant="accent" class="text-lg px-8 py-3">
-          <a [routerLink]="['/tours']">Explore Our Tours Today</a>
-        </app-button>
+    <section class="cta-section">
+      <div class="cta-background"></div>
+      <div class="cta-overlay"></div>
+      <div class="cta-content">
+        <div class="container">
+          <div class="cta-text">
+            <h2 class="cta-title">Join Us on a Journey Beyond Barriers</h2>
+            <p class="cta-description">
+              Experience Sri Lanka through the lens of accessibility, cultural exchange, and genuine human connection.
+            </p>
+            <button
+              mat-raised-button
+              color="accent"
+              size="large"
+              class="cta-button"
+              [routerLink]="['/tours']"
+            >
+              
+              Explore Our Tours Today
+            </button>
+          </div>
+        </div>
       </div>
     </section>
   `,
   styles: [`
+
+    mat-icon{
+      font-size: 24px !important;}
+    /* Global Variables */
     :host {
-      --background: 255 255 255;
-      --foreground: 17 17 17;
-      --muted-foreground: 107 114 128;
-      --primary: 45 212 191;
-      --primary-foreground: 255 255 255;
-      --accent: 249 115 22;
-      --accent-foreground: 255 255 255;
-      --secondary: 100 116 139;
-      --secondary-foreground: 255 255 255;
-      --border: 229 231 235;
-      --card: 255 255 255;
-      --muted: 249 250 251;
+      --primary-color: #2dd4bf;
+      --primary-light: #5eead4;
+      --primary-dark: #0f766e;
+      --accent-color: #f97316;
+      --accent-light: #fed7aa;
+      --secondary-color: #6366f1;
+      --success-color: #10b981;
+      --background-color: #ffffff;
+      --surface-color: #f8fafc;
+      --text-primary: #1f2937;
+      --text-secondary: #6b7280;
+      --text-muted: #9ca3af;
+      display: block;
     }
+
+    /* Hero Section */
     .hero-section {
       position: relative;
-      padding-top: 5rem;
-      padding-bottom: 5rem;
-      background-color: rgba(#4f9153, 0.7);
-      
-    }
-    @media (min-width: 1024px) {
-      .hero-section {
-        padding-top: 8rem;
-        padding-bottom: 8rem;
-      }
-    }
-    .container {
-      max-width: 80rem;
-      margin: 0 auto;
-      padding-left: 1rem;
-      padding-right: 1rem;
-    }
-    @media (min-width: 640px) {
-      .container {
-        padding-left: 1.5rem;
-        padding-right: 1.5rem;
-      }
-    }
-    @media (min-width: 1024px) {
-      .container {
-        padding-left: 2rem;
-        padding-right: 2rem;
-      }
-    }
-    .text-center {
-      text-align: center;
-    }
-    .space-y-8 {
+      max-height: 70vh;
       display: flex;
-      flex-direction: column;
-      gap: 2rem;
+      align-items: center;
+      overflow: hidden;
+      background-color: #4f9153 ;
     }
-    .text-4xl {
-      font-size: 2.25rem;
-      line-height: 2.5rem;
+
+    .hero-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+      opacity: 0.1;
     }
-    .lg-text-6xl {
-      font-size: 2.25rem;
+
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
     }
+
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      padding: 80px 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .hero-text {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero-title {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1.1;
+      margin-bottom: 24px;
+      animation: fadeInUp 1s ease-out;
+    }
+
     @media (min-width: 1024px) {
-      .lg-text-6xl {
-        font-size: 3.75rem;
-        line-height: 1;
+      .hero-title {
+        font-size: 4rem;
       }
     }
-    .font-bold {
-      font-weight: 700;
+
+    .highlight-text {
+      color: var(--accent-color);
+      background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 1em !important;
     }
-    .text-foreground {
-      color: rgb(var(--foreground));
-    }
-    .leading-tight {
-      line-height: 1.25;
-    }
-    .text-xl {
+
+    .hero-description {
       font-size: 1.25rem;
-      line-height: 1.75rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      animation: fadeInUp 1s ease-out 0.2s both;
     }
-    .text-muted-foreground {
-      color: rgb(var(--muted-foreground));
+
+    /* Story Section */
+    .story-section {
+      padding: 100px 0;
+      background: white;
     }
-    .max-w-4xl {
-      max-width: 64rem;
-    }
-    .mx-auto {
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .leading-relaxed {
-      line-height: 1.625;
-    }
-    .py-20 {
-      padding-top: 5rem;
-      padding-bottom: 5rem;
-    }
-    .grid-cols-1 {
+
+    .story-grid {
       display: grid;
-      grid-template-columns: repeat(1, minmax(0, 1fr));
-    }
-    .lg-grid-cols-2 {
-      grid-template-columns: repeat(1, minmax(0, 1fr));
-    }
-    @media (min-width: 1024px) {
-      .lg-grid-cols-2 {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-    .gap-12 {
-      gap: 3rem;
-    }
-    .items-center {
+      grid-template-columns: 1fr;
+      gap: 64px;
       align-items: center;
     }
-    .space-y-6 {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-    .text-3xl {
-      font-size: 1.875rem;
-      line-height: 2.25rem;
-    }
-    .lg-text-4xl {
-      font-size: 1.875rem;
-    }
+
     @media (min-width: 1024px) {
-      .lg-text-4xl {
-        font-size: 2.25rem;
-        line-height: 2.5rem;
+      .story-grid {
+        grid-template-columns: 1fr 1fr;
       }
     }
-    .space-y-4 {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .font-semibold {
-      font-weight: 600;
-    }
-    .relative {
+
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 32px;
       position: relative;
     }
-    .img-rounded {
-      border-radius: 1rem;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-      width: 100%;
-      height: auto;
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+      border-radius: 2px;
     }
-    .w-full {
-      width: 100%;
-    }
-    .h-auto {
-      height: auto;
-    }
-    .bg-muted-30 {
-      background-color: rgba(var(--muted), 0.3);
-    }
-    .md-grid-cols-3 {
-      grid-template-columns: repeat(1, minmax(0, 1fr));
-    }
-    @media (min-width: 768px) {
-      .md-grid-cols-3 {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-    }
-    .gap-8 {
-      gap: 2rem;
-    }
-    .p-8 {
-      padding: 2rem;
-    }
-    .transition-shadow {
-      transition: box-shadow 0.3s ease-in-out;
-    }
-    .icon-bg {
-      width: 5rem;
-      height: 5rem;
-    }
-    .rounded-full {
-      border-radius: 9999px;
-    }
-    .flex {
+
+    .story-text {
       display: flex;
+      flex-direction: column;
+      gap: 24px;
     }
-    .justify-center {
+
+    .story-paragraph {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin: 0;
+    }
+
+    .highlight-card {
+      background: linear-gradient(135deg, rgba(45, 212, 191, 0.05), rgba(249, 115, 22, 0.05)) !important;
+      border-left: 4px solid var(--accent-color);
+      transition: all 0.3s ease;
+    }
+
+    .highlight-card:hover {
+      transform: translateX(8px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .highlight-icon {
+      color: var(--accent-color);
+      font-size: 24px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .highlight-text {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .story-image {
+      position: relative;
+    }
+
+    .founder-image {
+      width: 100%;
+      height: 500px;
+      object-fit: cover;
+      border-radius: 24px;
+      box-shadow: 0 20px 64px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease;
+    }
+
+    .founder-image:hover {
+      transform: scale(1.02);
+    }
+
+    .image-decoration {
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+      border-radius: 50%;
+      opacity: 0.1;
+      z-index: -1;
+    }
+
+    /* Mission Section */
+    .mission-section {
+      padding: 100px 0;
+      background: linear-gradient(135deg, var(--surface-color), white);
+    }
+
+    .mission-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 32px;
+    }
+
+    .mission-card {
+      transition: all 0.3s ease;
+      border-radius: 24px !important;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+      border: 2px solid transparent;
+    }
+
+    .mission-card:hover {
+      transform: translateY(-12px);
+      box-shadow: 0 20px 64px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .vision-card:hover {
+      border-color: var(--primary-color);
+    }
+
+    .mission-main-card:hover {
+      border-color: var(--accent-color);
+    }
+
+    .motto-card:hover {
+      border-color: var(--secondary-color);
+    }
+
+    .mission-content {
+      padding: 40px 32px !important;
+      text-align: center;
+    }
+
+    .mission-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
       justify-content: center;
+      margin: 0 auto 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     }
-    .mx-auto {
-      margin-left: auto;
-      margin-right: auto;
+
+    .mission-icon mat-icon {
+      font-size: 32px;
+      color: white;
     }
-    .bg-primary-10 {
-      background-color: rgba(var(--primary), 0.1);
+
+    .primary-gradient {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
     }
-    .text-primary {
-      color: rgb(var(--primary));
+
+    .accent-gradient {
+      background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
     }
-    .text-3xl {
-      font-size: 1.875rem;
-      line-height: 2.25rem;
+
+    .secondary-gradient {
+      background: linear-gradient(135deg, var(--secondary-color), #a5b4fc);
     }
-    .text-2xl {
+
+    .success-gradient {
+      background: linear-gradient(135deg, var(--success-color), #6ee7b7);
+    }
+
+    .mission-title {
       font-size: 1.5rem;
-      line-height: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 16px;
     }
-    .bg-accent-10 {
-      background-color: rgba(var(--accent), 0.1);
+
+    .mission-description {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      font-size: 1rem;
     }
-    .text-accent {
-      color: rgb(var(--accent));
+
+    .motto-text {
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 1.2rem;
+      font-style: italic;
+      line-height: 1.6;
     }
-    .bg-secondary-10 {
-      background-color: rgba(var(--secondary), 0.1);
+
+    /* Timeline Section */
+    .timeline-section {
+      padding: 100px 0;
+      background: white;
     }
-    .text-secondary {
-      color: rgb(var(--secondary));
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 80px;
     }
-    .mb-16 {
-      margin-bottom: 4rem;
+
+    .section-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      margin-top: 16px;
     }
-    .mb-4 {
-      margin-bottom: 1rem;
+
+    .timeline {
+      max-width: 800px;
+      margin: 0 auto;
     }
-    .space-y-12 {
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 120px 60px 1fr;
+      gap: 24px;
+      margin-bottom: 48px;
+      align-items: start;
+    }
+
+    .timeline-year {
+      text-align: center;
+    }
+
+    .year-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: white;
+    }
+
+    .primary-color {
+      background-color: var(--primary-color);
+    }
+
+    .accent-color {
+      background-color: var(--accent-color);
+    }
+
+    .secondary-color {
+      background-color: var(--secondary-color);
+    }
+
+    .success-color {
+      background-color: var(--success-color);
+    }
+
+    .timeline-connector {
       display: flex;
       flex-direction: column;
-      gap: 3rem;
+      align-items: center;
     }
-    .flex-col {
-      flex-direction: column;
+
+    .timeline-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 3px solid white;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
-    .md-flex-row {
-      flex-direction: column;
+
+    .timeline-line {
+      width: 2px;
+      height: 60px;
+      background: linear-gradient(to bottom, var(--primary-color), transparent);
+      margin-top: 12px;
     }
-    @media (min-width: 768px) {
-      .md-flex-row {
-        flex-direction: row;
-      }
+
+    .timeline-card {
+      border-radius: 16px !important;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
     }
-    .gap-8 {
-      gap: 2rem;
+
+    .timeline-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.12) !important;
     }
-    .md-w-1-4 {
-      width: 100%;
-      text-align: center;
+
+    .timeline-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
     }
-    @media (min-width: 768px) {
-      .md-w-1-4 {
-        width: 25%;
-        text-align: right;
-      }
+
+    .timeline-icon mat-icon {
+      font-size: 24px;
+      color: white;
     }
-    .md-text-right {
-      text-align: center;
-    }
-    @media (min-width: 768px) {
-      .md-text-right {
-        text-align: right;
-      }
-    }
-    .md-w-1-12 {
-      width: 100%;
-    }
-    @media (min-width: 768px) {
-      .md-w-1-12 {
-        width: 8.333333%;
-      }
-    }
-    .md-w-2-3 {
-      width: 100%;
-    }
-    @media (min-width: 768px) {
-      .md-w-2-3 {
-        width: 66.666667%;
-      }
-    }
-    .p-6 {
-      padding: 1.5rem;
-    }
-    .hover-shadow:hover {
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    }
-    .text-xl {
+
+    .timeline-title {
       font-size: 1.25rem;
-      line-height: 1.75rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 12px;
     }
-    .mb-2 {
-      margin-bottom: 0.5rem;
+
+    .timeline-description {
+      color: var(--text-secondary);
+      line-height: 1.6;
     }
-    .lg-grid-cols-4 {
-      grid-template-columns: repeat(1, minmax(0, 1fr));
+
+    /* Values Section */
+    .values-section {
+      padding: 100px 0;
+      background: linear-gradient(135deg, var(--surface-color), #f1f5f9);
     }
-    @media (min-width: 1024px) {
-      .lg-grid-cols-4 {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 32px;
+    }
+
+    .value-card {
+      border-radius: 20px !important;
+      transition: all 0.3s ease;
+      background: white;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .value-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 64px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .value-content {
+      padding: 32px 24px !important;
+      text-align: center;
+    }
+
+    .value-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+
+    .value-icon mat-icon {
+      font-size: 28px;
+      color: white;
+    }
+
+    .value-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+    }
+
+    .value-description {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    /* Statistics Section */
+    .stats-section {
+      padding: 100px 0;
+      background: white;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 32px;
+    }
+
+    .stat-card {
+      border-radius: 20px !important;
+      transition: all 0.3s ease;
+      background: white;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 64px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .stat-content {
+      padding: 40px 24px !important;
+      text-align: center;
+    }
+
+    .stat-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+
+    .stat-icon mat-icon {
+      font-size: 32px;
+      color: white;
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      margin-bottom: 20px;
+    }
+
+    .stat-progress {
+      width: 100%;
+      height: 4px;
+      background-color: rgba(0, 0, 0, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 1s ease-out 0.5s;
+    }
+
+    .primary-progress {
+      background-color: var(--primary-color);
+    }
+
+    .accent-progress {
+      background-color: var(--accent-color);
+    }
+
+    .secondary-progress {
+      background-color: var(--secondary-color);
+    }
+
+    .success-progress {
+      background-color: var(--success-color);
+    }
+
+    /* CTA Section */
+    .cta-section {
+      position: relative;
+      padding: 100px 0;
+      overflow: hidden;
+    }
+
+    .cta-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+      opacity: 0.1;
+    }
+
+    .cta-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(45, 212, 191, 0.9), rgba(249, 115, 22, 0.8));
+    }
+
+    .cta-content {
+      position: relative;
+      z-index: 10;
+    }
+
+    .cta-text {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .cta-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 24px;
+    }
+
+    .cta-description {
+      font-size: 1.25rem;
+      color: rgba(255, 255, 255, 0.95);
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+
+    .cta-button {
+      font-size: 1.1rem !important;
+      padding: 16px 40px !important;
+      height: auto !important;
+      border-radius: 30px !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-3px) !important;
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
     }
-    .icon-small {
-      width: 4rem;
-      height: 4rem;
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2.5rem;
+      }
+      
+      .section-title {
+        font-size: 2rem;
+      }
+      
+      .container {
+        padding: 0 16px;
+      }
+      
+      .timeline-item {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 16px;
+      }
+      
+      .timeline-line {
+        display: none;
+      }
+      
+      .cta-title {
+        font-size: 2rem;
+      }
+      
+      .stat-number {
+        font-size: 2.5rem;
+      }
     }
-    .text-2xl {
-      font-size: 1.5rem;
-      line-height: 2rem;
-    }
-    .text-lg {
-      font-size: 1.125rem;
-      line-height: 1.75rem;
-    }
-    .text-sm {
-      font-size: 0.875rem;
-      line-height: 1.25rem;
-    }
-    .bg-primary-20 {
-      background-color: rgba(var(--primary), 0.2);
-    }
-    .icon-large {
-      width: 5rem;
-      height: 5rem;
-    }
-    .bg-gradient-primary {
-      background-image: linear-gradient(to bottom right, rgb(var(--primary)), rgba(var(--primary), 0.7));
-    }
-    .text-primary-foreground {
-      color: rgb(var(--primary-foreground));
-    }
-    .bg-gradient-accent {
-      background-image: linear-gradient(to bottom right, rgb(var(--accent)), rgba(var(--accent), 0.7));
-    }
-    .text-accent-foreground {
-      color: rgb(var(--accent-foreground));
-    }
-    .bg-gradient-secondary {
-      background-image: linear-gradient(to bottom right, rgb(var(--secondary)), rgba(var(--secondary), 0.7));
-    }
-    .text-secondary-foreground {
-      color: rgb(var(--secondary-foreground));
-    }
-    .bg-gradient-primary-accent {
-      background-image: linear-gradient(to bottom right, rgb(var(--primary)), rgb(var(--accent)));
-    }
-    .mt-5 {
-      margin-top: 1.25rem;
-    }
-    .bg-gradient-primary-accent {
-      background-image: linear-gradient(to bottom right, rgba(var(--primary), 0.1), rgba(var(--accent), 0.1));
-    }
-    .max-w-4xl {
-      max-width: 64rem;
-    }
-    .mb-6 {
-      margin-bottom: 1.5rem;
-    }
-    .mb-8 {
-      margin-bottom: 2rem;
-    }
-    .px-8 {
-      padding-left: 2rem;
-      padding-right: 2rem;
-    }
-    .py-3 {
-      padding-top: 0.75rem;
-      padding-bottom: 0.75rem;
-    }
-    .dot {
-      width: 1rem;
-      height: 1rem;
-      border-radius: 9999px;
-    }
-    .bg-primary {
-      background-color: rgb(var(--primary));
-    }
-    .bg-accent {
-      background-color: rgb(var(--accent));
-    }
-    .bg-secondary {
-      background-color: rgb(var(--secondary));
+
+    @media (max-width: 480px) {
+      .hero-title {
+        font-size: 2rem;
+      }
+      
+      .hero-description {
+        font-size: 1.1rem;
+      }
+      
+      .values-grid,
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
     }
   `]
 })
-export class AboutPageComponent { }
+export class AboutPageComponent {
+  milestones = [
+    {
+      year: '2014',
+      title: 'First Deaf-Friendly Tours',
+      description: 'Launched our pioneering accessible tourism experiences with visual guides and sign language interpretation.',
+      icon: 'launch',
+      colorClass: 'primary-color',
+      gradient: 'primary-gradient'
+    },
+    {
+      year: '2017',
+      title: 'Deaf-Friendly Homestay',
+      description: 'Established our first fully accessible homestay accommodation with visual communication systems.',
+      icon: 'home',
+      colorClass: 'accent-color',
+      gradient: 'accent-gradient'
+    },
+    {
+      year: '2020',
+      title: '1,000+ Guests Milestone',
+      description: 'Celebrated serving over 1,000 Deaf and hearing guests from around the world with barrier-free experiences.',
+      icon: 'celebration',
+      colorClass: 'secondary-color',
+      gradient: 'secondary-gradient'
+    },
+    {
+      year: '2024',
+      title: 'International Recognition',
+      description: 'Partnerships with international Deaf organizations and recognition as a leader in accessible tourism.',
+      icon: 'verified',
+      colorClass: 'success-color',
+      gradient: 'success-gradient'
+    }
+  ];
+
+  values = [
+    {
+      icon: 'groups',
+      title: 'Inclusivity',
+      description: 'Creating spaces where everyone belongs, regardless of hearing ability',
+      gradient: 'primary-gradient'
+    },
+    {
+      icon: 'handshake',
+      title: 'Respect',
+      description: 'Honoring Deaf culture while celebrating Sri Lankan heritage',
+      gradient: 'accent-gradient'
+    },
+    {
+      icon: 'public',
+      title: 'Empowerment',
+      description: 'Enabling independent exploration and meaningful cultural exchange',
+      gradient: 'secondary-gradient'
+    },
+    {
+      icon: 'star',
+      title: 'Excellence',
+      description: 'Delivering exceptional experiences that exceed expectations',
+      gradient: 'success-gradient'
+    }
+  ];
+
+  statistics = [
+    {
+      icon: 'emoji_events',
+      number: '1st',
+      label: 'Deaf-Friendly Provider in Sri Lanka',
+      progress: 100,
+      gradient: 'primary-gradient',
+      colorClass: 'primary-progress'
+    },
+    {
+      icon: 'schedule',
+      number: '10+',
+      label: 'Years of Experience',
+      progress: 85,
+      gradient: 'accent-gradient',
+      colorClass: 'accent-progress'
+    },
+    {
+      icon: 'people',
+      number: '1000+',
+      label: 'Happy Guests Served',
+      progress: 90,
+      gradient: 'secondary-gradient',
+      colorClass: 'secondary-progress'
+    },
+    {
+      icon: 'thumb_up',
+      number: '95%',
+      label: 'Guest Satisfaction Rate',
+      progress: 95,
+      gradient: 'success-gradient',
+      colorClass: 'success-progress'
+    }
+  ];
+}

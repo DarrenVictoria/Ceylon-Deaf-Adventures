@@ -11,7 +11,10 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { LucideAngularModule } from 'lucide-angular';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatRippleModule } from '@angular/material/core';
 import { Timestamp } from '@angular/fire/firestore';
 import { BookingsService } from '../../services/bookings.service';
 import { Tour } from '../../models/tour';
@@ -35,28 +38,37 @@ import { Booking } from '../../models/booking';
     MatNativeDateModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
-    LucideAngularModule
+    MatIconModule,
+    MatCardModule,
+    MatDividerModule,
+    MatRippleModule
   ],
   template: `
     <div class="booking-container">
       <!-- Header Section -->
       <div class="booking-header">
+        <div class="header-background"></div>
         <div class="header-content">
           <div class="header-icon">
-            <lucide-icon name="calendar-check" [size]="32"></lucide-icon>
+            <mat-icon class="header-main-icon">event_available</mat-icon>
           </div>
           <div class="header-text">
             <h2 class="booking-title">Book Your Adventure</h2>
             <p class="tour-name">{{ data.tour.title }}</p>
             <div class="tour-details">
-              <span class="tour-duration">{{ data.tour.durationDays }} {{ data.tour.durationDays === 1 ? 'Day' : 'Days' }}</span>
-              <span class="tour-separator">•</span>
-              <span class="tour-type">{{ data.tour.type | titlecase }}</span>
+              <div class="detail-item">
+                <mat-icon class="detail-icon">schedule</mat-icon>
+                <span>{{ data.tour.durationDays }} {{ data.tour.durationDays === 1 ? 'Day' : 'Days' }}</span>
+              </div>
+              <div class="detail-item">
+                <mat-icon class="detail-icon">category</mat-icon>
+                <span>{{ data.tour.type | titlecase }}</span>
+              </div>
             </div>
           </div>
         </div>
         <button mat-icon-button class="close-button" (click)="onCancel()">
-          <lucide-icon name="x" [size]="24"></lucide-icon>
+          <mat-icon>close</mat-icon>
         </button>
       </div>
       
@@ -64,405 +76,569 @@ import { Booking } from '../../models/booking';
       <div class="booking-content">
         <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()">
           <!-- Personal Information Section -->
-          <div class="form-section">
-            <h3 class="section-title">
-              <lucide-icon name="user" [size]="20"></lucide-icon>
-              Personal Information
-            </h3>
-            <div class="form-grid">
-              <mat-form-field appearance="outline" class="form-field">
-                <mat-label>Full Name *</mat-label>
-                <input 
-                  matInput 
-                  formControlName="guestName" 
-                  placeholder="Enter your full name"
-                  autocomplete="name"
-                >
-                @if (bookingForm.get('guestName')?.invalid && bookingForm.get('guestName')?.touched) {
-                  <mat-error>
-                    @if (bookingForm.get('guestName')?.errors?.['required']) {
-                      Name is required
-                    } @else if (bookingForm.get('guestName')?.errors?.['minlength']) {
-                      Name must be at least 2 characters long
-                    }
+          <mat-card class="form-section-card">
+            <mat-card-header class="section-header">
+              <div mat-card-avatar class="section-avatar personal-avatar">
+                <mat-icon>person</mat-icon>
+              </div>
+              <mat-card-title class="section-title">Personal Information</mat-card-title>
+              <mat-card-subtitle class="section-subtitle">Tell us about yourself</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content class="section-content">
+              <div class="form-grid">
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>Full Name *</mat-label>
+                  <input 
+                    matInput 
+                    formControlName="guestName" 
+                    placeholder="Enter your full name"
+                    autocomplete="name"
+                  >
+                  <mat-icon matSuffix>account_circle</mat-icon>
+                  <mat-error *ngIf="bookingForm.get('guestName')?.hasError('required')">
+                    Name is required
                   </mat-error>
-                }
-              </mat-form-field>
-
-              <mat-form-field appearance="outline" class="form-field">
-                <mat-label>Email Address *</mat-label>
-                <input 
-                  matInput 
-                  type="email" 
-                  formControlName="guestEmail" 
-                  placeholder="your@email.com"
-                  autocomplete="email"
-                >
-                <mat-icon matSuffix>
-                  <lucide-icon name="mail" [size]="20"></lucide-icon>
-                </mat-icon>
-                @if (bookingForm.get('guestEmail')?.invalid && bookingForm.get('guestEmail')?.touched) {
-                  <mat-error>
-                    @if (bookingForm.get('guestEmail')?.errors?.['required']) {
-                      Email is required
-                    } @else if (bookingForm.get('guestEmail')?.errors?.['email']) {
-                      Please enter a valid email address
-                    }
+                  <mat-error *ngIf="bookingForm.get('guestName')?.hasError('minlength')">
+                    Name must be at least 2 characters
                   </mat-error>
-                }
-              </mat-form-field>
+                </mat-form-field>
 
-              <mat-form-field appearance="outline" class="form-field">
-                <mat-label>Phone Number</mat-label>
-                <input 
-                  matInput 
-                  formControlName="guestPhone" 
-                  placeholder="+94 XX XXX XXXX"
-                  autocomplete="tel"
-                >
-                <mat-icon matSuffix>
-                  <lucide-icon name="phone" [size]="20"></lucide-icon>
-                </mat-icon>
-              </mat-form-field>
-            </div>
-          </div>
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>Email Address *</mat-label>
+                  <input 
+                    matInput 
+                    type="email" 
+                    formControlName="guestEmail" 
+                    placeholder="your@email.com"
+                    autocomplete="email"
+                  >
+                  <mat-icon matSuffix>email</mat-icon>
+                  <mat-error *ngIf="bookingForm.get('guestEmail')?.hasError('required')">
+                    Email is required
+                  </mat-error>
+                  <mat-error *ngIf="bookingForm.get('guestEmail')?.hasError('email')">
+                    Please enter a valid email address
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>Phone Number</mat-label>
+                  <input 
+                    matInput 
+                    formControlName="guestPhone" 
+                    placeholder="+94 XX XXX XXXX"
+                    autocomplete="tel"
+                  >
+                  <mat-icon matSuffix>phone</mat-icon>
+                  <mat-hint>Optional but recommended for tour updates</mat-hint>
+                </mat-form-field>
+              </div>
+            </mat-card-content>
+          </mat-card>
 
           <!-- Tour Details Section -->
-          <div class="form-section">
-            <h3 class="section-title">
-              <lucide-icon name="map-pin" [size]="20"></lucide-icon>
-              Tour Details
-            </h3>
-            <div class="form-grid">
-              <mat-form-field appearance="outline" class="form-field">
-                <mat-label>Preferred Tour Date *</mat-label>
-                <input 
-                  matInput 
-                  [matDatepicker]="picker" 
-                  formControlName="tourDate" 
-                  [min]="minDate"
-                  readonly
-                >
-                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
-                @if (bookingForm.get('tourDate')?.invalid && bookingForm.get('tourDate')?.touched) {
-                  <mat-error>Please select a tour date</mat-error>
-                }
-              </mat-form-field>
+          <mat-card class="form-section-card">
+            <mat-card-header class="section-header">
+              <div mat-card-avatar class="section-avatar tour-avatar">
+                <mat-icon>explore</mat-icon>
+              </div>
+              <mat-card-title class="section-title">Tour Details</mat-card-title>
+              <mat-card-subtitle class="section-subtitle">When would you like to explore?</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content class="section-content">
+              <div class="form-grid">
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>Preferred Tour Date *</mat-label>
+                  <input 
+                    matInput 
+                    [matDatepicker]="picker" 
+                    formControlName="tourDate" 
+                    [min]="minDate"
+                    readonly
+                  >
+                  <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                  <mat-error *ngIf="bookingForm.get('tourDate')?.hasError('required')">
+                    Please select a tour date
+                  </mat-error>
+                  <mat-hint>Select your preferred starting date</mat-hint>
+                </mat-form-field>
 
-              <mat-form-field appearance="outline" class="form-field">
-                <mat-label>Number of People *</mat-label>
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>Number of People *</mat-label>
+                  <input 
+                    matInput 
+                    type="number" 
+                    formControlName="numPeople" 
+                    [min]="1" 
+                    [max]="data.tour.capacity"
+                    placeholder="1"
+                  >
+                  <mat-icon matSuffix>groups</mat-icon>
+                  <mat-error *ngIf="bookingForm.get('numPeople')?.hasError('required')">
+                    Number of people is required
+                  </mat-error>
+                  <mat-error *ngIf="bookingForm.get('numPeople')?.hasError('min')">
+                    At least 1 person is required
+                  </mat-error>
+                  <mat-error *ngIf="bookingForm.get('numPeople')?.hasError('max')">
+                    Maximum {{ data.tour.capacity }} people allowed
+                  </mat-error>
+                  <mat-hint>Maximum {{ data.tour.capacity }} people per booking</mat-hint>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>Preferred Stay Type *</mat-label>
+                  <mat-select formControlName="stayType">
+                    <mat-option value="Homestay">
+                      <div class="select-option">
+                        <mat-icon>home</mat-icon>
+                        <span>Homestay</span>
+                      </div>
+                    </mat-option>
+                    <mat-option value="Guesthouse">
+                      <div class="select-option">
+                        <mat-icon>apartment</mat-icon>
+                        <span>Guesthouse</span>
+                      </div>
+                    </mat-option>
+                    <mat-option value="Villa">
+                      <div class="select-option">
+                        <mat-icon>villa</mat-icon>
+                        <span>Villa</span>
+                      </div>
+                    </mat-option>
+                    <mat-option value="Hotel3to5">
+                      <div class="select-option">
+                        <mat-icon>hotel</mat-icon>
+                        <span>Hotel 3-5 Stars</span>
+                      </div>
+                    </mat-option>
+                    <mat-option value="Camping">
+                      <div class="select-option">
+                        <mat-icon>nature</mat-icon>
+                        <span>Camping</span>
+                      </div>
+                    </mat-option>
+                  </mat-select>
+                  <mat-hint>Choose your preferred accommodation type</mat-hint>
+                </mat-form-field>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Pricing Section -->
+          <mat-card class="form-section-card pricing-card">
+            <mat-card-header class="section-header">
+              <div mat-card-avatar class="section-avatar pricing-avatar">
+                <mat-icon>payments</mat-icon>
+              </div>
+              <mat-card-title class="section-title">Pricing</mat-card-title>
+              <mat-card-subtitle class="section-subtitle">Tour cost and your offer</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content class="section-content">
+              <div class="price-display-card">
+                <div class="price-info">
+                  <div class="suggested-price">
+                    <span class="price-label">Suggested Price</span>
+                    <div class="price-amount">
+                      <span class="currency">{{ data.tour.currency }}</span>
+                      <span class="amount">{{ data.tour.priceDisplay }}</span>
+                    </div>
+                    <span class="price-per">per person</span>
+                  </div>
+                  <div class="total-calculation" *ngIf="bookingForm.get('numPeople')?.value > 0">
+                    <mat-divider class="calc-divider"></mat-divider>
+                    <div class="calc-row">
+                      <span class="calc-label">{{ bookingForm.get('numPeople')?.value }} people × {{ data.tour.currency }} {{ data.tour.priceDisplay }}</span>
+                      <span class="calc-total">{{ data.tour.currency }} {{ calculateSuggestedTotal() }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <mat-form-field appearance="outline" class="form-field-full">
+                <mat-label>Your Bid Price ({{ data.tour.currency }}) *</mat-label>
                 <input 
                   matInput 
                   type="number" 
-                  formControlName="numPeople" 
-                  [min]="1" 
-                  [max]="data.tour.capacity"
-                  placeholder="1"
+                  formControlName="totalPrice" 
+                  [min]="0" 
+                  step="0.01"
+                  placeholder="Enter your offer"
                 >
-                <mat-icon matSuffix>
-                  <lucide-icon name="users" [size]="20"></lucide-icon>
-                </mat-icon>
-                @if (bookingForm.get('numPeople')?.invalid && bookingForm.get('numPeople')?.touched) {
-                  <mat-error>
-                    @if (bookingForm.get('numPeople')?.errors?.['required']) {
-                      Number of people is required
-                    } @else if (bookingForm.get('numPeople')?.errors?.['min']) {
-                      At least 1 person is required
-                    } @else if (bookingForm.get('numPeople')?.errors?.['max']) {
-                      Maximum {{ data.tour.capacity }} people allowed
-                    }
-                  </mat-error>
-                }
-              </mat-form-field>
-
-              <mat-form-field appearance="outline" class="form-field">
-                <mat-label>Preferred Stay Type *</mat-label>
-                <mat-select formControlName="stayType">
-                  <mat-option value="Homestay">
-                    <div class="select-option">
-                      <lucide-icon name="home" [size]="16"></lucide-icon>
-                      <span>Homestay</span>
-                    </div>
-                  </mat-option>
-                  <mat-option value="Guesthouse">
-                    <div class="select-option">
-                      <lucide-icon name="building" [size]="16"></lucide-icon>
-                      <span>Guesthouse</span>
-                    </div>
-                  </mat-option>
-                  <mat-option value="Villa">
-                    <div class="select-option">
-                      <lucide-icon name="castle" [size]="16"></lucide-icon>
-                      <span>Villa</span>
-                    </div>
-                  </mat-option>
-                  <mat-option value="Hotel3to5">
-                    <div class="select-option">
-                      <lucide-icon name="bed" [size]="16"></lucide-icon>
-                      <span>Hotel 3-5 Stars</span>
-                    </div>
-                  </mat-option>
-                  <mat-option value="Camping">
-                    <div class="select-option">
-                      <lucide-icon name="tent" [size]="16"></lucide-icon>
-                      <span>Camping</span>
-                    </div>
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-          </div>
-
-          <!-- Pricing Section -->
-          <div class="form-section">
-            <h3 class="section-title">
-              <lucide-icon name="dollar-sign" [size]="20"></lucide-icon>
-              Pricing
-            </h3>
-            
-            <div class="price-display">
-              <div class="price-info">
-                <div class="suggested-price">
-                  <span class="price-label">Suggested Price</span>
-                  <span class="price-value">$ {{ data.tour.priceDisplay }} {{ data.tour.currency }}</span>
-                  <span class="price-per">per person</span>
-                </div>
-                <div class="total-calculation" *ngIf="bookingForm.get('numPeople')?.value">
-                  <span class="calc-label">{{ bookingForm.get('numPeople')?.value }} people × $ {{ data.tour.priceDisplay }} =</span>
-                  <span class="calc-total">$ {{ calculateSuggestedTotal() }}</span>
-                </div>
-              </div>
-            </div>
-
-            <mat-form-field appearance="outline" class="form-field-full">
-              <mat-label>Your Bid Price ({{ data.tour.currency }}) *</mat-label>
-              <input 
-                matInput 
-                type="number" 
-                formControlName="totalPrice" 
-                [min]="0" 
-                step="0.01"
-                placeholder="Enter your bid amount"
-              >
-              <span matTextPrefix>$</span>
-              <mat-icon matSuffix>
-                <lucide-icon name="tag" [size]="20"></lucide-icon>
-              </mat-icon>
-              <mat-hint>You can negotiate the price. We'll review your offer.</mat-hint>
-              @if (bookingForm.get('totalPrice')?.invalid && bookingForm.get('totalPrice')?.touched) {
-                <mat-error>
-                  @if (bookingForm.get('totalPrice')?.errors?.['required']) {
-                    Please enter your bid price
-                  } @else if (bookingForm.get('totalPrice')?.errors?.['min']) {
-                    Price cannot be negative
-                  }
+                <span matTextPrefix>{{ data.tour.currency }}&nbsp;</span>
+                <mat-icon matSuffix>local_offer</mat-icon>
+                <mat-hint>You can negotiate the price. We'll review your offer within 24 hours.</mat-hint>
+                <mat-error *ngIf="bookingForm.get('totalPrice')?.hasError('required')">
+                  Please enter your bid price
                 </mat-error>
-              }
-            </mat-form-field>
-          </div>
+                <mat-error *ngIf="bookingForm.get('totalPrice')?.hasError('min')">
+                  Price cannot be negative
+                </mat-error>
+              </mat-form-field>
+            </mat-card-content>
+          </mat-card>
 
           <!-- Accessibility Section -->
-          <div class="form-section">
-            <h3 class="section-title">
-              <lucide-icon name="accessibility" [size]="20"></lucide-icon>
-              Accessibility & Guide Options
-            </h3>
-            
-            <div class="checkbox-container">
-              <mat-checkbox formControlName="guideRequired" class="guide-checkbox">
-                <div class="checkbox-content">
-                  <div class="checkbox-title">Require Deaf Guide with Sign Language Support</div>
-                  <div class="checkbox-description">
-                    Our certified deaf guides provide full sign language interpretation throughout your tour
+          <mat-card class="form-section-card accessibility-card">
+            <mat-card-header class="section-header">
+              <div mat-card-avatar class="section-avatar accessibility-avatar">
+                <mat-icon>accessible</mat-icon>
+              </div>
+              <mat-card-title class="section-title">Accessibility Options</mat-card-title>
+              <mat-card-subtitle class="section-subtitle">Customize your accessible experience</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content class="section-content">
+              <div class="checkbox-container">
+                <mat-checkbox formControlName="guideRequired" class="guide-checkbox">
+                  <div class="checkbox-content">
+                    <div class="checkbox-title">
+                      <mat-icon class="checkbox-icon">sign_language</mat-icon>
+                      Require Deaf Guide with Sign Language Support
+                    </div>
+                    <div class="checkbox-description">
+                      Our certified deaf guides provide full sign language interpretation throughout your tour,
+                      ensuring you don't miss any cultural insights or important information.
+                    </div>
                   </div>
-                </div>
-              </mat-checkbox>
-            </div>
-          </div>
+                </mat-checkbox>
+              </div>
+            </mat-card-content>
+          </mat-card>
 
           <!-- Special Requests Section -->
-          <div class="form-section">
-            <h3 class="section-title">
-              <lucide-icon name="message-square" [size]="20"></lucide-icon>
-              Additional Information
-            </h3>
-            
-            <mat-form-field appearance="outline" class="form-field-full">
-              <mat-label>Special Requests or Dietary Requirements</mat-label>
-              <textarea 
-                matInput 
-                formControlName="specialRequests" 
-                rows="4" 
-                placeholder="Please let us know about any dietary restrictions, accessibility needs, medical conditions, or special requests..."
-                maxlength="500"
-              ></textarea>
-              <mat-hint align="end">{{ getCharacterCount() }}/500</mat-hint>
-            </mat-form-field>
-          </div>
+          <mat-card class="form-section-card">
+            <mat-card-header class="section-header">
+              <div mat-card-avatar class="section-avatar requests-avatar">
+                <mat-icon>message</mat-icon>
+              </div>
+              <mat-card-title class="section-title">Additional Information</mat-card-title>
+              <mat-card-subtitle class="section-subtitle">Let us know your special needs</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content class="section-content">
+              <mat-form-field appearance="outline" class="form-field-full">
+                <mat-label>Special Requests or Dietary Requirements</mat-label>
+                <textarea 
+                  matInput 
+                  formControlName="specialRequests" 
+                  rows="4" 
+                  placeholder="Please share any dietary restrictions, accessibility needs, medical conditions, or special requests that would help us customize your experience..."
+                  maxlength="500"
+                ></textarea>
+                <mat-hint align="end">{{ getCharacterCount() }}/500</mat-hint>
+              </mat-form-field>
+            </mat-card-content>
+          </mat-card>
 
           <!-- Error Display -->
-          @if (errorMessage) {
-            <div class="error-message">
-              <lucide-icon name="alert-circle" [size]="20"></lucide-icon>
-              <span>{{ errorMessage }}</span>
-            </div>
-          }
+          <mat-card *ngIf="errorMessage" class="error-card">
+            <mat-card-content class="error-content">
+              <mat-icon class="error-icon">error</mat-icon>
+              <div class="error-text">
+                <h4 class="error-title">Booking Error</h4>
+                <p class="error-message">{{ errorMessage }}</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
         </form>
 
         <!-- Terms and Conditions -->
-        <div class="terms-section">
-          <div class="terms-content">
-            <lucide-icon name="info" [size]="16"></lucide-icon>
-            <span>
-              By submitting this booking request, you agree to our 
-              <a href="#" class="terms-link">terms and conditions</a> and 
-              <a href="#" class="terms-link">cancellation policy</a>.
-            </span>
-          </div>
-        </div>
+        <mat-card class="terms-card">
+          <mat-card-content class="terms-content">
+            <div class="terms-icon">
+              <mat-icon>info</mat-icon>
+            </div>
+            <div class="terms-text">
+              <p class="terms-description">
+                By submitting this booking request, you agree to our 
+                <a href="#" class="terms-link">terms and conditions</a> and 
+                <a href="#" class="terms-link">cancellation policy</a>.
+                We'll contact you within 24 hours to confirm your booking.
+              </p>
+            </div>
+          </mat-card-content>
+        </mat-card>
       </div>
 
       <!-- Actions Section -->
       <div class="actions-container">
         <button 
-          type="button" 
-          class="btn-cancel" 
+          mat-stroked-button
+          color="primary"
+          class="cancel-btn" 
           (click)="onCancel()" 
           [disabled]="isSubmitting"
         >
-          <lucide-icon name="x" [size]="18"></lucide-icon>
+          <mat-icon>close</mat-icon>
           Cancel
         </button>
         <button 
-          type="button" 
-          class="btn-submit" 
+          mat-raised-button
+          color="primary"
+          class="submit-btn" 
           (click)="onSubmit()" 
           [disabled]="!bookingForm.valid || isSubmitting"
         >
-          @if (isSubmitting) {
-            <mat-spinner diameter="20" class="inline-spinner"></mat-spinner>
-            Processing Request...
-          } @else {
-            <lucide-icon name="send" [size]="18"></lucide-icon>
-            Submit Booking Request
-          }
+          <mat-spinner *ngIf="isSubmitting" diameter="20" class="submit-spinner"></mat-spinner>
+          <mat-icon *ngIf="!isSubmitting">send</mat-icon>
+          {{ isSubmitting ? 'Processing Request...' : 'Submit Booking Request' }}
         </button>
       </div>
     </div>
   `,
   styles: [`
+    /* Global Variables - Improved Contrast */
+    :host {
+      --primary-color: #0d9488;
+      --primary-light: #14b8a6;
+      --primary-dark: #0f766e;
+      --accent-color: #ea580c;
+      --accent-light: #fb923c;
+      --secondary-color: #4f46e5;
+      --success-color: #059669;
+      --warning-color: #d97706;
+      --error-color: #dc2626;
+      --background-color: #ffffff;
+      --surface-color: #f9fafb;
+      --surface-raised: #ffffff;
+      --text-primary: #111827;
+      --text-secondary: #4b5563;
+      --text-muted: #6b7280;
+      --border-color: #e5e7eb;
+      --border-color-light: #f3f4f6;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 18px;
+      --radius-2xl: 22px;
+      --spacing-xs: 8px;
+      --spacing-sm: 12px;
+      --spacing-md: 16px;
+      --spacing-lg: 20px;
+      --spacing-xl: 24px;
+      --spacing-2xl: 32px;
+      --spacing-3xl: 40px;
+      display: block;
+    }
+
     .booking-container {
-      background: white;
-      border-radius: 1rem;
+      background: var(--background-color);
+      border-radius: var(--radius-2xl);
       overflow: hidden;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-      max-width: 700px;
+      box-shadow: var(--shadow-xl), 0 0 0 1px rgba(0, 0, 0, 0.05);
+      max-width: 800px;
       width: 100%;
       max-height: 90vh;
       display: flex;
       flex-direction: column;
     }
     
+    /* Header Section - Improved Contrast */
     .booking-header {
-      background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
-      color: white;
-      padding: 2rem;
       position: relative;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      color: white;
+      padding: var(--spacing-2xl) var(--spacing-2xl) var(--spacing-xl);
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: var(--spacing-lg);
+    }
+
+    .header-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('/api/placeholder/800/200') center/cover;
+      opacity: 0.08;
     }
     
     .header-content {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: var(--spacing-lg);
       flex: 1;
+      position: relative;
+      z-index: 2;
     }
     
     .header-icon {
       background: rgba(255, 255, 255, 0.2);
-      border-radius: 1rem;
-      padding: 1rem;
-      backdrop-filter: blur(10px);
+      border-radius: 50%;
+      padding: var(--spacing-md);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      flex-shrink: 0;
+    }
+
+    .header-main-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
     }
     
     .header-text {
       flex: 1;
+      min-width: 0;
     }
     
     .booking-title {
-      font-size: 1.5rem;
+      font-size: 1.625rem;
       font-weight: 700;
-      margin: 0 0 0.5rem 0;
+      margin: 0 0 var(--spacing-xs) 0;
       line-height: 1.2;
+      letter-spacing: -0.01em;
     }
     
     .tour-name {
-      font-size: 1.125rem;
-      opacity: 0.9;
-      margin: 0 0 0.5rem 0;
+      font-size: 1rem;
+      opacity: 0.95;
+      margin: 0 0 var(--spacing-sm) 0;
       font-weight: 500;
+      line-height: 1.3;
     }
     
     .tour-details {
       display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.875rem;
-      opacity: 0.8;
+      gap: var(--spacing-lg);
+      flex-wrap: wrap;
     }
-    
-    .tour-separator {
-      opacity: 0.6;
+
+    .detail-item {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      font-size: 0.8125rem;
+      opacity: 0.95;
+      font-weight: 500;
+    }
+
+    .detail-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
     }
     
     .close-button {
       background: rgba(255, 255, 255, 0.2) !important;
       color: white !important;
-      border-radius: 50% !important;
-      backdrop-filter: blur(10px);
-      transition: all 0.2s ease !important;
-      width: 44px !important;
-      height: 44px !important;
+      border-radius: 50%;
+      backdrop-filter: blur(12px);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      position: relative;
+      z-index: 2;
+      flex-shrink: 0;
     }
     
     .close-button:hover {
       background: rgba(255, 255, 255, 0.3) !important;
       transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
     
+    /* Content Section - Better Spacing */
     .booking-content {
       flex: 1;
       overflow-y: auto;
-      padding: 2rem;
+      padding: var(--spacing-2xl);
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xl);
+      background: var(--surface-color);
     }
     
-    .form-section {
-      margin-bottom: 2rem;
+    .form-section-card {
+      border-radius: var(--radius-lg) !important;
+      box-shadow: var(--shadow-sm) !important;
+      border: 1px solid var(--border-color);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: var(--surface-raised) !important;
     }
-    
-    .form-section:last-child {
-      margin-bottom: 0;
+
+    .form-section-card:hover {
+      box-shadow: var(--shadow-md) !important;
+      border-color: var(--primary-color);
     }
-    
-    .section-title {
+
+    .section-header {
+      padding: var(--spacing-lg) var(--spacing-lg) 0 !important;
+      margin-bottom: var(--spacing-md) !important;
+    }
+
+    .section-avatar {
+      width: 44px !important;
+      height: 44px !important;
+      border-radius: 50%;
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: #1e293b;
-      margin: 0 0 1.5rem 0;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid #e2e8f0;
+      justify-content: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .section-avatar mat-icon {
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
+    }
+
+    .personal-avatar {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+      color: white;
+    }
+
+    .tour-avatar {
+      background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
+      color: white;
+    }
+
+    .pricing-avatar {
+      background: linear-gradient(135deg, var(--success-color), #34d399);
+      color: white;
+    }
+
+    .accessibility-avatar {
+      background: linear-gradient(135deg, var(--secondary-color), #818cf8);
+      color: white;
+    }
+
+    .requests-avatar {
+      background: linear-gradient(135deg, var(--warning-color), #fbbf24);
+      color: white;
+    }
+
+    .section-title {
+      font-size: 1.125rem !important;
+      font-weight: 700 !important;
+      color: var(--text-primary) !important;
+      margin-bottom: 2px !important;
+      letter-spacing: -0.01em;
+    }
+
+    .section-subtitle {
+      font-size: 0.8125rem !important;
+      color: var(--text-secondary) !important;
+      font-weight: 500;
+    }
+
+    .section-content {
+      padding: 0 var(--spacing-lg) var(--spacing-lg) !important;
     }
     
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--spacing-lg);
     }
     
     .form-field,
@@ -477,301 +653,598 @@ import { Booking } from '../../models/booking';
     .select-option {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: var(--spacing-sm);
     }
-    
-    .price-display {
-      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-      border: 1px solid #e2e8f0;
-      border-radius: 1rem;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
+
+    /* Pricing Section - Enhanced Contrast */
+    .pricing-card {
+      background: var(--surface-raised) !important;
     }
-    
+
+    .price-display-card {
+      background: linear-gradient(135deg, #f0fdfa, #ccfbf1);
+      border: 2px solid var(--primary-color);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-xl);
+      margin-bottom: var(--spacing-lg);
+      box-shadow: var(--shadow-sm);
+    }
+
     .price-info {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .suggested-price {
+      text-align: center;
+    }
+
+    .price-label {
+      display: block;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+      margin-bottom: var(--spacing-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .price-amount {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 4px;
+      margin: var(--spacing-xs) 0;
+    }
+
+    .currency {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      font-weight: 700;
+    }
+
+    .amount {
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .price-per {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .calc-divider {
+      margin: var(--spacing-md) 0;
+    }
+
+    .calc-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
+      padding: var(--spacing-xs) 0;
     }
-    
-    .suggested-price {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-    
-    .price-label {
-      font-size: 0.875rem;
-      color: #64748b;
+
+    .calc-label {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
       font-weight: 500;
     }
-    
-    .price-value {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #3b82f6;
-      line-height: 1;
-    }
-    
-    .price-per {
-      font-size: 0.75rem;
-      color: #64748b;
-    }
-    
-    .total-calculation {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 0.25rem;
-    }
-    
-    .calc-label {
-      font-size: 0.875rem;
-      color: #64748b;
-    }
-    
+
     .calc-total {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #1e293b;
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-primary);
     }
-    
+
+    /* Accessibility Section - Better Contrast */
+    .accessibility-card {
+      background: var(--surface-raised) !important;
+    }
+
     .checkbox-container {
-      background: #f1f5f9;
-      border: 1px solid #e2e8f0;
-      border-radius: 0.75rem;
-      padding: 1.5rem;
+      background: linear-gradient(135deg, #faf5ff, #f3e8ff);
+      border: 2px solid var(--secondary-color);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-sm);
     }
-    
+
     .guide-checkbox {
       width: 100%;
     }
-    
+
     .checkbox-content {
-      margin-left: 0.5rem;
+      margin-left: var(--spacing-sm);
     }
-    
+
     .checkbox-title {
-      font-weight: 600;
-      color: #1e293b;
-      margin-bottom: 0.5rem;
-    }
-    
-    .checkbox-description {
-      font-size: 0.875rem;
-      color: #64748b;
-      line-height: 1.4;
-    }
-    
-    .error-message {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      color: #dc2626;
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      border-radius: 0.5rem;
-      padding: 1rem;
-      margin: 1rem 0;
-      font-size: 0.875rem;
+      gap: var(--spacing-xs);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--spacing-xs);
+      font-size: 0.9375rem;
     }
-    
-    .terms-section {
-      margin-top: 1.5rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid #e2e8f0;
+
+    .checkbox-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      color: var(--secondary-color);
     }
-    
+
+    .checkbox-description {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    /* Error Section - Improved Contrast */
+    .error-card {
+      background: linear-gradient(135deg, #fef2f2, #fee2e2) !important;
+      border: 2px solid #f87171 !important;
+      border-radius: var(--radius-md) !important;
+      box-shadow: var(--shadow-sm) !important;
+    }
+
+    .error-content {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--spacing-md);
+      padding: var(--spacing-lg) !important;
+    }
+
+    .error-icon {
+      color: var(--error-color);
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .error-text {
+      flex: 1;
+    }
+
+    .error-title {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--error-color);
+      margin: 0 0 var(--spacing-xs) 0;
+      letter-spacing: -0.01em;
+    }
+
+    .error-message {
+      font-size: 0.8125rem;
+      color: #991b1b;
+      line-height: 1.5;
+      margin: 0;
+      font-weight: 500;
+    }
+
+    /* Terms Section - Better Readability */
+    .terms-card {
+      background: linear-gradient(135deg, #f0f9ff, #e0f2fe) !important;
+      border: 1px solid #7dd3fc !important;
+      border-radius: var(--radius-md) !important;
+      box-shadow: var(--shadow-sm) !important;
+    }
+
     .terms-content {
       display: flex;
       align-items: flex-start;
-      gap: 0.5rem;
-      font-size: 0.875rem;
-      color: #64748b;
-      line-height: 1.4;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-lg) !important;
     }
-    
-    .terms-link {
-      color: #3b82f6;
-      text-decoration: none;
-      font-weight: 500;
-    }
-    
-    .terms-link:hover {
-      text-decoration: underline;
-    }
-    
-    .actions-container {
-      display: flex;
-      gap: 1rem;
-      padding: 1.5rem 2rem;
-      background: #f8fafc;
-      border-top: 1px solid #e2e8f0;
+
+    .terms-icon {
+      color: #0369a1;
       flex-shrink: 0;
     }
-    
-    .btn-cancel {
+
+    .terms-icon mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    .terms-text {
       flex: 1;
-      background: white;
-      color: #64748b;
-      border: 1px solid #cbd5e1;
-      padding: 0.875rem 1.5rem;
-      border-radius: 0.5rem;
+    }
+
+    .terms-description {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin: 0;
       font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      font-size: 0.875rem;
     }
-    
-    .btn-cancel:hover:not(:disabled) {
-      background: #f1f5f9;
-      border-color: #94a3b8;
-      transform: translateY(-1px);
-    }
-    
-    .btn-cancel:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-    
-    .btn-submit {
-      flex: 2;
-      background: #3b82f6;
-      color: white;
-      border: none;
-      padding: 0.875rem 1.5rem;
-      border-radius: 0.5rem;
+
+    .terms-link {
+      color: var(--primary-dark);
+      text-decoration: none;
       font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      border-bottom: 1px solid transparent;
+    }
+
+    .terms-link:hover {
+      color: var(--primary-color);
+      border-bottom-color: var(--primary-color);
+    }
+
+    .terms-link:focus {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+
+    /* Actions Section - Refined Spacing */
+    .actions-container {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      font-size: 0.875rem;
+      gap: var(--spacing-md);
+      padding: var(--spacing-lg) var(--spacing-2xl);
+      background: var(--surface-raised);
+      border-top: 1px solid var(--border-color);
+      flex-shrink: 0;
+      box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);
     }
-    
-    .btn-submit:hover:not(:disabled) {
-      background: #2563eb;
+
+    .cancel-btn {
+      flex: 1;
+      padding: var(--spacing-sm) var(--spacing-xl) !important;
+      height: 48px !important;
+      border-radius: var(--radius-md) !important;
+      font-weight: 600 !important;
+      font-size: 0.9375rem !important;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      border: 2px solid var(--primary-color) !important;
+      letter-spacing: -0.01em;
+    }
+
+    .cancel-btn mat-icon {
+      margin-right: var(--spacing-xs);
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    .cancel-btn:hover:not([disabled]) {
+      background: var(--surface-color) !important;
       transform: translateY(-1px);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--shadow-md);
     }
-    
-    .btn-submit:disabled {
-      background: #cbd5e1;
+
+    .cancel-btn:focus {
+      outline: 3px solid rgba(13, 148, 136, 0.3);
+      outline-offset: 2px;
+    }
+
+    .submit-btn {
+      flex: 2;
+      padding: var(--spacing-sm) var(--spacing-xl) !important;
+      height: 48px !important;
+      border-radius: var(--radius-md) !important;
+      font-weight: 600 !important;
+      font-size: 0.9375rem !important;
+      background-color: var(--primary-color) !important;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      box-shadow: var(--shadow-sm);
+      letter-spacing: -0.01em;
+    }
+
+    .submit-btn mat-icon {
+      margin-right: var(--spacing-xs);
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    .submit-btn:hover:not([disabled]) {
+      background-color: var(--primary-dark) !important;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-lg), 0 0 0 3px rgba(13, 148, 136, 0.15);
+    }
+
+    .submit-btn:focus {
+      outline: 3px solid rgba(13, 148, 136, 0.4);
+      outline-offset: 2px;
+    }
+
+    .submit-btn:disabled {
+      background-color: #d1d5db !important;
+      color: #6b7280 !important;
       cursor: not-allowed;
       transform: none;
       box-shadow: none;
+      opacity: 0.6;
     }
-    
-    .inline-spinner {
-      display: inline-block !important;
+
+    .submit-spinner {
+      margin-right: var(--spacing-xs);
     }
-    
-    .inline-spinner ::ng-deep circle {
-      stroke: white !important;
+
+    .submit-spinner ::ng-deep circle {
+      stroke: white;
     }
-    
-    /* Scrollbar styling */
+
+    /* Material Design Overrides - Better Borders */
+    ::ng-deep .mat-mdc-form-field {
+      margin-bottom: 4px;
+    }
+
+    ::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline {
+      border-radius: var(--radius-md);
+    }
+
+    ::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-thick {
+      border-color: var(--primary-color);
+      border-width: 2px;
+    }
+
+    ::ng-deep .mat-mdc-form-field-appearance-outline.mat-focused .mat-mdc-form-field-outline-thick {
+      border-color: var(--primary-dark);
+    }
+
+    ::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-start,
+    ::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-end {
+      border-radius: var(--radius-md);
+    }
+
+    ::ng-deep .mat-mdc-form-field-hint,
+    ::ng-deep .mat-mdc-form-field-error {
+      font-size: 0.75rem;
+      font-weight: 500;
+      margin-top: 4px;
+    }
+
+    ::ng-deep .mat-mdc-form-field-error {
+      color: var(--error-color);
+    }
+
+    ::ng-deep .mat-mdc-checkbox .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background {
+      background-color: var(--secondary-color);
+      border-color: var(--secondary-color);
+    }
+
+    ::ng-deep .mat-mdc-checkbox .mdc-checkbox__native-control:enabled:focus:checked ~ .mdc-checkbox__background {
+      background-color: var(--secondary-color);
+      border-color: var(--secondary-color);
+    }
+
+    ::ng-deep .mat-mdc-option .mat-icon {
+      margin-right: var(--spacing-sm);
+      color: var(--text-secondary);
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    ::ng-deep .mat-mdc-option.mat-mdc-option-active,
+    ::ng-deep .mat-mdc-option:hover {
+      background: var(--surface-color);
+    }
+
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      padding-bottom: 0;
+    }
+
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+      margin-top: 4px;
+    }
+
+    ::ng-deep .mat-datepicker-toggle {
+      color: var(--text-secondary);
+    }
+
+    ::ng-deep .mat-mdc-icon-button.mat-datepicker-toggle {
+      width: 40px;
+      height: 40px;
+      padding: 8px;
+    }
+
+    /* Scrollbar Styling - More Refined */
     .booking-content::-webkit-scrollbar {
-      width: 6px;
+      width: 8px;
     }
-    
+
     .booking-content::-webkit-scrollbar-track {
-      background: #f1f5f9;
-      border-radius: 3px;
+      background: var(--border-color-light);
+      border-radius: 4px;
+      margin: 4px 0;
     }
-    
+
     .booking-content::-webkit-scrollbar-thumb {
       background: #cbd5e1;
-      border-radius: 3px;
+      border-radius: 4px;
+      border: 2px solid var(--border-color-light);
     }
-    
+
     .booking-content::-webkit-scrollbar-thumb:hover {
       background: #94a3b8;
     }
-    
-    /* Material Design overrides */
-    ::ng-deep .mat-mdc-form-field {
-      width: 100%;
+
+    /* Focus Visible - Accessibility */
+    button:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible,
+    select:focus-visible {
+      outline: 3px solid var(--primary-color);
+      outline-offset: 2px;
     }
-    
-    ::ng-deep .mat-mdc-form-field .mat-mdc-text-field-wrapper {
-      border-radius: 0.5rem;
-    }
-    
-    ::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-thick {
-      border-color: #3b82f6;
-    }
-    
-    ::ng-deep .mat-mdc-checkbox .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background {
-      background-color: #3b82f6;
-      border-color: #3b82f6;
-    }
-    
-    /* Responsive Design */
+
+    /* Responsive Design - Better Breakpoints */
     @media (max-width: 768px) {
-      .booking-header {
-        padding: 1.5rem;
+      :host {
+        --spacing-xs: 6px;
+        --spacing-sm: 10px;
+        --spacing-md: 14px;
+        --spacing-lg: 18px;
+        --spacing-xl: 22px;
+        --spacing-2xl: 28px;
       }
-      
+
+      .booking-header {
+        padding: var(--spacing-xl) var(--spacing-lg);
+      }
+
       .header-content {
         flex-direction: column;
         text-align: center;
-        gap: 1rem;
+        gap: var(--spacing-md);
       }
-      
+
+      .booking-title {
+        font-size: 1.375rem;
+      }
+
+      .tour-name {
+        font-size: 0.9375rem;
+      }
+
       .booking-content {
-        padding: 1.5rem;
+        padding: var(--spacing-xl);
+        gap: var(--spacing-lg);
       }
-      
+
       .form-grid {
         grid-template-columns: 1fr;
-        gap: 1rem;
+        gap: var(--spacing-md);
       }
-      
-      .price-info {
-        flex-direction: column;
-        text-align: center;
+
+      .section-content {
+        padding: 0 var(--spacing-md) var(--spacing-md) !important;
       }
-      
-      .total-calculation {
-        align-items: center;
-      }
-      
+
       .actions-container {
         flex-direction: column;
-        padding: 1.5rem;
+        padding: var(--spacing-lg);
+        gap: var(--spacing-sm);
       }
-      
-      .terms-content {
-        text-align: center;
+
+      .cancel-btn,
+      .submit-btn {
+        flex: 1;
+      }
+
+      .tour-details {
         justify-content: center;
       }
+
+      .price-display-card {
+        padding: var(--spacing-lg);
+      }
+
+      .amount {
+        font-size: 2rem;
+      }
     }
-    
+
     @media (max-width: 480px) {
       .booking-container {
-        margin: 0.5rem;
-        max-height: calc(100vh - 1rem);
+        margin: 8px;
+        max-height: calc(100vh - 16px);
+        border-radius: var(--radius-xl);
       }
-      
+
       .booking-header {
-        padding: 1rem;
+        padding: var(--spacing-lg);
       }
-      
+
+      .header-icon {
+        padding: var(--spacing-sm);
+      }
+
+      .header-main-icon {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+      }
+
+      .close-button {
+        width: 40px;
+        height: 40px;
+      }
+
       .booking-content {
-        padding: 1rem;
+        padding: var(--spacing-lg);
+        gap: var(--spacing-md);
       }
-      
+
+      .form-section-card {
+        border-radius: var(--radius-md) !important;
+      }
+
+      .section-header {
+        padding: var(--spacing-md) var(--spacing-md) 0 !important;
+      }
+
+      .section-avatar {
+        width: 40px !important;
+        height: 40px !important;
+      }
+
+      .section-avatar mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
       .actions-container {
-        padding: 1rem;
+        padding: var(--spacing-md);
+      }
+
+      .cancel-btn,
+      .submit-btn {
+        height: 44px !important;
+        font-size: 0.875rem !important;
+      }
+
+      .booking-title {
+        font-size: 1.25rem;
+      }
+
+      .tour-name {
+        font-size: 0.875rem;
+      }
+
+      .detail-item {
+        font-size: 0.75rem;
+      }
+
+      .section-title {
+        font-size: 1rem !important;
+      }
+
+      .amount {
+        font-size: 1.75rem;
+      }
+    }
+
+    /* Print Styles */
+    @media print {
+      .booking-header,
+      .actions-container,
+      .close-button {
+        display: none;
+      }
+
+      .booking-container {
+        box-shadow: none;
+        max-height: none;
+      }
+
+      .booking-content {
+        overflow: visible;
+        padding: 0;
       }
     }
   `]
@@ -811,7 +1284,6 @@ export class BookingDialogComponent implements OnInit {
   }
 
   private setupFormSubscriptions() {
-    // Update total price when number of people changes
     this.bookingForm.get('numPeople')?.valueChanges.subscribe(numPeople => {
       if (numPeople && numPeople > 0) {
         const suggestedTotal = this.data.tour.priceDisplay * numPeople;
@@ -820,7 +1292,6 @@ export class BookingDialogComponent implements OnInit {
       }
     });
 
-    // Clear error message when form changes
     this.bookingForm.valueChanges.subscribe(() => {
       if (this.errorMessage) {
         this.errorMessage = '';
@@ -919,7 +1390,6 @@ export class BookingDialogComponent implements OnInit {
     if (typeof error === 'string') return error;
     if (error?.message) return error.message;
 
-    // Handle specific Firebase errors
     if (error?.code) {
       switch (error.code) {
         case 'permission-denied':
@@ -939,92 +1409,6 @@ export class BookingDialogComponent implements OnInit {
       }
     }
 
-    // Network errors
-    if (error?.name === 'NetworkError' || error?.message?.includes('network')) {
-      return 'Network connection error. Please check your internet connection and try again.';
-    }
-
-    // Validation errors
-    if (error?.message?.includes('validation') || error?.message?.includes('required')) {
-      return 'Please fill in all required fields correctly and try again.';
-    }
-
     return 'An unexpected error occurred while submitting your booking. Please try again or contact support if the problem continues.';
-  }
-
-  // Utility method to format phone number as user types (optional enhancement)
-  onPhoneInput(event: any) {
-    let value = event.target.value.replace(/\D/g, '');
-    if (value.length > 0) {
-      if (value.startsWith('94')) {
-        value = value.substring(0, 11);
-        value = value.replace(/(\d{2})(\d{2})(\d{3})(\d{4})/, '+$1 $2 $3 $4');
-      } else {
-        value = value.substring(0, 10);
-        value = value.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
-      }
-    }
-    this.bookingForm.get('guestPhone')?.setValue(value);
-  }
-
-  // Method to validate date selection (prevent past dates and unavailable dates)
-  dateFilter = (date: Date | null): boolean => {
-    if (!date) return false;
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    // Don't allow dates in the past
-    if (date < today) return false;
-
-    // Don't allow dates more than 1 year in the future
-    const oneYearFromNow = new Date();
-    oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
-    if (date > oneYearFromNow) return false;
-
-    // Optionally: check against tour's available dates
-    // if (this.data.tour.nextAvailableDates) {
-    //   return this.data.tour.nextAvailableDates.some(availableDate => {
-    //     const available = availableDate.toDate ? availableDate.toDate() : new Date(availableDate);
-    //     return available.toDateString() === date.toDateString();
-    //   });
-    // }
-
-    return true;
-  };
-
-  // Method to get available time slots for selected date (future enhancement)
-  getAvailableTimeSlots(): string[] {
-    // This could be enhanced to show available time slots based on the selected date
-    return ['09:00 AM', '02:00 PM'];
-  }
-
-  // Method to calculate price breakdown (future enhancement)
-  getPriceBreakdown() {
-    const numPeople = this.bookingForm.get('numPeople')?.value || 1;
-    const basePrice = this.data.tour.priceDisplay;
-    const subtotal = basePrice * numPeople;
-    const serviceFee = Math.round(subtotal * 0.1); // 10% service fee
-    const total = subtotal + serviceFee;
-
-    return {
-      basePrice,
-      numPeople,
-      subtotal,
-      serviceFee,
-      total
-    };
-  }
-
-  // Method to check tour availability for selected date (future enhancement)
-  async checkAvailability(date: Date): Promise<boolean> {
-    try {
-      // This would call the BookingsService to check availability
-      // return await this.bookingsService.checkAvailability(this.data.tour.id, date);
-      return true; // Placeholder
-    } catch (error) {
-      console.error('Error checking availability:', error);
-      return true; // Default to available if check fails
-    }
   }
 }

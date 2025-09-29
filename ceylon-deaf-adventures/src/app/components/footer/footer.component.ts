@@ -87,6 +87,8 @@ import { LucideAngularModule, Mail, Phone, MapPin, Facebook, Instagram, Youtube 
       font-size: 0.95rem;
       transition: color 0.25s ease-in-out;
       cursor: pointer;
+      text-decoration: none;
+      color:white;
     }
     .footer-link:hover {
       color: rgb(var(--accent));

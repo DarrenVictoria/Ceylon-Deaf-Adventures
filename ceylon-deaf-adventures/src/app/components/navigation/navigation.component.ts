@@ -109,7 +109,7 @@ import { LucideAngularModule, Menu, X } from 'lucide-angular';
       position: sticky;
       top: 0;
       z-index: 50;
-      background-color: rgba(var(--background), 1);
+      background-color: #ffffff;
       backdrop-filter: blur(8px);
       border-bottom: 1px solid ;
     }
@@ -191,7 +191,7 @@ import { LucideAngularModule, Menu, X } from 'lucide-angular';
       }
     }
     .hover-text-primary:hover {
-      color: rgb(var(--primary));
+      color: rgb(var(--accent));
     }
     .font-medium {
       font-weight: 500;

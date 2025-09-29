@@ -339,6 +339,7 @@ import { MatChipsModule } from '@angular/material/chips';
       width: 100%;
       animation: slideUp 0.3s ease-out;
       background-color: #ffffff;
+      border-radius: 12px;
     }
 
     .development-notice-header {

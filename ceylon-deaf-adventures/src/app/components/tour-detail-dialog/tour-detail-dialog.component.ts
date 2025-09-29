@@ -5,7 +5,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
-import { LucideAngularModule } from 'lucide-angular';
+import { MatCardModule } from '@angular/material/card';
+import { MatRippleModule } from '@angular/material/core';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Tour } from '../../models/tour';
 import { BookingDialogComponent } from '../booking-dialog/booking-dialog.component';
 
@@ -20,24 +23,330 @@ import { BookingDialogComponent } from '../booking-dialog/booking-dialog.compone
     MatIconModule,
     MatChipsModule,
     MatDividerModule,
-    LucideAngularModule
+    MatCardModule,
+    MatRippleModule,
+    MatBadgeModule,
+    MatProgressBarModule
   ],
+  template: `
+    <div class="dialog-container">
+      <!-- Hero Section -->
+      <div class="hero-section">
+        <img 
+          [src]="data.tour.images[0] || '/placeholder.svg?height=400&width=800'" 
+          [alt]="data.tour.title"
+          class="hero-image"
+        >
+        <div class="hero-overlay">
+          <div class="hero-gradient"></div>
+        </div>
+        <div class="hero-content">
+          <div class="hero-badges">
+            <div class="hero-badge type-badge">
+              <mat-icon class="badge-icon">{{ getTypeIcon(data.tour.type) }}</mat-icon>
+              <span class="badge-text">{{ data.tour.type | titlecase }}</span>
+            </div>
+            <div class="hero-badge duration-badge">
+              <mat-icon class="badge-icon">schedule</mat-icon>
+              <span class="badge-text">{{ data.tour.durationDays }}{{ data.tour.durationDays === 1 ? ' Day' : ' Days' }}</span>
+            </div>
+          </div>
+          <h2 class="hero-title">{{ data.tour.title }}</h2>
+          <p class="hero-subtitle">{{ data.tour.shortDescription }}</p>
+        </div>
+        <button mat-icon-button class="close-button" (click)="onClose()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <!-- Content Section -->
+      <div class="content-section">
+        <!-- Price and Capacity Card -->
+        <mat-card class="info-card price-card">
+          <mat-card-content class="price-content">
+            <div class="price-info">
+              <div class="price-main">
+                <span class="currency">{{ data.tour.currency }}</span>
+                <span class="amount">{{ data.tour.priceDisplay }}</span>
+              </div>
+              <span class="price-label">per person</span>
+            </div>
+            <mat-divider class="price-divider"></mat-divider>
+            <div class="capacity-info">
+              <div class="capacity-header">
+                <mat-icon class="capacity-icon">groups</mat-icon>
+                <span class="capacity-label">Group Size</span>
+              </div>
+              <div class="capacity-details">
+                <span class="capacity-number">Up to {{ data.tour.capacity }}</span>
+                <span class="capacity-text">people</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Locations Section -->
+        <div class="content-section-wrapper">
+          <div class="section-header">
+            <mat-icon class="section-icon">place</mat-icon>
+            <h3 class="section-title">Destinations</h3>
+          </div>
+          <div class="locations-grid">
+            <mat-chip-listbox class="location-chips">
+              <mat-chip *ngFor="let location of data.tour.location; trackBy: trackByLocation" class="location-chip" matRipple>
+                <mat-icon matChipAvatar>place</mat-icon>
+                {{ location }}
+              </mat-chip>
+            </mat-chip-listbox>
+          </div>
+        </div>
+
+        <mat-divider class="section-divider"></mat-divider>
+
+        <!-- Description Section -->
+        <div class="content-section-wrapper">
+          <div class="section-header">
+            <mat-icon class="section-icon">description</mat-icon>
+            <h3 class="section-title">About This Tour</h3>
+          </div>
+          <div class="description-content">
+            <p class="description-short">{{ data.tour.shortDescription }}</p>
+            <p class="description-full">{{ data.tour.fullDescription }}</p>
+          </div>
+        </div>
+
+        <mat-divider class="section-divider"></mat-divider>
+
+        <!-- Features Section -->
+        <div class="content-section-wrapper">
+          <div class="section-header">
+            <mat-icon class="section-icon">star</mat-icon>
+            <h3 class="section-title">Tour Highlights</h3>
+          </div>
+          <div class="features-grid">
+            <mat-card *ngFor="let feature of data.tour.features; trackBy: trackByFeature" class="feature-card" matRipple>
+              <mat-card-content class="feature-content">
+                <mat-icon class="feature-icon">check_circle</mat-icon>
+                <span class="feature-text">{{ feature }}</span>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+
+        <mat-divider class="section-divider"></mat-divider>
+
+        <!-- Accessibility Features Section -->
+        <div class="content-section-wrapper">
+          <div class="section-header">
+            <mat-icon class="section-icon">accessible</mat-icon>
+            <h3 class="section-title">Accessibility Features</h3>
+          </div>
+          <div class="accessibility-grid">
+            <mat-card class="accessibility-card" matRipple>
+              <mat-card-content class="accessibility-content">
+                <div class="accessibility-item">
+                  <mat-icon 
+                    [class]="data.tour.accessibility.visualAlarms ? 'icon-success' : 'icon-unavailable'"
+                  >
+                    {{ data.tour.accessibility.visualAlarms ? 'check_circle' : 'cancel' }}
+                  </mat-icon>
+                  <div class="accessibility-info">
+                    <span class="accessibility-label">Visual Alarms</span>
+                    <span class="accessibility-status">{{ data.tour.accessibility.visualAlarms ? 'Available' : 'Not Available' }}</span>
+                  </div>
+                </div>
+                <mat-progress-bar 
+                  mode="determinate" 
+                  [value]="data.tour.accessibility.visualAlarms ? 100 : 0"
+                  [color]="data.tour.accessibility.visualAlarms ? 'primary' : 'warn'"
+                  class="accessibility-progress"
+                ></mat-progress-bar>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="accessibility-card" matRipple>
+              <mat-card-content class="accessibility-content">
+                <div class="accessibility-item">
+                  <mat-icon 
+                    [class]="data.tour.accessibility.staffTrained ? 'icon-success' : 'icon-unavailable'"
+                  >
+                    {{ data.tour.accessibility.staffTrained ? 'check_circle' : 'cancel' }}
+                  </mat-icon>
+                  <div class="accessibility-info">
+                    <span class="accessibility-label">Trained Staff</span>
+                    <span class="accessibility-status">{{ data.tour.accessibility.staffTrained ? 'Certified' : 'Not Available' }}</span>
+                  </div>
+                </div>
+                <mat-progress-bar 
+                  mode="determinate" 
+                  [value]="data.tour.accessibility.staffTrained ? 100 : 0"
+                  [color]="data.tour.accessibility.staffTrained ? 'primary' : 'warn'"
+                  class="accessibility-progress"
+                ></mat-progress-bar>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="accessibility-card" matRipple>
+              <mat-card-content class="accessibility-content">
+                <div class="accessibility-item">
+                  <mat-icon 
+                    [class]="data.tour.accessibility.ramps ? 'icon-success' : 'icon-unavailable'"
+                  >
+                    {{ data.tour.accessibility.ramps ? 'check_circle' : 'cancel' }}
+                  </mat-icon>
+                  <div class="accessibility-info">
+                    <span class="accessibility-label">Wheelchair Access</span>
+                    <span class="accessibility-status">{{ data.tour.accessibility.ramps ? 'Accessible' : 'Limited Access' }}</span>
+                  </div>
+                </div>
+                <mat-progress-bar 
+                  mode="determinate" 
+                  [value]="data.tour.accessibility.ramps ? 100 : 0"
+                  [color]="data.tour.accessibility.ramps ? 'primary' : 'warn'"
+                  class="accessibility-progress"
+                ></mat-progress-bar>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="accessibility-card" matRipple>
+              <mat-card-content class="accessibility-content">
+                <div class="accessibility-item">
+                  <mat-icon 
+                    [class]="data.tour.accessibility.captionsProvided ? 'icon-success' : 'icon-unavailable'"
+                  >
+                    {{ data.tour.accessibility.captionsProvided ? 'check_circle' : 'cancel' }}
+                  </mat-icon>
+                  <div class="accessibility-info">
+                    <span class="accessibility-label">Captions & Materials</span>
+                    <span class="accessibility-status">{{ data.tour.accessibility.captionsProvided ? 'Provided' : 'Not Available' }}</span>
+                  </div>
+                </div>
+                <mat-progress-bar 
+                  mode="determinate" 
+                  [value]="data.tour.accessibility.captionsProvided ? 100 : 0"
+                  [color]="data.tour.accessibility.captionsProvided ? 'primary' : 'warn'"
+                  class="accessibility-progress"
+                ></mat-progress-bar>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+
+        <mat-divider class="section-divider"></mat-divider>
+
+        <!-- Tour Details Section -->
+        <div class="content-section-wrapper">
+          <div class="section-header">
+            <mat-icon class="section-icon">info</mat-icon>
+            <h3 class="section-title">Important Details</h3>
+          </div>
+          <div class="details-grid">
+            <mat-card class="detail-card" matRipple>
+              <mat-card-content class="detail-content">
+                <mat-icon class="detail-icon">event_available</mat-icon>
+                <div class="detail-info">
+                  <span class="detail-label">Next Available</span>
+                  <span class="detail-value">{{ getNextAvailableDate() }}</span>
+                </div>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="detail-card" matRipple>
+              <mat-card-content class="detail-content">
+                <mat-icon class="detail-icon">language</mat-icon>
+                <div class="detail-info">
+                  <span class="detail-label">Languages</span>
+                  <span class="detail-value">English, Sign Language</span>
+                </div>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="detail-card" matRipple>
+              <mat-card-content class="detail-content">
+                <mat-icon class="detail-icon">fitness_center</mat-icon>
+                <div class="detail-info">
+                  <span class="detail-label">Difficulty Level</span>
+                  <span class="detail-value">{{ getDifficultyLevel() }}</span>
+                </div>
+              </mat-card-content>
+            </mat-card>
+
+            <mat-card class="detail-card" matRipple>
+              <mat-card-content class="detail-content">
+                <mat-icon class="detail-icon">dining</mat-icon>
+                <div class="detail-info">
+                  <span class="detail-label">Meals Included</span>
+                  <span class="detail-value">Breakfast & Lunch</span>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions Bar -->
+      <div class="actions-bar">
+        <button 
+          mat-stroked-button 
+          color="primary"
+          class="close-action-btn" 
+          (click)="onClose()"
+        >
+          <mat-icon>close</mat-icon>
+          Close
+        </button>
+        <button 
+          mat-raised-button 
+          color="primary"
+          class="book-action-btn" 
+          (click)="openBookingDialog()"
+        >
+          <mat-icon>event</mat-icon>
+          Book This Tour
+        </button>
+      </div>
+    </div>
+  `,
   styles: [`
+    mat-icon {
+      font-size: 20px !important;
+  }
+    
+    /* Global Variables */
+    :host {
+      --primary-color: #2dd4bf;
+      --primary-light: #5eead4;
+      --primary-dark: #0f766e;
+      --accent-color: #f97316;
+      --accent-light: #fed7aa;
+      --secondary-color: #6366f1;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --error-color: #ef4444;
+      --background-color: #ffffff;
+      --surface-color: #f8fafc;
+      --text-primary: #1f2937;
+      --text-secondary: #6b7280;
+      --text-muted: #9ca3af;
+      display: block;
+    }
+
     .dialog-container {
       background: white;
-      border-radius: 1.5rem;
+      border-radius: 24px;
       overflow: hidden;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-      max-width: 700px;
+      max-width: 900px;
       width: 100%;
       max-height: 90vh;
       display: flex;
       flex-direction: column;
     }
     
+    /* Hero Section */
     .hero-section {
       position: relative;
-      height: 300px;
+      height: 350px;
       overflow: hidden;
       flex-shrink: 0;
     }
@@ -50,10 +359,15 @@ import { BookingDialogComponent } from '../booking-dialog/booking-dialog.compone
     }
     
     .hero-image:hover {
-      transform: scale(1.02);
+      transform: scale(1.05);
     }
     
     .hero-overlay {
+      position: absolute;
+      inset: 0;
+    }
+
+    .hero-gradient {
       position: absolute;
       inset: 0;
       background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.2) 100%);
@@ -61,43 +375,69 @@ import { BookingDialogComponent } from '../booking-dialog/booking-dialog.compone
     
     .hero-content {
       position: absolute;
-      bottom: 2rem;
-      left: 2rem;
-      right: 2rem;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 32px;
       color: white;
+      z-index: 2;
+    }
+
+    .hero-badges {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .hero-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .badge-icon {
+      font-size: 18px;
+    }
+
+    .badge-text {
+      white-space: nowrap;
     }
     
     .hero-title {
-      font-size: 2rem;
-      font-weight: 700;
-      margin: 0 0 1rem 0;
+      font-size: 2.25rem;
+      font-weight: 800;
+      margin: 0 0 12px 0;
       line-height: 1.2;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
-    
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      padding: 0.5rem 1rem;
-      border-radius: 2rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+
+    .hero-subtitle {
+      font-size: 1.125rem;
+      opacity: 0.95;
+      margin: 0;
+      line-height: 1.4;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     }
     
     .close-button {
       position: absolute;
-      top: 1rem;
-      right: 1rem;
+      top: 16px;
+      right: 16px;
       background: rgba(0, 0, 0, 0.5) !important;
       color: white !important;
       border-radius: 50%;
-      width: 44px;
-      height: 44px;
+      width: 48px;
+      height: 48px;
       backdrop-filter: blur(10px);
       transition: all 0.2s ease;
+      z-index: 10;
     }
     
     .close-button:hover {
@@ -105,435 +445,488 @@ import { BookingDialogComponent } from '../booking-dialog/booking-dialog.compone
       transform: scale(1.05);
     }
     
+    /* Content Section */
     .content-section {
       flex: 1;
       overflow-y: auto;
-      padding: 2rem;
+      padding: 32px;
     }
-    
-    .price-duration-card {
-      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+
+    .info-card {
+      margin-bottom: 32px;
+      border-radius: 16px !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
       border: 1px solid #e2e8f0;
-      border-radius: 1rem;
-      padding: 2rem;
-      margin-bottom: 2rem;
+    }
+
+    .price-card {
+      background: linear-gradient(135deg, #f0fdfa, #ccfbf1) !important;
+      border-color: var(--primary-color) !important;
+    }
+
+    .price-content {
+      padding: 32px !important;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+      gap: 32px;
       flex-wrap: wrap;
-      gap: 1rem;
     }
-    
+
     .price-info {
-      text-align: left;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
     }
-    
-    .price-amount {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: #3b82f6;
+
+    .price-main {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .currency {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .amount {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--primary-color);
       line-height: 1;
     }
-    
-    .price-currency {
-      font-size: 1rem;
-      color: #64748b;
+
+    .price-label {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .price-divider {
+      align-self: stretch;
+      margin: 0 16px;
+    }
+
+    .capacity-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .capacity-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .capacity-icon {
+      color: var(--primary-color);
+      font-size: 24px;
+    }
+
+    .capacity-label {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
       font-weight: 500;
     }
-    
-    .price-per {
-      color: #64748b;
-      font-size: 0.875rem;
-      margin-top: 0.25rem;
+
+    .capacity-details {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
     }
-    
-    .duration-info {
-      text-align: right;
-    }
-    
-    .duration-amount {
+
+    .capacity-number {
       font-size: 1.5rem;
-      font-weight: 600;
-      color: #1e293b;
-      line-height: 1;
-    }
-    
-    .duration-label {
-      color: #64748b;
-      font-size: 0.875rem;
-      margin-top: 0.25rem;
-    }
-    
-    .section-title {
-      font-size: 1.25rem;
       font-weight: 700;
-      color: #1e293b;
-      margin: 2rem 0 1rem 0;
+      color: var(--text-primary);
+    }
+
+    .capacity-text {
+      font-size: 1rem;
+      color: var(--text-secondary);
+    }
+
+    .content-section-wrapper {
+      margin-bottom: 32px;
+    }
+
+    .section-header {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 12px;
+      margin-bottom: 24px;
     }
-    
-    .section-title:first-of-type {
-      margin-top: 0;
+
+    .section-icon {
+      color: var(--primary-color);
+      font-size: 28px;
     }
-    
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .section-divider {
+      margin: 32px 0 !important;
+    }
+
+    /* Locations Section */
+    .locations-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
     .location-chips {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 2rem;
+      gap: 12px;
     }
-    
-    .chip-location {
-      background: rgba(59, 130, 246, 0.1);
-      color: #3b82f6;
-      border: 1px solid rgba(59, 130, 246, 0.2);
-      padding: 0.5rem 1rem;
-      border-radius: 2rem;
-      font-size: 0.875rem;
-      font-weight: 500;
+
+    .location-chip {
+      background-color: rgba(45, 212, 191, 0.1) !important;
+      color: var(--primary-color) !important;
+      font-size: 0.875rem !important;
+      height: 36px !important;
+      border-radius: 18px !important;
+      border: 1px solid rgba(45, 212, 191, 0.3) !important;
+      font-weight: 500 !important;
     }
-    
-    .description-text {
-      color: #4b5563;
-      line-height: 1.6;
-      margin-bottom: 1rem;
-    }
-    
-    .short-description {
-      font-weight: 500;
-      color: #374151;
-    }
-    
-    .feature-chips {
+
+    /* Description Section */
+    .description-content {
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin: 1rem 0;
+      flex-direction: column;
+      gap: 16px;
     }
-    
-    .chip-feature {
-      background: rgba(99, 102, 241, 0.1);
-      color: #6366f1;
-      border: 1px solid rgba(99, 102, 241, 0.2);
-      padding: 0.5rem 1rem;
-      border-radius: 2rem;
-      font-size: 0.875rem;
+
+    .description-short {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .description-full {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin: 0;
+    }
+
+    /* Features Section */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .feature-card {
+      border-radius: 12px !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+      border: 1px solid #e2e8f0;
+      transition: all 0.2s ease;
+    }
+
+    .feature-card:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+      transform: translateY(-2px);
+    }
+
+    .feature-content {
+      padding: 16px !important;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .feature-icon {
+      color: var(--success-color);
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .feature-text {
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      line-height: 1.4;
       font-weight: 500;
     }
-    
+
+    /* Accessibility Section */
     .accessibility-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin: 1rem 0 2rem 0;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
     }
-    
+
+    .accessibility-card {
+      border-radius: 12px !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+      border: 1px solid #e2e8f0;
+      transition: all 0.2s ease;
+    }
+
+    .accessibility-card:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+      transform: translateY(-2px);
+    }
+
+    .accessibility-content {
+      padding: 16px !important;
+    }
+
     .accessibility-item {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      padding: 1rem;
-      background: #f8fafc;
-      border-radius: 0.75rem;
-      border: 1px solid #e2e8f0;
+      gap: 12px;
+      margin-bottom: 12px;
     }
-    
-    .icon-success {
-      color: #10b981;
-    }
-    
-    .icon-unavailable {
-      color: #ef4444;
-    }
-    
-    .accessibility-label {
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: #374151;
-    }
-    
-    .details-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin: 1rem 0 2rem 0;
-    }
-    
-    .detail-card {
-      padding: 1.25rem;
-      background: #f8fafc;
-      border-radius: 0.75rem;
-      border: 1px solid #e2e8f0;
-    }
-    
-    .detail-label {
-      font-weight: 600;
-      color: #1e293b;
-      margin-bottom: 0.25rem;
-    }
-    
-    .detail-value {
-      color: #64748b;
-      font-size: 0.875rem;
-    }
-    
-    .divider {
-      border: none;
-      border-top: 1px solid #e2e8f0;
-      margin: 2rem 0;
-    }
-    
-    .actions-bar {
-      padding: 1.5rem 2rem;
-      background: #f8fafc;
-      border-top: 1px solid #e2e8f0;
-      display: flex;
-      gap: 1rem;
+
+    .accessibility-item mat-icon {
+      font-size: 24px;
       flex-shrink: 0;
     }
-    
-    .btn-close {
+
+    .icon-success {
+      color: var(--success-color);
+    }
+
+    .icon-unavailable {
+      color: #cbd5e1;
+    }
+
+    .accessibility-info {
       flex: 1;
-      background: white;
-      color: #64748b;
-      border: 1px solid #cbd5e1;
-      padding: 0.875rem 1.5rem;
-      border-radius: 0.5rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
-    
-    .btn-close:hover {
-      background: #f1f5f9;
-      border-color: #94a3b8;
-    }
-    
-    .btn-book {
-      flex: 2;
-      background: #3b82f6;
-      color: white;
-      border: none;
-      padding: 0.875rem 1.5rem;
-      border-radius: 0.5rem;
+
+    .accessibility-label {
+      font-size: 0.875rem;
       font-weight: 600;
-      cursor: pointer;
+      color: var(--text-primary);
+    }
+
+    .accessibility-status {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .accessibility-progress {
+      height: 4px;
+      border-radius: 2px;
+    }
+
+    /* Details Section */
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .detail-card {
+      border-radius: 12px !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+      border: 1px solid #e2e8f0;
       transition: all 0.2s ease;
+    }
+
+    .detail-card:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+      transform: translateY(-2px);
+    }
+
+    .detail-content {
+      padding: 20px !important;
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
+      gap: 16px;
     }
-    
-    .btn-book:hover {
-      background: #2563eb;
+
+    .detail-icon {
+      color: var(--primary-color);
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+
+    .detail-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .detail-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .detail-value {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* Actions Bar */
+    .actions-bar {
+      padding: 24px 32px;
+      background: linear-gradient(135deg, var(--surface-color), white);
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .close-action-btn {
+      flex: 1;
+      padding: 12px 24px !important;
+      height: auto !important;
+      border-radius: 12px !important;
+      font-weight: 600 !important;
+      font-size: 0.875rem !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .close-action-btn:hover {
       transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
-    
-    /* Scrollbar styling */
+
+    .book-action-btn {
+      flex: 2;
+      padding: 12px 24px !important;
+      height: auto !important;
+      border-radius: 12px !important;
+      font-weight: 600 !important;
+      font-size: 0.875rem !important;
+      background-color: var(--primary-color) !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .book-action-btn:hover {
+      background-color: var(--primary-dark) !important;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(45, 212, 191, 0.3);
+    }
+
+    /* Material Design Overrides */
+    ::ng-deep .mat-mdc-chip-listbox .mat-mdc-chip {
+      border-radius: 18px;
+    }
+
+    ::ng-deep .mat-mdc-progress-bar {
+      border-radius: 2px;
+    }
+
+    /* Scrollbar Styling */
     .content-section::-webkit-scrollbar {
       width: 6px;
     }
-    
+
     .content-section::-webkit-scrollbar-track {
       background: #f1f5f9;
       border-radius: 3px;
     }
-    
+
     .content-section::-webkit-scrollbar-thumb {
       background: #cbd5e1;
       border-radius: 3px;
     }
-    
+
     .content-section::-webkit-scrollbar-thumb:hover {
       background: #94a3b8;
     }
-    
+
+    /* Responsive Design */
     @media (max-width: 768px) {
+      .hero-section {
+        height: 280px;
+      }
+
       .hero-content {
-        left: 1rem;
-        right: 1rem;
-        bottom: 1rem;
+        padding: 24px;
       }
-      
+
       .hero-title {
-        font-size: 1.5rem;
+        font-size: 1.75rem;
       }
-      
+
+      .hero-subtitle {
+        font-size: 1rem;
+      }
+
       .content-section {
-        padding: 1.5rem;
+        padding: 24px;
       }
-      
-      .price-duration-card {
+
+      .price-content {
         flex-direction: column;
         text-align: center;
-        padding: 1.5rem;
       }
-      
-      .duration-info {
-        text-align: center;
+
+      .price-divider {
+        width: 100%;
+        margin: 16px 0;
       }
-      
+
       .accessibility-grid {
         grid-template-columns: 1fr;
       }
-      
+
       .details-grid {
         grid-template-columns: 1fr;
       }
-      
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
       .actions-bar {
         flex-direction: column;
-        padding: 1.5rem;
+        padding: 20px 24px;
       }
     }
-  `],
-  template: `
-    <div class="dialog-container">
-      <!-- Hero Section -->
-      <div class="hero-section">
-        <img 
-          [src]="data.tour.images[0] || '/placeholder.svg?height=300&width=700'" 
-          [alt]="data.tour.title"
-          class="hero-image"
-        >
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-          <h2 class="hero-title">{{ data.tour.title }}</h2>
-          <div class="hero-badge">
-            <lucide-icon [name]="getTypeIcon(data.tour.type)" [size]="16"></lucide-icon>
-            <span>{{ data.tour.type | titlecase }}</span>
-          </div>
-        </div>
-        <button mat-icon-button class="close-button" (click)="onClose()">
-          <lucide-icon name="x" [size]="24"></lucide-icon>
-        </button>
-      </div>
 
-      <!-- Content Section -->
-      <div class="content-section">
-        <!-- Price and Duration -->
-        <div class="price-duration-card">
-          <div class="price-info">
-            <div class="price-amount">
-              <span class="price-currency">{{ data.tour.currency }}</span>
-            </div>
-            <div class="price-per">per person</div>
-          </div>
-          <div class="duration-info">
-            <div class="duration-amount">
-              {{ data.tour.durationDays }} {{ data.tour.durationDays === 1 ? 'Day' : 'Days' }}
-            </div>
-            <div class="duration-label">Duration</div>
-          </div>
-        </div>
+    @media (max-width: 480px) {
+      .dialog-container {
+        margin: 8px;
+        max-height: calc(100vh - 16px);
+        border-radius: 16px;
+      }
 
-        <!-- Locations -->
-        <h3 class="section-title">
-          <lucide-icon name="map-pin" [size]="20" style="color: #3b82f6;"></lucide-icon>
-          Locations
-        </h3>
-        <div class="location-chips">
-          @for (location of data.tour.location; track location) {
-            <span class="chip-location">{{ location }}</span>
-          }
-        </div>
+      .hero-section {
+        height: 240px;
+      }
 
-        <hr class="divider">
+      .hero-content {
+        padding: 20px;
+      }
 
-        <!-- Description -->
-        <h3 class="section-title">About This Tour</h3>
-        <p class="description-text short-description">{{ data.tour.shortDescription }}</p>
-        <p class="description-text">{{ data.tour.fullDescription }}</p>
+      .hero-title {
+        font-size: 1.5rem;
+      }
 
-        <hr class="divider">
+      .content-section {
+        padding: 16px;
+      }
 
-        <!-- Features -->
-        <h3 class="section-title">
-          <lucide-icon name="star" [size]="20" style="color: #3b82f6;"></lucide-icon>
-          Tour Features
-        </h3>
-        <div class="feature-chips">
-          @for (feature of data.tour.features; track feature) {
-            <span class="chip-feature">{{ feature }}</span>
-          }
-        </div>
-
-        <hr class="divider">
-
-        <!-- Accessibility Features -->
-        <h3 class="section-title">
-          <lucide-icon name="accessibility" [size]="20" style="color: #3b82f6;"></lucide-icon>
-          Accessibility Features
-        </h3>
-        <div class="accessibility-grid">
-          <div class="accessibility-item">
-            <lucide-icon 
-              [name]="data.tour.accessibility.visualAlarms ? 'check-circle' : 'x-circle'" 
-              [size]="20"
-              [class]="data.tour.accessibility.visualAlarms ? 'icon-success' : 'icon-unavailable'"
-            ></lucide-icon>
-            <span class="accessibility-label">Visual Alarms</span>
-          </div>
-          <div class="accessibility-item">
-            <lucide-icon 
-              [name]="data.tour.accessibility.staffTrained ? 'check-circle' : 'x-circle'" 
-              [size]="20"
-              [class]="data.tour.accessibility.staffTrained ? 'icon-success' : 'icon-unavailable'"
-            ></lucide-icon>
-            <span class="accessibility-label">Trained Staff</span>
-          </div>
-          <div class="accessibility-item">
-            <lucide-icon 
-              [name]="data.tour.accessibility.ramps ? 'check-circle' : 'x-circle'" 
-              [size]="20"
-              [class]="data.tour.accessibility.ramps ? 'icon-success' : 'icon-unavailable'"
-            ></lucide-icon>
-            <span class="accessibility-label">Wheelchair Ramps</span>
-          </div>
-          <div class="accessibility-item">
-            <lucide-icon 
-              [name]="data.tour.accessibility.captionsProvided ? 'check-circle' : 'x-circle'" 
-              [size]="20"
-              [class]="data.tour.accessibility.captionsProvided ? 'icon-success' : 'icon-unavailable'"
-            ></lucide-icon>
-            <span class="accessibility-label">Captions Provided</span>
-          </div>
-        </div>
-
-        <hr class="divider">
-
-        <!-- Tour Details -->
-        <h3 class="section-title">
-          <lucide-icon name="info" [size]="20" style="color: #3b82f6;"></lucide-icon>
-          Tour Details
-        </h3>
-        <div class="details-grid">
-          <div class="detail-card">
-            <div class="detail-label">Group Size</div>
-            <div class="detail-value">Up to {{ data.tour.capacity }} people</div>
-          </div>
-          <div class="detail-card">
-            <div class="detail-label">Next Available</div>
-            <div class="detail-value">{{ getNextAvailableDate() }}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Actions Bar -->
-      <div class="actions-bar">
-        <button class="btn-close" (click)="onClose()">
-          Close
-        </button>
-        <button class="btn-book" (click)="openBookingDialog()">
-          <lucide-icon name="calendar" [size]="20"></lucide-icon>
-          Book This Tour
-        </button>
-      </div>
-    </div>
-  `
+      .actions-bar {
+        padding: 16px;
+      }
+    }
+  `]
 })
 export class TourDetailDialogComponent {
   constructor(
@@ -558,12 +951,12 @@ export class TourDetailDialogComponent {
 
   getTypeIcon(type: string): string {
     const icons = {
-      adventure: 'mountain',
-      group: 'users',
-      private: 'home',
-      deaf_guide: 'eye'
+      adventure: 'hiking',
+      group: 'groups',
+      private: 'person',
+      deaf_guide: 'accessibility'
     };
-    return icons[type as keyof typeof icons] || 'mountain';
+    return icons[type as keyof typeof icons] || 'tour';
   }
 
   getNextAvailableDate(): string {
@@ -571,11 +964,30 @@ export class TourDetailDialogComponent {
       const date = this.data.tour.nextAvailableDates[0];
       const dateObj = date.toDate ? date.toDate() : new Date(date);
       return dateObj.toLocaleDateString('en-US', {
-        month: 'short',
+        month: 'long',
         day: 'numeric',
         year: 'numeric'
       });
     }
     return 'Contact us for availability';
+  }
+
+  getDifficultyLevel(): string {
+    // You can add difficulty level to Tour model or derive it from tour type
+    const difficultyMap: { [key: string]: string } = {
+      adventure: 'Moderate to Challenging',
+      group: 'Easy to Moderate',
+      private: 'Customizable',
+      deaf_guide: 'Easy to Moderate'
+    };
+    return difficultyMap[this.data.tour.type] || 'Moderate';
+  }
+
+  trackByLocation(index: number, location: string): string {
+    return location;
+  }
+
+  trackByFeature(index: number, feature: string): string {
+    return feature;
   }
 }
