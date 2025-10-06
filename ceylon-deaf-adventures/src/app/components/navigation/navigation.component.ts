@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
+import { MatIcon } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
-import { LucideAngularModule, Menu, X } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 
 @Component({
   selector: 'app-navigation',
   standalone: true,
-  imports: [RouterLink, LucideAngularModule],
+  imports: [RouterLink, LucideAngularModule, MatIcon],
   template: `
     <nav class="nav">
       <div class="container">
@@ -43,11 +44,11 @@ import { LucideAngularModule, Menu, X } from 'lucide-angular';
 
           <!-- Mobile menu button -->
           <div class="md-hidden">
-            <button class="btn-ghost btn-sm" (click)="isOpen = !isOpen" aria-label="Toggle menu">
+            <button mat-icon-button (click)="isOpen = !isOpen" aria-label="Toggle menu" class="menu-button">
               @if (isOpen) {
-                <lucide-icon [name]="'x'" class="icon"></lucide-icon>
+                <mat-icon>close</mat-icon>
               } @else {
-                <lucide-icon [name]="'menu'" class="icon"></lucide-icon>
+                <mat-icon>menu</mat-icon>
               }
             </button>
           </div>
@@ -86,7 +87,7 @@ import { LucideAngularModule, Menu, X } from 'lucide-angular';
                 Blog
               </a>
               <div class="pt-4 pb-3">
-                <a href="#" class="btn btn-accent w-full" (click)="isOpen = false">
+                <a href="/tours" class="btn btn-accent w-full" (click)="isOpen = false">
                   Book Your Adventure
                 </a>
               </div>
@@ -114,12 +115,12 @@ import { LucideAngularModule, Menu, X } from 'lucide-angular';
       z-index: 50;
       background-color: #ffffff;
       backdrop-filter: blur(8px);
-      border-bottom: 1px solid ;
+      border-bottom: 1px solid rgb(var(--border));
       min-height: 4rem;
     }
 
     .links{
-    text-decoration: none;
+      text-decoration: none;
     }
     .container {
       max-width: 80rem;
@@ -204,6 +205,7 @@ import { LucideAngularModule, Menu, X } from 'lucide-angular';
       color: rgb(var(--muted-foreground));
     }
     .btn {
+      display: inline-block;
       padding-left: 1.5rem;
       padding-right: 1.5rem;
       padding-top: 0.75rem;
@@ -211,11 +213,20 @@ import { LucideAngularModule, Menu, X } from 'lucide-angular';
       border-radius: 0.375rem;
       text-decoration: none;
       transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+      font-weight: 500;
+      text-align: center;
     }
+
     .btn-accent {
       background-color: rgb(var(--accent));
       color: #fff;
+      max-width: 300px;
     }
+    
+    .btn-accent:hover {
+      opacity: 0.9;
+    }
+    
     .md-hidden {
       display: block;
     }
@@ -228,14 +239,48 @@ import { LucideAngularModule, Menu, X } from 'lucide-angular';
       background-color: transparent;
       border: none;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+      border-radius: 0.375rem;
+      transition: background-color 0.15s ease-in-out;
     }
+    
+    .btn-ghost:hover {
+      background-color: rgb(var(--muted));
+    }
+    
+    .btn-ghost:active {
+      background-color: rgb(var(--border));
+    }
+    
     .btn-sm {
-      padding: 0.25rem 0.5rem;
+      padding: 0.5rem;
     }
+    
     .icon {
       height: 1.5rem;
       width: 1.5rem;
+      color: rgb(var(--foreground));
+      stroke: currentColor;
+      stroke-width: 2;
     }
+    
+    /* Ensure lucide icons are visible */
+    lucide-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgb(var(--foreground));
+    }
+    
+    lucide-icon svg {
+      stroke: rgb(var(--foreground));
+      stroke-width: 2;
+      fill: none;
+    }
+    
     .mobile-menu {
       padding: 0.5rem;
       padding-top: 0.5rem;
@@ -252,10 +297,11 @@ import { LucideAngularModule, Menu, X } from 'lucide-angular';
       font-weight: 500;
       color: rgb(var(--foreground));
       border-radius: 0.375rem;
+      text-decoration: none;
       transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
     }
     .mobile-link:hover {
-      color: rgb(var(--primary));
+      color: rgb(var(--accent));
       background-color: rgb(var(--muted));
     }
     .pt-4 {

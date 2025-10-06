@@ -72,7 +72,7 @@ import { MatDividerModule } from '@angular/material/divider';
           </div>
           <div class="story-image">
             <img
-              src="/ceylon-deaf-adventures-family.png"
+              src="/Early.jpeg"
               alt="Ceylon Deaf Adventures founder with local Sri Lankan family"
               class="founder-image"
             />

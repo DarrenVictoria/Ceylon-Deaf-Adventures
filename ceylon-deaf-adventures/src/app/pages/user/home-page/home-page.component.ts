@@ -98,9 +98,11 @@ import { MatChipsModule } from '@angular/material/chips';
               <div class="video-container">
                 <video 
                   #greenscreenVideo
-                  src="720p.mp4"
+                  src="480p.mp4"
                   class="welcome-video hidden"
                   muted
+                  autoplay
+                  loop
                   playsinline
                   preload="auto"
                 ></video>
@@ -474,6 +476,7 @@ import { MatChipsModule } from '@angular/material/chips';
       display: flex;
       align-items: flex-end;
       justify-content: center;
+      transform: scale(1.5);
     }
 
     .welcome-video {
@@ -497,7 +500,7 @@ import { MatChipsModule } from '@angular/material/chips';
       animation: fadeInUp 1s ease-out 0.6s both;
       filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5));
       transition: transform 0.3s ease;
-      margin-bottom: -10rem;
+      margin-bottom: -3rem;
     }
 
     .welcome-video-canvas:hover {

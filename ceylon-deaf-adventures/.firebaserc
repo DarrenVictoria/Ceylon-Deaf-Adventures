@@ -7,6 +7,9 @@
       "hosting": {
         "staging": [
           "ceylondeafadventures-staging"
+        ],
+        "production": [
+          "ceylondeafadventures-25"
         ]
       }
     }

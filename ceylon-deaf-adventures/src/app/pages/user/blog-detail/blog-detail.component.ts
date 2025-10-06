@@ -38,7 +38,7 @@ import { takeUntil } from 'rxjs/operators';
       <mat-icon class="error-icon">error_outline</mat-icon>
       <h2 class="error-title">Blog post not found</h2>
       <p class="error-description">The blog post you're looking for doesn't exist or has been removed.</p>
-      <button mat-raised-button color="primary" [routerLink]="['/blogs']">
+      <button mat-raised-button color="primary" [routerLink]="['/blogs']"  >
         <mat-icon>arrow_back</mat-icon>
         Back to Blogs
       </button>
@@ -87,11 +87,11 @@ import { takeUntil } from 'rxjs/operators';
             <p *ngIf="blog.summary" class="blog-summary">{{ blog.summary }}</p>
 
             <div class="blog-actions">
-              <button mat-stroked-button (click)="goBack()">
+              <button mat-stroked-button (click)="goBack()" style="color:white;">
                 <mat-icon>arrow_back</mat-icon>
                 Back to Blogs
               </button>
-              <button mat-button (click)="shareArticle()">
+              <button mat-button (click)="shareArticle()" style="color:white;">
                 <mat-icon>share</mat-icon>
                 Share
               </button>
@@ -136,7 +136,7 @@ import { takeUntil } from 'rxjs/operators';
 
               <!-- Navigation -->
               <div class="blog-navigation">
-                <button mat-raised-button color="primary" [routerLink]="['/blogs']">
+                <button mat-raised-button color="primary" [routerLink]="['/blogs']" >
                   <mat-icon>arrow_back</mat-icon>
                   Back to All Blogs
                 </button>
@@ -859,15 +859,15 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
         next: (blog) => {
           this.blog = blog;
           this.isLoading = false;
-          
+
           if (blog) {
             // Increment view count
             this.blogsService.incrementViewCount(blog.id!);
-            
+
             // Load related blogs
             this.loadRelatedBlogs(blog);
           }
-          
+
           this.cdr.markForCheck();
         },
         error: (error) => {
@@ -886,12 +886,12 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(blogs => {
         this.relatedBlogs = blogs
-          .filter(blog => 
-            blog.id !== currentBlog.id && 
+          .filter(blog =>
+            blog.id !== currentBlog.id &&
             blog.tags?.some(tag => currentBlog.tags!.includes(tag))
           )
           .slice(0, 3);
-        
+
         this.cdr.markForCheck();
       });
   }
@@ -908,25 +908,25 @@ export class BlogDetailComponent implements OnInit, OnDestroy {
 
   getFormattedContent(): string {
     if (!this.blog?.content) return '';
-    
+
     // Simple markdown-like formatting
     let content = this.blog.content;
-    
+
     // Convert line breaks to paragraphs
     content = content.replace(/\n\n/g, '</p><p>');
     content = '<p>' + content + '</p>';
-    
+
     // Convert bold text
     content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    
+
     // Convert italic text
     content = content.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    
+
     // Convert headers
     content = content.replace(/^### (.*$)/gim, '<h3>$1</h3>');
     content = content.replace(/^## (.*$)/gim, '<h2>$1</h2>');
     content = content.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-    
+
     return content;
   }
 
