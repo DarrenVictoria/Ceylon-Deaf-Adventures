@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { LucideAngularModule, Mail, Phone, MapPin, Facebook, Instagram, Youtube } from 'lucide-angular';
+import { LucideAngularModule, Mail, Phone, MapPin } from 'lucide-angular';
 
 @Component({
   selector: 'app-footer',
@@ -47,9 +47,7 @@ import { LucideAngularModule, Mail, Phone, MapPin, Facebook, Instagram, Youtube 
         <!-- Socials -->
         <div class="flex justify-center md:justify-between items-center mt-12 flex-col md:flex-row gap-6">
           <div class="flex gap-6">
-            <a href="https://facebook.com" target="_blank" class="social-icon"><lucide-icon [name]="'facebook'"></lucide-icon></a>
-            <a href="https://instagram.com" target="_blank" class="social-icon"><lucide-icon [name]="'instagram'"></lucide-icon></a>
-            <a href="https://youtube.com" target="_blank" class="social-icon"><lucide-icon [name]="'youtube'"></lucide-icon></a>
+
           </div>
           <p class="text-xs text-secondary-foreground-60 text-center">
             © 2025 Ceylon Deaf Adventures. All rights reserved.<br class="md:hidden"/> 

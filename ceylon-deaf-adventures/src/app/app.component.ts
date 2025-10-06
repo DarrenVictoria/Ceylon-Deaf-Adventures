@@ -21,8 +21,8 @@ export class AppComponent {
   title = 'ceylon-deaf-adventures';
 
   ngOnInit() {
-    if (!environment.production) { // Only run in dev
-      initDummyData().then(() => console.log('Dummy data initialized'));
-    }
+
+    initDummyData().then(() => console.log('Dummy data initialized'));
+
   }
 }

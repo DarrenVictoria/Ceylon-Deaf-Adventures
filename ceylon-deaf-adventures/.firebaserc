@@ -2,6 +2,14 @@
   "projects": {
     "release": "ceylondeafadventures-25"
   },
-  "targets": {},
+  "targets": {
+    "ceylondeafadventures-25": {
+      "hosting": {
+        "staging": [
+          "ceylondeafadventures-staging"
+        ]
+      }
+    }
+  },
   "etags": {}
 }

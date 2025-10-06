@@ -29,18 +29,14 @@ import { LucideAngularModule, Menu, X } from 'lucide-angular';
             <a [routerLink]="['/tours']" class="text-foreground hover-text-primary font-medium links">
               Tours
             </a>
-           
-            <a [routerLink]="['/']" class="text-muted-foreground hover-text-primary font-medium links">
+            <a [routerLink]="['/blogs']" class="text-foreground hover-text-primary font-medium links">
               Blog
-            </a>
-            <a [routerLink]="['/']" class="text-muted-foreground hover-text-primary font-medium links">
-              Contact
             </a>
           </div>
 
           <!-- CTA Button -->
           <div class="hidden-md-flex items-center space-x-4">
-            <a href="#" class="btn btn-accent">
+            <a href="/tours" class="btn btn-accent">
               Book Your Adventure
             </a>
           </div>
@@ -82,6 +78,13 @@ import { LucideAngularModule, Menu, X } from 'lucide-angular';
               >
                 Tours
               </a>
+              <a
+                [routerLink]="['/blogs']"
+                class="mobile-link"
+                (click)="isOpen = false"
+              >
+                Blog
+              </a>
               <div class="pt-4 pb-3">
                 <a href="#" class="btn btn-accent w-full" (click)="isOpen = false">
                   Book Your Adventure
@@ -112,6 +115,7 @@ import { LucideAngularModule, Menu, X } from 'lucide-angular';
       background-color: #ffffff;
       backdrop-filter: blur(8px);
       border-bottom: 1px solid ;
+      min-height: 4rem;
     }
 
     .links{

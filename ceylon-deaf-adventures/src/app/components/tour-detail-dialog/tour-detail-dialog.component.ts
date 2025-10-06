@@ -332,8 +332,9 @@ import { BookingDialogComponent } from '../booking-dialog/booking-dialog.compone
     }
 
     .dialog-container {
+
       background: white;
-      border-radius: 24px;
+
       overflow: hidden;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
       max-width: 900px;
@@ -349,8 +350,9 @@ import { BookingDialogComponent } from '../booking-dialog/booking-dialog.compone
       height: 350px;
       overflow: hidden;
       flex-shrink: 0;
+     
     }
-    
+
     .hero-image {
       width: 100%;
       height: 100%;
@@ -368,6 +370,7 @@ import { BookingDialogComponent } from '../booking-dialog/booking-dialog.compone
     }
 
     .hero-gradient {
+      
       position: absolute;
       inset: 0;
       background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.2) 100%);
@@ -595,7 +598,7 @@ import { BookingDialogComponent } from '../booking-dialog/booking-dialog.compone
       color: var(--primary-color) !important;
       font-size: 0.875rem !important;
       height: 36px !important;
-      border-radius: 18px !important;
+      border-radius: 10px !important;
       border: 1px solid rgba(45, 212, 191, 0.3) !important;
       font-weight: 500 !important;
     }

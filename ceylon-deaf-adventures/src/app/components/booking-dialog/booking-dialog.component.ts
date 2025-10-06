@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, HostListener } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDatepickerModule, MatDatepicker } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -41,7 +41,7 @@ import { Booking } from '../../models/booking';
     MatIconModule,
     MatCardModule,
     MatDividerModule,
-    MatRippleModule
+    MatRippleModule,
   ],
   template: `
     <div class="booking-container">
@@ -85,13 +85,12 @@ import { Booking } from '../../models/booking';
               <mat-card-subtitle class="section-subtitle">Tell us about yourself</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content class="section-content">
-              <div class="form-grid">
+            <div class="form-grid">
                 <mat-form-field appearance="outline" class="form-field">
-                  <mat-label>Full Name *</mat-label>
+                  <mat-label>Full Name</mat-label>
                   <input 
                     matInput 
                     formControlName="guestName" 
-                    placeholder="Enter your full name"
                     autocomplete="name"
                   >
                   <mat-icon matSuffix>account_circle</mat-icon>
@@ -104,12 +103,11 @@ import { Booking } from '../../models/booking';
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="form-field">
-                  <mat-label>Email Address *</mat-label>
+                  <mat-label>Email Address</mat-label>
                   <input 
                     matInput 
                     type="email" 
                     formControlName="guestEmail" 
-                    placeholder="your@email.com"
                     autocomplete="email"
                   >
                   <mat-icon matSuffix>email</mat-icon>
@@ -126,7 +124,6 @@ import { Booking } from '../../models/booking';
                   <input 
                     matInput 
                     formControlName="guestPhone" 
-                    placeholder="+94 XX XXX XXXX"
                     autocomplete="tel"
                   >
                   <mat-icon matSuffix>phone</mat-icon>
@@ -146,15 +143,16 @@ import { Booking } from '../../models/booking';
               <mat-card-subtitle class="section-subtitle">When would you like to explore?</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content class="section-content">
-              <div class="form-grid">
-                <mat-form-field appearance="outline" class="form-field">
-                  <mat-label>Preferred Tour Date *</mat-label>
+            <div class="form-grid">
+                <mat-form-field appearance="outline" class="form-field" >
+                  <mat-label>Preferred Tour Date</mat-label>
                   <input 
                     matInput 
                     [matDatepicker]="picker" 
                     formControlName="tourDate" 
                     [min]="minDate"
-                    readonly
+                    (click)="openDatePicker()"
+                    
                   >
                   <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                   <mat-datepicker #picker></mat-datepicker>
@@ -165,14 +163,13 @@ import { Booking } from '../../models/booking';
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="form-field">
-                  <mat-label>Number of People *</mat-label>
+                  <mat-label>Number of People</mat-label>
                   <input 
                     matInput 
                     type="number" 
                     formControlName="numPeople" 
                     [min]="1" 
                     [max]="data.tour.capacity"
-                    placeholder="1"
                   >
                   <mat-icon matSuffix>groups</mat-icon>
                   <mat-error *ngIf="bookingForm.get('numPeople')?.hasError('required')">
@@ -188,38 +185,13 @@ import { Booking } from '../../models/booking';
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="form-field">
-                  <mat-label>Preferred Stay Type *</mat-label>
+                  <mat-label>Preferred Stay Type</mat-label>
                   <mat-select formControlName="stayType">
-                    <mat-option value="Homestay">
-                      <div class="select-option">
-                        <mat-icon>home</mat-icon>
-                        <span>Homestay</span>
-                      </div>
-                    </mat-option>
-                    <mat-option value="Guesthouse">
-                      <div class="select-option">
-                        <mat-icon>apartment</mat-icon>
-                        <span>Guesthouse</span>
-                      </div>
-                    </mat-option>
-                    <mat-option value="Villa">
-                      <div class="select-option">
-                        <mat-icon>villa</mat-icon>
-                        <span>Villa</span>
-                      </div>
-                    </mat-option>
-                    <mat-option value="Hotel3to5">
-                      <div class="select-option">
-                        <mat-icon>hotel</mat-icon>
-                        <span>Hotel 3-5 Stars</span>
-                      </div>
-                    </mat-option>
-                    <mat-option value="Camping">
-                      <div class="select-option">
-                        <mat-icon>nature</mat-icon>
-                        <span>Camping</span>
-                      </div>
-                    </mat-option>
+                    <mat-option value="Homestay">Homestay</mat-option>
+                    <mat-option value="Guesthouse">Guesthouse</mat-option>
+                    <mat-option value="Villa">Villa</mat-option>
+                    <mat-option value="Hotel3to5">Hotel 3-5 Stars</mat-option>
+                    <mat-option value="Camping">Camping</mat-option>
                   </mat-select>
                   <mat-hint>Choose your preferred accommodation type</mat-hint>
                 </mat-form-field>
@@ -258,14 +230,13 @@ import { Booking } from '../../models/booking';
               </div>
 
               <mat-form-field appearance="outline" class="form-field-full">
-                <mat-label>Your Bid Price ({{ data.tour.currency }}) *</mat-label>
+                <mat-label>Your Bid Price ({{ data.tour.currency }})</mat-label>
                 <input 
                   matInput 
                   type="number" 
                   formControlName="totalPrice" 
                   [min]="0" 
                   step="0.01"
-                  placeholder="Enter your offer"
                 >
                 <span matTextPrefix>{{ data.tour.currency }}&nbsp;</span>
                 <mat-icon matSuffix>local_offer</mat-icon>
@@ -323,7 +294,6 @@ import { Booking } from '../../models/booking';
                   matInput 
                   formControlName="specialRequests" 
                   rows="4" 
-                  placeholder="Please share any dietary restrictions, accessibility needs, medical conditions, or special requests that would help us customize your experience..."
                   maxlength="500"
                 ></textarea>
                 <mat-hint align="end">{{ getCharacterCount() }}/500</mat-hint>
@@ -388,60 +358,63 @@ import { Booking } from '../../models/booking';
     </div>
   `,
   styles: [`
-    /* Global Variables - Improved Contrast */
+    /* Azure Blue Theme Variables */
     :host {
-      --primary-color: #0d9488;
-      --primary-light: #14b8a6;
-      --primary-dark: #0f766e;
-      --accent-color: #ea580c;
-      --accent-light: #fb923c;
-      --secondary-color: #4f46e5;
-      --success-color: #059669;
-      --warning-color: #d97706;
-      --error-color: #dc2626;
-      --background-color: #ffffff;
-      --surface-color: #f9fafb;
-      --surface-raised: #ffffff;
-      --text-primary: #111827;
-      --text-secondary: #4b5563;
-      --text-muted: #6b7280;
-      --border-color: #e5e7eb;
-      --border-color-light: #f3f4f6;
-      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 14px;
-      --radius-xl: 18px;
-      --radius-2xl: 22px;
+      --azure-primary: #0078D4;
+      --azure-primary-dark: #005A9E;
+      --azure-primary-light: #50A0E8;
+      --azure-secondary: #0063B1;
+      --azure-accent: #00BCF2;
+      --azure-success: #107C10;
+      --azure-warning: #F7630C;
+      --azure-error: #D13438;
+      --azure-bg: #FFFFFF;
+      --azure-surface: #F3F2F1;
+      --azure-surface-raised: #FFFFFF;
+      --azure-text-primary: #201F1E;
+      --azure-text-secondary: #605E5C;
+      --azure-text-muted: #8A8886;
+      --azure-border: #EDEBE9;
+      --azure-border-light: #F3F2F1;
+      --shadow-sm: 0 1.6px 3.6px rgba(0, 0, 0, 0.1), 0 0.3px 0.9px rgba(0, 0, 0, 0.07);
+      --shadow-md: 0 6.4px 14.4px rgba(0, 0, 0, 0.13), 0 1.2px 3.6px rgba(0, 0, 0, 0.11);
+      --shadow-lg: 0 25.6px 57.6px rgba(0, 0, 0, 0.22), 0 4.8px 14.4px rgba(0, 0, 0, 0.18);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
       --spacing-xs: 8px;
       --spacing-sm: 12px;
       --spacing-md: 16px;
       --spacing-lg: 20px;
       --spacing-xl: 24px;
       --spacing-2xl: 32px;
-      --spacing-3xl: 40px;
       display: block;
     }
 
+    ::ng-deep .mat-datepicker-content {
+      z-index: 10000 !important; /* Ensure the datepicker appears above other elements */
+    }
+
+    ::ng-deep .mat-datepicker-toggle {
+      pointer-events: auto !important; /* Ensure toggle is clickable */
+    }
+
     .booking-container {
-      background: var(--background-color);
-      border-radius: var(--radius-2xl);
+      background: var(--azure-bg);
       overflow: hidden;
-      box-shadow: var(--shadow-xl), 0 0 0 1px rgba(0, 0, 0, 0.05);
+      box-shadow: var(--shadow-lg);
       max-width: 800px;
       width: 100%;
       max-height: 90vh;
       display: flex;
       flex-direction: column;
+      border-radius: var(--radius-lg);
     }
     
-    /* Header Section - Improved Contrast */
+    /* Header - Azure Blue Gradient */
     .booking-header {
       position: relative;
-      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+      background: linear-gradient(135deg, var(--azure-primary) 0%, var(--azure-secondary) 100%);
       color: white;
       padding: var(--spacing-2xl) var(--spacing-2xl) var(--spacing-xl);
       display: flex;
@@ -456,7 +429,6 @@ import { Booking } from '../../models/booking';
       left: 0;
       right: 0;
       bottom: 0;
-      background: url('/api/placeholder/800/200') center/cover;
       opacity: 0.08;
     }
     
@@ -483,6 +455,7 @@ import { Booking } from '../../models/booking';
       font-size: 32px;
       width: 32px;
       height: 32px;
+      color: white;
     }
     
     .header-text {
@@ -492,10 +465,10 @@ import { Booking } from '../../models/booking';
     
     .booking-title {
       font-size: 1.625rem;
-      font-weight: 700;
+      font-weight: 600;
       margin: 0 0 var(--spacing-xs) 0;
       line-height: 1.2;
-      letter-spacing: -0.01em;
+      color: white;
     }
     
     .tour-name {
@@ -504,6 +477,7 @@ import { Booking } from '../../models/booking';
       margin: 0 0 var(--spacing-sm) 0;
       font-weight: 500;
       line-height: 1.3;
+      color: white;
     }
     
     .tour-details {
@@ -516,15 +490,17 @@ import { Booking } from '../../models/booking';
       display: flex;
       align-items: center;
       gap: var(--spacing-xs);
-      font-size: 0.8125rem;
+      font-size: 0.875rem;
       opacity: 0.95;
       font-weight: 500;
+      color: white;
     }
 
     .detail-icon {
       font-size: 16px;
       width: 16px;
       height: 16px;
+      color: white;
     }
     
     .close-button {
@@ -532,7 +508,7 @@ import { Booking } from '../../models/booking';
       color: white !important;
       border-radius: 50%;
       backdrop-filter: blur(12px);
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.2s ease;
       width: 44px;
       height: 44px;
       border: 1px solid rgba(255, 255, 255, 0.3);
@@ -544,101 +520,93 @@ import { Booking } from '../../models/booking';
     .close-button:hover {
       background: rgba(255, 255, 255, 0.3) !important;
       transform: scale(1.05);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
     
-    /* Content Section - Better Spacing */
+    /* Content Section */
     .booking-content {
       flex: 1;
       overflow-y: auto;
       padding: var(--spacing-2xl);
       display: flex;
       flex-direction: column;
-      gap: var(--spacing-xl);
-      background: var(--surface-color);
+      gap: var(--spacing-lg);
+      background: var(--azure-surface);
     }
     
     .form-section-card {
-      border-radius: var(--radius-lg) !important;
+      border-radius: var(--radius-md) !important;
       box-shadow: var(--shadow-sm) !important;
-      border: 1px solid var(--border-color);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      background: var(--surface-raised) !important;
+      border: 1px solid var(--azure-border);
+      transition: all 0.2s ease;
+      background: var(--azure-surface-raised) !important;
     }
 
     .form-section-card:hover {
       box-shadow: var(--shadow-md) !important;
-      border-color: var(--primary-color);
     }
 
     .section-header {
-      padding: var(--spacing-lg) var(--spacing-lg) 0 !important;
-      margin-bottom: var(--spacing-md) !important;
+      padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-sm) !important;
+      margin-bottom: 0 !important;
     }
 
     .section-avatar {
-      width: 44px !important;
-      height: 44px !important;
-      border-radius: 50%;
+      width: 48px !important;
+      height: 48px !important;
+      border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: var(--shadow-sm);
     }
 
     .section-avatar mat-icon {
-      font-size: 22px;
-      width: 22px;
-      height: 22px;
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+      color: white;
     }
 
     .personal-avatar {
-      background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
-      color: white;
+      background: var(--azure-primary);
     }
 
     .tour-avatar {
-      background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
-      color: white;
+      background: var(--azure-accent);
     }
 
     .pricing-avatar {
-      background: linear-gradient(135deg, var(--success-color), #34d399);
-      color: white;
+      background: var(--azure-success);
     }
 
     .accessibility-avatar {
-      background: linear-gradient(135deg, var(--secondary-color), #818cf8);
-      color: white;
+      background: var(--azure-secondary);
     }
 
     .requests-avatar {
-      background: linear-gradient(135deg, var(--warning-color), #fbbf24);
-      color: white;
+      background: var(--azure-warning);
     }
 
     .section-title {
       font-size: 1.125rem !important;
-      font-weight: 700 !important;
-      color: var(--text-primary) !important;
-      margin-bottom: 2px !important;
-      letter-spacing: -0.01em;
+      font-weight: 600 !important;
+      color: var(--azure-text-primary) !important;
+      margin-bottom: 4px !important;
     }
 
     .section-subtitle {
-      font-size: 0.8125rem !important;
-      color: var(--text-secondary) !important;
-      font-weight: 500;
+      font-size: 0.875rem !important;
+      color: var(--azure-text-secondary) !important;
+      font-weight: 400;
     }
 
     .section-content {
-      padding: 0 var(--spacing-lg) var(--spacing-lg) !important;
+      padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg) !important;
     }
     
     .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: var(--spacing-lg);
+      gap: var(--spacing-md);
     }
     
     .form-field,
@@ -649,25 +617,14 @@ import { Booking } from '../../models/booking';
     .form-field-full {
       grid-column: 1 / -1;
     }
-    
-    .select-option {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-sm);
-    }
 
-    /* Pricing Section - Enhanced Contrast */
-    .pricing-card {
-      background: var(--surface-raised) !important;
-    }
-
+    /* Pricing Section */
     .price-display-card {
-      background: linear-gradient(135deg, #f0fdfa, #ccfbf1);
-      border: 2px solid var(--primary-color);
+      background: linear-gradient(135deg, #E1F5FE, #B3E5FC);
+      border: 2px solid var(--azure-primary);
       border-radius: var(--radius-md);
       padding: var(--spacing-xl);
       margin-bottom: var(--spacing-lg);
-      box-shadow: var(--shadow-sm);
     }
 
     .price-info {
@@ -682,8 +639,8 @@ import { Booking } from '../../models/booking';
 
     .price-label {
       display: block;
-      font-size: 0.8125rem;
-      color: var(--text-secondary);
+      font-size: 0.875rem;
+      color: var(--azure-text-secondary);
       font-weight: 600;
       margin-bottom: var(--spacing-xs);
       text-transform: uppercase;
@@ -700,23 +657,21 @@ import { Booking } from '../../models/booking';
 
     .currency {
       font-size: 1.125rem;
-      color: var(--text-secondary);
-      font-weight: 700;
+      color: var(--azure-text-secondary);
+      font-weight: 600;
     }
 
     .amount {
       font-size: 2.25rem;
-      font-weight: 800;
-      color: var(--primary-dark);
+      font-weight: 700;
+      color: var(--azure-primary-dark);
       line-height: 1;
-      letter-spacing: -0.02em;
     }
 
     .price-per {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-      text-align: center;
-      font-weight: 500;
+      font-size: 0.8125rem;
+      color: var(--azure-text-secondary);
+      font-weight: 400;
     }
 
     .calc-divider {
@@ -727,32 +682,26 @@ import { Booking } from '../../models/booking';
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: var(--spacing-xs) 0;
     }
 
     .calc-label {
-      font-size: 0.8125rem;
-      color: var(--text-secondary);
+      font-size: 0.875rem;
+      color: var(--azure-text-secondary);
       font-weight: 500;
     }
 
     .calc-total {
       font-size: 1.125rem;
-      font-weight: 700;
-      color: var(--text-primary);
+      font-weight: 600;
+      color: var(--azure-text-primary);
     }
 
-    /* Accessibility Section - Better Contrast */
-    .accessibility-card {
-      background: var(--surface-raised) !important;
-    }
-
+    /* Accessibility Section */
     .checkbox-container {
-      background: linear-gradient(135deg, #faf5ff, #f3e8ff);
-      border: 2px solid var(--secondary-color);
+      background: linear-gradient(135deg, #F3E5F5, #E1BEE7);
+      border: 2px solid var(--azure-secondary);
       border-radius: var(--radius-md);
       padding: var(--spacing-lg);
-      box-shadow: var(--shadow-sm);
     }
 
     .guide-checkbox {
@@ -768,31 +717,29 @@ import { Booking } from '../../models/booking';
       align-items: center;
       gap: var(--spacing-xs);
       font-weight: 600;
-      color: var(--text-primary);
+      color: var(--azure-text-primary);
       margin-bottom: var(--spacing-xs);
-      font-size: 0.9375rem;
+      font-size: 1rem;
     }
 
     .checkbox-icon {
       font-size: 20px;
       width: 20px;
       height: 20px;
-      color: var(--secondary-color);
+      color: var(--azure-secondary);
     }
 
     .checkbox-description {
-      font-size: 0.8125rem;
-      color: var(--text-secondary);
+      font-size: 0.875rem;
+      color: var(--azure-text-secondary);
       line-height: 1.5;
-      font-weight: 500;
     }
 
-    /* Error Section - Improved Contrast */
+    /* Error Card */
     .error-card {
-      background: linear-gradient(135deg, #fef2f2, #fee2e2) !important;
-      border: 2px solid #f87171 !important;
+      background: linear-gradient(135deg, #FFEBEE, #FFCDD2) !important;
+      border: 2px solid var(--azure-error) !important;
       border-radius: var(--radius-md) !important;
-      box-shadow: var(--shadow-sm) !important;
     }
 
     .error-content {
@@ -803,39 +750,31 @@ import { Booking } from '../../models/booking';
     }
 
     .error-icon {
-      color: var(--error-color);
+      color: var(--azure-error);
       font-size: 24px;
       width: 24px;
       height: 24px;
-      flex-shrink: 0;
-    }
-
-    .error-text {
-      flex: 1;
     }
 
     .error-title {
-      font-size: 0.9375rem;
-      font-weight: 700;
-      color: var(--error-color);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--azure-error);
       margin: 0 0 var(--spacing-xs) 0;
-      letter-spacing: -0.01em;
     }
 
     .error-message {
-      font-size: 0.8125rem;
-      color: #991b1b;
+      font-size: 0.875rem;
+      color: #B71C1C;
       line-height: 1.5;
       margin: 0;
-      font-weight: 500;
     }
 
-    /* Terms Section - Better Readability */
+    /* Terms Card */
     .terms-card {
-      background: linear-gradient(135deg, #f0f9ff, #e0f2fe) !important;
-      border: 1px solid #7dd3fc !important;
+      background: linear-gradient(135deg, #E3F2FD, #BBDEFB) !important;
+      border: 1px solid #64B5F6 !important;
       border-radius: var(--radius-md) !important;
-      box-shadow: var(--shadow-sm) !important;
     }
 
     .terms-content {
@@ -846,8 +785,7 @@ import { Booking } from '../../models/booking';
     }
 
     .terms-icon {
-      color: #0369a1;
-      flex-shrink: 0;
+      color: var(--azure-primary);
     }
 
     .terms-icon mat-icon {
@@ -856,58 +794,46 @@ import { Booking } from '../../models/booking';
       height: 20px;
     }
 
-    .terms-text {
-      flex: 1;
-    }
-
     .terms-description {
-      font-size: 0.8125rem;
-      color: var(--text-secondary);
+      font-size: 0.875rem;
+      color: var(--azure-text-secondary);
       line-height: 1.6;
       margin: 0;
-      font-weight: 500;
     }
 
     .terms-link {
-      color: var(--primary-dark);
+      color: var(--azure-primary);
       text-decoration: none;
       font-weight: 600;
-      transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: color 0.2s ease;
       border-bottom: 1px solid transparent;
     }
 
     .terms-link:hover {
-      color: var(--primary-color);
-      border-bottom-color: var(--primary-color);
+      color: var(--azure-primary-dark);
+      border-bottom-color: var(--azure-primary-dark);
     }
 
-    .terms-link:focus {
-      outline: 2px solid var(--primary-color);
-      outline-offset: 2px;
-      border-radius: 2px;
-    }
-
-    /* Actions Section - Refined Spacing */
+    /* Action Buttons */
     .actions-container {
       display: flex;
       gap: var(--spacing-md);
       padding: var(--spacing-lg) var(--spacing-2xl);
-      background: var(--surface-raised);
-      border-top: 1px solid var(--border-color);
+      background: var(--azure-surface-raised);
+      border-top: 1px solid var(--azure-border);
       flex-shrink: 0;
-      box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);
     }
 
     .cancel-btn {
       flex: 1;
-      padding: var(--spacing-sm) var(--spacing-xl) !important;
+      padding: 0 var(--spacing-xl) !important;
       height: 48px !important;
-      border-radius: var(--radius-md) !important;
+      border-radius: var(--radius-sm) !important;
       font-weight: 600 !important;
       font-size: 0.9375rem !important;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-      border: 2px solid var(--primary-color) !important;
-      letter-spacing: -0.01em;
+      transition: all 0.2s ease !important;
+      border: 2px solid var(--azure-primary) !important;
+      color: var(--azure-primary) !important;
     }
 
     .cancel-btn mat-icon {
@@ -918,27 +844,22 @@ import { Booking } from '../../models/booking';
     }
 
     .cancel-btn:hover:not([disabled]) {
-      background: var(--surface-color) !important;
-      transform: translateY(-1px);
-      box-shadow: var(--shadow-md);
-    }
-
-    .cancel-btn:focus {
-      outline: 3px solid rgba(13, 148, 136, 0.3);
-      outline-offset: 2px;
+      background: var(--azure-surface) !important;
+      color: var(--azure-primary-dark) !important;
+      border-color: var(--azure-primary-dark) !important;
     }
 
     .submit-btn {
       flex: 2;
-      padding: var(--spacing-sm) var(--spacing-xl) !important;
+      padding: 0 var(--spacing-xl) !important;
       height: 48px !important;
-      border-radius: var(--radius-md) !important;
+      border-radius: var(--radius-sm) !important;
       font-weight: 600 !important;
       font-size: 0.9375rem !important;
-      background-color: var(--primary-color) !important;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      background-color: var(--azure-primary) !important;
+      color: white !important;
+      transition: all 0.2s ease !important;
       box-shadow: var(--shadow-sm);
-      letter-spacing: -0.01em;
     }
 
     .submit-btn mat-icon {
@@ -946,26 +867,19 @@ import { Booking } from '../../models/booking';
       font-size: 20px;
       width: 20px;
       height: 20px;
+      color: white;
     }
 
     .submit-btn:hover:not([disabled]) {
-      background-color: var(--primary-dark) !important;
-      transform: translateY(-1px);
-      box-shadow: var(--shadow-lg), 0 0 0 3px rgba(13, 148, 136, 0.15);
-    }
-
-    .submit-btn:focus {
-      outline: 3px solid rgba(13, 148, 136, 0.4);
-      outline-offset: 2px;
+      background-color: var(--azure-primary-dark) !important;
+      box-shadow: var(--shadow-md);
     }
 
     .submit-btn:disabled {
-      background-color: #d1d5db !important;
-      color: #6b7280 !important;
+      background-color: #C8C6C4 !important;
+      color: #A19F9D !important;
       cursor: not-allowed;
-      transform: none;
       box-shadow: none;
-      opacity: 0.6;
     }
 
     .submit-spinner {
@@ -976,53 +890,86 @@ import { Booking } from '../../models/booking';
       stroke: white;
     }
 
-    /* Material Design Overrides - Better Borders */
+    /* Material Design Overrides - Azure Theme */
     ::ng-deep .mat-mdc-form-field {
       margin-bottom: 4px;
     }
-
-    ::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline {
-      border-radius: var(--radius-md);
+    
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      background-color: white !important;
+      border-radius: var(--radius-sm);
     }
-
-    ::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-thick {
-      border-color: var(--primary-color);
-      border-width: 2px;
-    }
-
-    ::ng-deep .mat-mdc-form-field-appearance-outline.mat-focused .mat-mdc-form-field-outline-thick {
-      border-color: var(--primary-dark);
-    }
-
+    
     ::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-start,
+    ::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-notch,
     ::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-end {
-      border-radius: var(--radius-md);
+      border-color: var(--azure-border) !important;
+      background-color: white !important;
+    }
+    
+    ::ng-deep .mat-mdc-form-field-appearance-outline.mat-focused .mat-mdc-form-field-outline-thick {
+      color: var(--azure-primary) !important;
+      border-width: 2px !important;
+    }
+    
+    ::ng-deep .mat-mdc-form-field-appearance-outline.mat-form-field-invalid .mat-mdc-form-field-outline-thick {
+      color: var(--azure-error) !important;
+      border-width: 2px !important;
+    }
+    
+    ::ng-deep .mat-mdc-input-element {
+      background-color: transparent !important;
+      color: var(--azure-text-primary) !important;
+      font-weight: 400;
+    }
+    
+    ::ng-deep .mat-mdc-select {
+      background-color: transparent !important;
+    }
+    
+    ::ng-deep .mat-mdc-select-value {
+      color: var(--azure-text-primary) !important;
+      font-weight: 400;
+    }
+
+    ::ng-deep .mat-mdc-select-arrow {
+      color: var(--azure-text-secondary);
     }
 
     ::ng-deep .mat-mdc-form-field-hint,
     ::ng-deep .mat-mdc-form-field-error {
       font-size: 0.75rem;
-      font-weight: 500;
+      font-weight: 400;
       margin-top: 4px;
     }
 
     ::ng-deep .mat-mdc-form-field-error {
-      color: var(--error-color);
+      color: var(--azure-error);
     }
 
+    ::ng-deep .mat-mdc-form-field-focus-overlay {
+      background-color: transparent !important;
+    }
+
+    /* Checkbox - Azure Blue */
     ::ng-deep .mat-mdc-checkbox .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background {
-      background-color: var(--secondary-color);
-      border-color: var(--secondary-color);
+      background-color: var(--azure-primary) !important;
+      border-color: var(--azure-primary) !important;
     }
 
     ::ng-deep .mat-mdc-checkbox .mdc-checkbox__native-control:enabled:focus:checked ~ .mdc-checkbox__background {
-      background-color: var(--secondary-color);
-      border-color: var(--secondary-color);
+      background-color: var(--azure-primary) !important;
+      border-color: var(--azure-primary) !important;
     }
 
+    ::ng-deep .mat-mdc-checkbox .mdc-checkbox__ripple {
+      background-color: var(--azure-primary);
+    }
+
+    /* Select Options */
     ::ng-deep .mat-mdc-option .mat-icon {
       margin-right: var(--spacing-sm);
-      color: var(--text-secondary);
+      color: var(--azure-text-secondary);
       font-size: 20px;
       width: 20px;
       height: 20px;
@@ -1030,58 +977,81 @@ import { Booking } from '../../models/booking';
 
     ::ng-deep .mat-mdc-option.mat-mdc-option-active,
     ::ng-deep .mat-mdc-option:hover {
-      background: var(--surface-color);
+      background: var(--azure-surface);
     }
 
-    ::ng-deep .mat-mdc-text-field-wrapper {
-      padding-bottom: 0;
+    ::ng-deep .mat-mdc-option.mdc-list-item--selected {
+      background-color: rgba(0, 120, 212, 0.08);
     }
 
-    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-      margin-top: 4px;
-    }
-
+    /* Date Picker - Azure Theme */
     ::ng-deep .mat-datepicker-toggle {
-      color: var(--text-secondary);
+      color: var(--azure-primary) !important;
     }
 
     ::ng-deep .mat-mdc-icon-button.mat-datepicker-toggle {
-      width: 40px;
-      height: 40px;
-      padding: 8px;
+      width: 40px !important;
+      height: 40px !important;
+      padding: 8px !important;
     }
 
-    /* Scrollbar Styling - More Refined */
+    ::ng-deep .mat-mdc-form-field-input-control input[matDatepicker] {
+      cursor: pointer !important;
+    }
+
+    ::ng-deep .mat-datepicker-content {
+      border-radius: var(--radius-md) !important;
+      box-shadow: var(--shadow-lg) !important;
+    }
+
+    ::ng-deep .mat-calendar {
+      font-family: inherit !important;
+    }
+
+    ::ng-deep .mat-calendar-header {
+      background-color: var(--azure-primary) !important;
+      color: white !important;
+      padding: var(--spacing-md);
+    }
+
+    ::ng-deep .mat-calendar-table-header th {
+      color: var(--azure-text-secondary) !important;
+      font-weight: 600 !important;
+    }
+
+    ::ng-deep .mat-calendar-body-selected {
+      background-color: var(--azure-primary) !important;
+      color: white !important;
+    }
+
+    ::ng-deep .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+      border-color: var(--azure-primary) !important;
+    }
+
+    ::ng-deep .mat-calendar-body-cell:hover .mat-calendar-body-cell-content:not(.mat-calendar-body-selected) {
+      background-color: rgba(0, 120, 212, 0.08);
+    }
+
+    /* Scrollbar */
     .booking-content::-webkit-scrollbar {
       width: 8px;
     }
 
     .booking-content::-webkit-scrollbar-track {
-      background: var(--border-color-light);
+      background: var(--azure-border-light);
       border-radius: 4px;
-      margin: 4px 0;
     }
 
     .booking-content::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
+      background: #C8C6C4;
       border-radius: 4px;
-      border: 2px solid var(--border-color-light);
     }
 
     .booking-content::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
+      background: #A19F9D;
     }
 
-    /* Focus Visible - Accessibility */
-    button:focus-visible,
-    input:focus-visible,
-    textarea:focus-visible,
-    select:focus-visible {
-      outline: 3px solid var(--primary-color);
-      outline-offset: 2px;
-    }
-
-    /* Responsive Design - Better Breakpoints */
+    /* Responsive Design */
     @media (max-width: 768px) {
       :host {
         --spacing-xs: 6px;
@@ -1106,45 +1076,22 @@ import { Booking } from '../../models/booking';
         font-size: 1.375rem;
       }
 
-      .tour-name {
-        font-size: 0.9375rem;
-      }
-
       .booking-content {
         padding: var(--spacing-xl);
-        gap: var(--spacing-lg);
+        gap: var(--spacing-md);
       }
 
       .form-grid {
         grid-template-columns: 1fr;
-        gap: var(--spacing-md);
-      }
-
-      .section-content {
-        padding: 0 var(--spacing-md) var(--spacing-md) !important;
       }
 
       .actions-container {
         flex-direction: column;
         padding: var(--spacing-lg);
-        gap: var(--spacing-sm);
-      }
-
-      .cancel-btn,
-      .submit-btn {
-        flex: 1;
       }
 
       .tour-details {
         justify-content: center;
-      }
-
-      .price-display-card {
-        padding: var(--spacing-lg);
-      }
-
-      .amount {
-        font-size: 2rem;
       }
     }
 
@@ -1152,50 +1099,14 @@ import { Booking } from '../../models/booking';
       .booking-container {
         margin: 8px;
         max-height: calc(100vh - 16px);
-        border-radius: var(--radius-xl);
       }
 
       .booking-header {
         padding: var(--spacing-lg);
       }
 
-      .header-icon {
-        padding: var(--spacing-sm);
-      }
-
-      .header-main-icon {
-        font-size: 28px;
-        width: 28px;
-        height: 28px;
-      }
-
-      .close-button {
-        width: 40px;
-        height: 40px;
-      }
-
       .booking-content {
         padding: var(--spacing-lg);
-        gap: var(--spacing-md);
-      }
-
-      .form-section-card {
-        border-radius: var(--radius-md) !important;
-      }
-
-      .section-header {
-        padding: var(--spacing-md) var(--spacing-md) 0 !important;
-      }
-
-      .section-avatar {
-        width: 40px !important;
-        height: 40px !important;
-      }
-
-      .section-avatar mat-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
       }
 
       .actions-container {
@@ -1205,51 +1116,13 @@ import { Booking } from '../../models/booking';
       .cancel-btn,
       .submit-btn {
         height: 44px !important;
-        font-size: 0.875rem !important;
-      }
-
-      .booking-title {
-        font-size: 1.25rem;
-      }
-
-      .tour-name {
-        font-size: 0.875rem;
-      }
-
-      .detail-item {
-        font-size: 0.75rem;
-      }
-
-      .section-title {
-        font-size: 1rem !important;
-      }
-
-      .amount {
-        font-size: 1.75rem;
-      }
-    }
-
-    /* Print Styles */
-    @media print {
-      .booking-header,
-      .actions-container,
-      .close-button {
-        display: none;
-      }
-
-      .booking-container {
-        box-shadow: none;
-        max-height: none;
-      }
-
-      .booking-content {
-        overflow: visible;
-        padding: 0;
       }
     }
   `]
 })
 export class BookingDialogComponent implements OnInit {
+  @ViewChild('picker') datePicker!: MatDatepicker<Date>;
+
   bookingForm!: FormGroup;
   minDate = new Date();
   isSubmitting = false;
@@ -1310,6 +1183,13 @@ export class BookingDialogComponent implements OnInit {
     return specialRequests.length;
   }
 
+
+  openDatePicker(): void {
+    if (this.datePicker) {
+      this.datePicker.open();
+    }
+  }
+
   async onSubmit() {
     if (this.bookingForm.invalid) {
       this.markFormGroupTouched();
@@ -1323,9 +1203,11 @@ export class BookingDialogComponent implements OnInit {
 
     try {
       const formValue = this.bookingForm.value;
+
       const booking: Partial<Booking> = {
         ...formValue,
         tourId: this.data.tour.id,
+        tourTitle: this.data.tour.title,
         tourDate: Timestamp.fromDate(formValue.tourDate),
         status: 'pending' as const,
         numDays: this.data.tour.durationDays
@@ -1347,7 +1229,6 @@ export class BookingDialogComponent implements OnInit {
       this.dialogRef.close({ success: true, bookingId });
 
     } catch (error: any) {
-      console.error('Booking error:', error);
       this.errorMessage = this.getErrorMessage(error);
       this.cdr.markForCheck();
     } finally {

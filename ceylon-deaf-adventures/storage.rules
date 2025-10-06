@@ -1,0 +1,25 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow upload of images to tours folder
+    match /tours/{allPaths=**} {
+      allow read, write: if true; // For now, allow all access. In production, add proper auth checks
+    }
+    
+    // Allow upload of images to blogs folder
+    match /blogs/{allPaths=**} {
+      allow read, write: if true; // For now, allow all access. In production, add proper auth checks
+    }
+    
+    // Allow upload of images to profiles folder
+    match /profiles/{allPaths=**} {
+      allow read, write: if true; // For now, allow all access. In production, add proper auth checks
+    }
+    
+    // Allow read access to any public images
+    match /{allPaths=**} {
+      allow read: if true;
+    }
+  }
+}

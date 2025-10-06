@@ -21,7 +21,7 @@ export class BookingsService {
                 ...booking,
                 userId: user?.uid || undefined,
                 status: 'pending' as const,
-                createdAt: serverTimestamp(),
+                // removed createdAt: serverTimestamp(),
                 tourId: booking.tourId,
                 tourDate: booking.tourDate,
                 numPeople: booking.numPeople || 1,

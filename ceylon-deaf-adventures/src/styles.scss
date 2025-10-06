@@ -1,8 +1,30 @@
+@use '@angular/material' as mat;
+@import '@angular/material/prebuilt-themes/azure-blue.css';
+
 /* Restore some basic browser defaults if needed */
 body {
     margin: 0;
     font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
+/* Remove focus border / outline from all mat-form-field inputs */
+.mat-mdc-text-field-wrapper.mdc-text-field--focused {
+    border-color: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Also handle filled and outlined variants */
+.mat-mdc-form-field-focus-overlay {
+    background-color: transparent !important;
+}
+
+.mat-mdc-text-field--outlined .mdc-notched-outline__leading,
+.mat-mdc-text-field--outlined .mdc-notched-outline__notch,
+.mat-mdc-text-field--outlined .mdc-notched-outline__trailing {
+    border-color: transparent !important;
+}
+
 
 
 /* Custom color palette for Ceylon Deaf Adventures - warm tropical Sri Lankan theme */
@@ -101,15 +123,16 @@ body {
 
 body {
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(-45deg,
-            var(--color-background),
-            color-mix(in oklch, var(--color-background) 95%, var(--color-primary) 5%),
-            color-mix(in oklch, var(--color-background) 97%, var(--color-accent) 3%),
-            var(--color-background));
-    animation: gradientShift 15s ease infinite;
-    background-size: 400% 400%;
+    background: linear-gradient(135deg, 
+        #fef7f0 0%,    /* Very light orange */
+        #fdf4f0 25%,   /* Light peachy orange */
+        #f0fdf4 50%,   /* Very light mint */
+        #f0fdfa 75%,   /* Very light teal */
+        #ecfdf5 100%   /* Light teal-mint */
+    ) !important;
+    background-attachment: fixed;
+    min-height: 100vh;
     color: var(--foreground);
-
 }
 
 @keyframes gradientShift {
@@ -1005,7 +1028,4 @@ body {
     height: 100%;
 }
 
-body {
-    margin: 0;
-    font-family: Roboto, "Helvetica Neue", sans-serif;
-}
+/* Bottom body styles updated to match top */
