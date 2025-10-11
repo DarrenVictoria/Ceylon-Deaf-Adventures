@@ -49,25 +49,14 @@ import { MatDividerModule } from '@angular/material/divider';
             <h2 class="section-title">Our Story</h2>
             <div class="story-text">
               <p class="story-paragraph">
-                In 2014, our founder recognized a gap in Sri Lanka's tourism industry—the lack of truly accessible
-                experiences for the Deaf community. What started as a personal mission to share Sri Lanka's beauty
-                with Deaf friends from around the world has grown into the country's first dedicated Deaf-friendly
-                tourism company.
+                Founded in 2017 with a deeply personal mission, Ceylon Deaf Adventures was born from lived experience and genuine understanding of the deaf community's needs. Our founder, raised by deaf parents, began welcoming international guests at age 13, witnessing firsthand the communication barriers that prevented deaf travelers from fully experiencing Sri Lanka's incredible adventures and cultural treasures.
               </p>
               <p class="story-paragraph">
-                Our journey began with simple homestay experiences, where visual communication and cultural immersion
-                took precedence over traditional audio-based tours. We discovered that when barriers are removed, the
-                connections formed between travelers and local communities become deeper and more meaningful.
+                This early exposure to the tourism industry revealed a critical gap: while Sri Lanka offered world-class adventure experiences—from whale watching and surfing to mountain hiking and wildlife safaris—these adventures remained largely inaccessible to the deaf community due to communication barriers and lack of inclusive planning.
               </p>
-              <mat-card class="highlight-card">
-                <mat-card-content>
-                  <mat-icon class="highlight-icon">celebration</mat-icon>
-                  <p class="highlight-text">
-                    Today, we're proud to have served over 1,000 Deaf and hearing guests from around the world, 
-                    each carrying home not just memories, but a piece of Sri Lankan warmth and hospitality.
-                  </p>
-                </mat-card-content>
-              </mat-card>
+              <p class="story-paragraph">
+                What started as a family-run deaf-friendly guest house has evolved into Sri Lanka's first and only specialized deaf adventure tourism company, with ambitious plans to transform accessible adventure tourism across Asia. Our personal connection to the deaf community drives our commitment to ensuring no adventurer feels left out or misunderstood.
+              </p>
             </div>
           </div>
           <div class="story-image">
@@ -201,6 +190,71 @@ import { MatDividerModule } from '@angular/material/divider';
               </div>
             </mat-card-content>
           </mat-card>
+        </div>
+      </div>
+    </section>
+
+    <!-- Social Media Section -->
+    <section class="social-section">
+      <div class="container">
+        <div class="social-content">
+          <div class="social-header">
+            <h2 class="section-title">Connect With Us</h2>
+            <p class="social-description">
+              🌍 Discover Ceylon Deaf Adventures<br>
+              Sri Lanka's first deaf-friendly travel agency, creating inclusive and accessible tours designed for the deaf community—while welcoming travelers from all walks of life.
+            </p>
+            <p class="social-description">
+              ✨ Experience authentic cultural journeys with expert guidance, sign language support, and unforgettable adventures across our beautiful island.
+            </p>
+            <div class="social-features">
+              <div class="feature-item">
+                <mat-icon class="feature-icon">check_circle</mat-icon>
+                <span>All are welcome.</span>
+              </div>
+              <div class="feature-item">
+                <mat-icon class="feature-icon">check_circle</mat-icon>
+                <span>Travel Without Barriers. Belong Without Bounds.</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="social-links-grid">
+            <h3 class="social-links-title">📌 Follow us and be part of our inclusive travel community:</h3>
+            <div class="social-links">
+              <a href="https://facebook.com/ceylondeafadventures" target="_blank" rel="noopener noreferrer" class="social-link facebook">
+                <mat-icon>facebook</mat-icon>
+                <span>Facebook</span>
+                <small>facebook.com/ceylondeafadventures</small>
+              </a>
+              <a href="https://instagram.com/ceylondeafadventures" target="_blank" rel="noopener noreferrer" class="social-link instagram">
+                <mat-icon>camera_alt</mat-icon>
+                <span>Instagram</span>
+                <small>instagram.com/ceylondeafadventures</small>
+              </a>
+              <a href="https://youtube.com/@CeylonDeafAdventures" target="_blank" rel="noopener noreferrer" class="social-link youtube">
+                <mat-icon>play_circle_filled</mat-icon>
+                <span>YouTube</span>
+                <small>youtube.com/&#64;CeylonDeafAdventures</small>
+              </a>
+              <a href="https://x.com/CeylonDeafAdv" target="_blank" rel="noopener noreferrer" class="social-link twitter">
+                <mat-icon>alternate_email</mat-icon>
+                <span>X (Twitter)</span>
+                <small>x.com/CeylonDeafAdv</small>
+              </a>
+              <a href="https://www.linkedin.com/company/ceylon-deaf-adventures" target="_blank" rel="noopener noreferrer" class="social-link linkedin">
+                <mat-icon>work</mat-icon>
+                <span>LinkedIn</span>
+                <small>linkedin.com/company/ceylon-deaf-adventures</small>
+              </a>
+              <a href="https://tiktok.com/@ceylondeafadventures" target="_blank" rel="noopener noreferrer" class="social-link tiktok">
+                <mat-icon>music_note</mat-icon>
+                <span>TikTok</span>
+                <small>tiktok.com/&#64;ceylondeafadventures</small>
+              </a>
+            </div>
+            <p class="social-footer">🌐 Your journey to barrier-free travel starts here!</p>
+          </div>
         </div>
       </div>
     </section>
@@ -797,6 +851,176 @@ import { MatDividerModule } from '@angular/material/divider';
 
     .success-progress {
       background-color: var(--success-color);
+    }
+
+    /* Social Media Section */
+    .social-section {
+      padding: 100px 0;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    }
+
+    .social-content {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 64px;
+      align-items: start;
+    }
+
+    @media (min-width: 1024px) {
+      .social-content {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .social-header {
+      text-align: left;
+    }
+
+    .social-description {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 24px;
+    }
+
+    .social-features {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 32px;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .feature-icon {
+      color: var(--success-color);
+      font-size: 20px;
+    }
+
+    .social-links-grid {
+      background: white;
+      padding: 40px;
+      border-radius: 24px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .social-links-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .social-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .social-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      border-radius: 16px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      background: #f8fafc;
+    }
+
+    .social-link mat-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+
+    .social-link span {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--text-primary);
+    }
+
+    .social-link small {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+
+    .social-link:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    }
+
+    .facebook:hover {
+      border-color: #1877F2;
+      background: rgba(24, 119, 242, 0.05);
+    }
+
+    .facebook mat-icon {
+      color: #1877F2;
+    }
+
+    .instagram:hover {
+      border-color: #E4405F;
+      background: rgba(228, 64, 95, 0.05);
+    }
+
+    .instagram mat-icon {
+      color: #E4405F;
+    }
+
+    .youtube:hover {
+      border-color: #FF0000;
+      background: rgba(255, 0, 0, 0.05);
+    }
+
+    .youtube mat-icon {
+      color: #FF0000;
+    }
+
+    .twitter:hover {
+      border-color: #000000;
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .twitter mat-icon {
+      color: #000000;
+    }
+
+    .linkedin:hover {
+      border-color: #0A66C2;
+      background: rgba(10, 102, 194, 0.05);
+    }
+
+    .linkedin mat-icon {
+      color: #0A66C2;
+    }
+
+    .tiktok:hover {
+      border-color: #000000;
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .tiktok mat-icon {
+      color: #000000;
+    }
+
+    .social-footer {
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--accent-color);
+      margin: 0;
     }
 
     /* CTA Section */

@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { HomePageComponent } from './pages/user/home-page/home-page.component';
 import { ToursPageComponent } from './pages/user/tours-page/tours-page.component';
 import { AboutPageComponent } from './pages/user/about-page/about-page.component';
+import { ShopPageComponent } from './pages/user/shop-page/shop-page.component';
 import { BlogsPageComponent } from './pages/user/blogs-page/blogs-page.component';
 import { BlogDetailComponent } from './pages/user/blog-detail/blog-detail.component';
 import { ToursListComponent } from './pages/admin/tours-list/tours-list.component';
@@ -17,6 +18,7 @@ export const routes: Routes = [
     { path: '', component: HomePageComponent },
     { path: 'tours', component: ToursPageComponent },
     { path: 'about', component: AboutPageComponent },
+    { path: 'shop', component: ShopPageComponent },
     { path: 'blogs', component: BlogsPageComponent },
     { path: 'blogs/:slug', component: BlogDetailComponent },
     {

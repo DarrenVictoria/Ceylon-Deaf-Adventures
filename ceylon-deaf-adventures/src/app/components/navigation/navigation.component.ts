@@ -30,6 +30,9 @@ import { LucideAngularModule } from 'lucide-angular';
             <a [routerLink]="['/tours']" class="text-foreground hover-text-primary font-medium links">
               Tours
             </a>
+            <a [routerLink]="['/shop']" class="text-foreground hover-text-primary font-medium links">
+              Shop
+            </a>
             <a [routerLink]="['/blogs']" class="text-foreground hover-text-primary font-medium links">
               Blog
             </a>
@@ -78,6 +81,13 @@ import { LucideAngularModule } from 'lucide-angular';
                 (click)="isOpen = false"
               >
                 Tours
+              </a>
+              <a
+                [routerLink]="['/shop']"
+                class="mobile-link"
+                (click)="isOpen = false"
+              >
+                Shop
               </a>
               <a
                 [routerLink]="['/blogs']"

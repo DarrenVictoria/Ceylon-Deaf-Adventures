@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LucideAngularModule, Mail, Phone, MapPin } from 'lucide-angular';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-footer',
   standalone: true,
-  imports: [RouterLink, LucideAngularModule],
+  imports: [RouterLink, LucideAngularModule, MatIconModule],
   template: `
     <footer class="footer">
       <div class="container py-12">
@@ -15,8 +16,12 @@ import { LucideAngularModule, Mail, Phone, MapPin } from 'lucide-angular';
           <div class="space-y-4">
             <h2 class="text-2xl font-extrabold tracking-wide text-accent">Ceylon Deaf Adventures</h2>
             <p class="text-sm leading-relaxed text-secondary-foreground-80 max-w-xs mx-auto md:mx-0">
-              Sri Lanka's first Deaf-friendly tourism company, creating barrier-free adventures for all.
+              🌍 Sri Lanka's first deaf-friendly travel agency, creating inclusive and accessible tours designed for the deaf community—while welcoming travelers from all walks of life.
             </p>
+            <p class="text-sm leading-relaxed text-secondary-foreground-80 max-w-xs mx-auto md:mx-0">
+              ✨ Experience authentic cultural journeys with expert guidance, sign language support, and unforgettable adventures across our beautiful island.
+            </p>
+           
           </div>
 
           <!-- Quick Links -->
@@ -25,6 +30,7 @@ import { LucideAngularModule, Mail, Phone, MapPin } from 'lucide-angular';
             <nav class="flex flex-col gap-2">
               <a [routerLink]="['/about']" class="footer-link">About Us</a>
               <a [routerLink]="['/tours']" class="footer-link">Tours & Experiences</a>
+              <a [routerLink]="['/shop']" class="footer-link">Ceylon Craft Shop</a>
             </nav>
           </div>
 
@@ -44,15 +50,59 @@ import { LucideAngularModule, Mail, Phone, MapPin } from 'lucide-angular';
           </div>
         </div>
 
-        <!-- Socials -->
-        <div class="flex justify-center md:justify-between items-center mt-12 flex-col md:flex-row gap-6">
-          <div class="flex gap-6">
-
+        <!-- Social Media & Copyright -->
+        <div class="mt-12 space-y-8">
+          <!-- Social Media Links -->
+          <div class="text-center">
+            <h4 class="text-lg font-semibold mb-4 text-accent"> Follow us and be part of our inclusive travel community:</h4>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 max-w-4xl mx-auto">
+              <a href="https://facebook.com/ceylondeafadventures" target="_blank" rel="noopener noreferrer" class="social-link">
+                <div class="social-icon facebook">
+                  <mat-icon>facebook</mat-icon>
+                </div>
+                <span class="social-label">Facebook</span>
+              </a>
+              <a href="https://instagram.com/ceylondeafadventures" target="_blank" rel="noopener noreferrer" class="social-link">
+                <div class="social-icon instagram">
+                  <mat-icon>camera_alt</mat-icon>
+                </div>
+                <span class="social-label">Instagram</span>
+              </a>
+              <a href="https://youtube.com/@CeylonDeafAdventures" target="_blank" rel="noopener noreferrer" class="social-link">
+                <div class="social-icon youtube">
+                  <mat-icon>play_circle_filled</mat-icon>
+                </div>
+                <span class="social-label">YouTube</span>
+              </a>
+              <a href="https://x.com/CeylonDeafAdv" target="_blank" rel="noopener noreferrer" class="social-link">
+                <div class="social-icon twitter">
+                  <mat-icon>alternate_email</mat-icon>
+                </div>
+                <span class="social-label">X (Twitter)</span>
+              </a>
+              <a href="https://www.linkedin.com/company/ceylon-deaf-adventures" target="_blank" rel="noopener noreferrer" class="social-link">
+                <div class="social-icon linkedin">
+                  <mat-icon>work</mat-icon>
+                </div>
+                <span class="social-label">LinkedIn</span>
+              </a>
+              <a href="https://tiktok.com/@ceylondeafadventures" target="_blank" rel="noopener noreferrer" class="social-link">
+                <div class="social-icon tiktok">
+                  <mat-icon>music_note</mat-icon>
+                </div>
+                <span class="social-label">TikTok</span>
+              </a>
+            </div>
+            
           </div>
-          <p class="text-xs text-secondary-foreground-60 text-center">
-            © 2025 Ceylon Deaf Adventures. All rights reserved.<br class="md:hidden"/> 
-            Travel Without Barriers, Belong Without Bounds.
-          </p>
+          
+          <!-- Copyright -->
+          <div class="text-center border-t border-accent/20 pt-6">
+            <p class="text-xs text-secondary-foreground-60">
+              © 2025 Ceylon Deaf Adventures. All rights reserved.<br class="md:hidden"/> 
+              Travel Without Barriers, Belong Without Bounds.
+            </p>
+          </div>
         </div>
       </div>
     </footer>
@@ -109,6 +159,113 @@ import { LucideAngularModule, Mail, Phone, MapPin } from 'lucide-angular';
     }
     .text-secondary-foreground-60 {
       color: rgba(var(--secondary-foreground), 0.6);
+    }
+    
+    /* Social Media Styles */
+    .social-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      padding: 16px 8px;
+      border-radius: 12px;
+    }
+    
+    .social-link:hover {
+      transform: translateY(-2px);
+    }
+    
+    .social-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .social-icon mat-icon {
+      font-size: 24px;
+      color: white;
+    }
+    
+    .social-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #ffffff;
+    }
+    
+    .facebook {
+      background: #1877F2;
+    }
+    
+    .facebook:hover {
+      background: #166FE5;
+      box-shadow: 0 6px 20px rgba(24, 119, 242, 0.4);
+    }
+    
+    .instagram {
+      background: linear-gradient(45deg, #405DE6, #5B51D8, #833AB4, #C13584, #E1306C, #FD1D1D, #F56040, #F77737, #FCAF45, #FFDC80);
+    }
+    
+    .instagram:hover {
+      box-shadow: 0 6px 20px rgba(228, 64, 95, 0.4);
+      transform: translateY(-2px) scale(1.05);
+    }
+    
+    .youtube {
+      background: #FF0000;
+    }
+    
+    .youtube:hover {
+      background: #E60000;
+      box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
+    }
+    
+    .twitter {
+      background: #000000;
+    }
+    
+    .twitter:hover {
+      background: #1a1a1a;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    .linkedin {
+      background: #0A66C2;
+    }
+    
+    .linkedin:hover {
+      background: #095A9F;
+      box-shadow: 0 6px 20px rgba(10, 102, 194, 0.4);
+    }
+    
+    .tiktok {
+      background: linear-gradient(45deg, #FF0050, #00F2EA);
+    }
+    
+    .tiktok:hover {
+      box-shadow: 0 6px 20px rgba(255, 0, 80, 0.4);
+      transform: translateY(-2px) scale(1.05);
+    }
+    
+    @media (max-width: 640px) {
+      .social-icon {
+        width: 40px;
+        height: 40px;
+      }
+      
+      .social-icon mat-icon {
+        font-size: 20px;
+      }
+      
+      .social-label {
+        font-size: 0.75rem;
+      }
     }
   `]
 })
