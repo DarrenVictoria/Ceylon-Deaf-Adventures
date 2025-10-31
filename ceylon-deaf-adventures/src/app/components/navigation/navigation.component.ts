@@ -10,13 +10,13 @@ import { LucideAngularModule } from 'lucide-angular';
   template: `
     <nav class="nav">
       <div class="container">
-        <div class="flex-between items-center h-16">
+        <div class="flex-between items-center h-24">
           <!-- Logo (1x1 image) -->
           <a [routerLink]="['/']" class="flex items-center space-x-2 links">
-            <img style="max-width:70px" src="logo.png" alt="Ceylon Deaf Adventures logo" class="logo-img" />
-            <div class="hidden-sm-block">
+            <img style="scale:2.8;" src="logo.png" alt="Ceylon Deaf Adventures logo" class="logo-img" />
+            <!--<div class="hidden-sm-block">
               <span class="font-bold text-lg text-foreground">Ceylon Deaf Adventures</span>
-            </div>
+            </div>-->
           </a>
 
           <!-- Desktop Navigation -->
@@ -40,6 +40,10 @@ import { LucideAngularModule } from 'lucide-angular';
 
           <!-- CTA Button -->
           <div class="hidden-md-flex items-center space-x-4">
+            <a href="https://wa.me/qr/BYO5ZTYZR5ZMF1" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp">
+              <mat-icon>chat</mat-icon>
+              <span>Chat on WhatsApp</span>
+            </a>
             <a href="/tours" class="btn btn-accent">
               Book Your Adventure
             </a>
@@ -97,6 +101,10 @@ import { LucideAngularModule } from 'lucide-angular';
                 Blog
               </a>
               <div class="pt-4 pb-3">
+                <a href="https://wa.me/qr/BYO5ZTYZR5ZMF1" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp w-full mb-2" (click)="isOpen = false">
+                  <mat-icon>chat</mat-icon>
+                  <span>Chat on WhatsApp</span>
+                </a>
                 <a href="/tours" class="btn btn-accent w-full" (click)="isOpen = false">
                   Book Your Adventure
                 </a>
@@ -173,7 +181,7 @@ import { LucideAngularModule } from 'lucide-angular';
       margin-left: 2rem;
     }
     .logo-img {
-      width: 3.5rem;
+      width: 5rem;
       height: 3.5rem;
       border-radius: 0.5rem;
       object-fit: cover;
@@ -235,6 +243,30 @@ import { LucideAngularModule } from 'lucide-angular';
     
     .btn-accent:hover {
       opacity: 0.9;
+    }
+    
+    .btn-whatsapp {
+      background-color: #25D366;
+      color: #fff;
+      max-width: 300px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    
+    .btn-whatsapp:hover {
+      background-color: #20BA5A;
+    }
+    
+    .btn-whatsapp mat-icon {
+      font-size: 1.25rem;
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+    
+    .mb-2 {
+      margin-bottom: 0.5rem;
     }
     
     .md-hidden {

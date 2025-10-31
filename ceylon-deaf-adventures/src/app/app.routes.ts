@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { HomePageComponent } from './pages/user/home-page/home-page.component';
+import { LaunchPageComponent } from './pages/user/launch-page/launch-page.component';
 import { ToursPageComponent } from './pages/user/tours-page/tours-page.component';
 import { AboutPageComponent } from './pages/user/about-page/about-page.component';
 import { ShopPageComponent } from './pages/user/shop-page/shop-page.component';
@@ -16,6 +17,7 @@ import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
     { path: '', component: HomePageComponent },
+    { path: 'launch', component: LaunchPageComponent },
     { path: 'tours', component: ToursPageComponent },
     { path: 'about', component: AboutPageComponent },
     { path: 'shop', component: ShopPageComponent },

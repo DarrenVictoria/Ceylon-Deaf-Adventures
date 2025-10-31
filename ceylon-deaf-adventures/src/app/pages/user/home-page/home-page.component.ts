@@ -25,36 +25,26 @@ import { MatChipsModule } from '@angular/material/chips';
   ],
   template: `
     <!-- Development Notice Modal -->
-    <div 
-      *ngIf="showDevelopmentNotice" 
+      <div 
+      *ngIf="showShopLaunch" 
       class="modal-overlay"
-      (click)="closeDevelopmentNotice()"
+      (click)="closeShopLaunch()"
     >
-      <mat-card class="modal-card" (click)="$event.stopPropagation()">
-        <mat-card-header class="development-notice-header">
-          <div mat-card-avatar class="notice-avatar">
-            <mat-icon class="notice-icon">construction</mat-icon>
-          </div>
-          <mat-card-title>Development Notice</mat-card-title>
-          <button 
-            mat-icon-button 
-            (click)="closeDevelopmentNotice()"
-            class="close-button"
-          >
-            <mat-icon>close</mat-icon>
-          </button>
-        </mat-card-header>
-        <mat-card-content class="notice-content">
-          <p>
-            This website is currently under development. Some features may not be fully functional yet. 
-            We appreciate your patience as we work to create the best accessible tourism experience.
-          </p>
+      <mat-card class="modal-card shop-launch-card" (click)="$event.stopPropagation()">
+        <button 
+          mat-icon-button 
+          (click)="closeShopLaunch()"
+          class="close-button"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+        <mat-card-content class="shop-launch-content">
+          <img 
+            src="/Shops_Coming.jpeg" 
+            alt="Shop Launching on November 1st, 2025"
+            class="launch-image"
+          />
         </mat-card-content>
-        <mat-card-actions align="end">
-          <button mat-raised-button color="primary" (click)="closeDevelopmentNotice()">
-            Understood
-          </button>
-        </mat-card-actions>
       </mat-card>
     </div>
 
@@ -151,6 +141,7 @@ import { MatChipsModule } from '@angular/material/chips';
             </mat-card-content>
           </mat-card>
       
+
 
           
           
@@ -324,6 +315,21 @@ import { MatChipsModule } from '@angular/material/chips';
       animation: slideUp 0.3s ease-out;
       background-color: #ffffff;
       border-radius: 12px;
+    }
+
+    .launch-image {
+      max-width: 22rem;
+      width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      border-radius: 8px;
+    }
+
+    @media (min-width: 1024px) {
+      .launch-image {
+        max-width: 30rem;
+      }
     }
 
     .development-notice-header {
@@ -1020,7 +1026,7 @@ export class HomePageComponent implements AfterViewInit, OnDestroy {
   @ViewChild('greenscreenVideo') videoElement!: ElementRef<HTMLVideoElement>;
   @ViewChild('videoCanvas') canvasElement!: ElementRef<HTMLCanvasElement>;
 
-  showDevelopmentNotice = true;
+  showShopLaunch = true;
   private animationFrameId: number | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
 
@@ -1134,7 +1140,7 @@ export class HomePageComponent implements AfterViewInit, OnDestroy {
       image: '/Pollonaruwa.jpg',
       alt: 'Pollonaruwa ancient ruins',
       icon: 'account_balance',
-      title: 'Pollonaruwa',
+      title: 'Pollonnaruwa',
       description: 'Polonnaruwa, Sri Lanka\'s medieval capital and a UNESCO World Heritage Site, renowned for its ancient ruins and remarkable Sinhalese architecture.',
       credit: 'Photo: Isuru Dev Thilina'
     }
@@ -1362,7 +1368,7 @@ export class HomePageComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  closeDevelopmentNotice() {
-    this.showDevelopmentNotice = false;
+  closeShopLaunch() {
+    this.showShopLaunch = false;
   }
 }

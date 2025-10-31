@@ -399,13 +399,14 @@ import { Booking } from '../../models/booking';
       pointer-events: auto !important; /* Ensure toggle is clickable */
     }
 
-    .booking-container {
+ .booking-container {
       background: var(--azure-bg);
       overflow: hidden;
       box-shadow: var(--shadow-lg);
       max-width: 800px;
       width: 100%;
       max-height: 90vh;
+      height: 90vh;
       display: flex;
       flex-direction: column;
       border-radius: var(--radius-lg);

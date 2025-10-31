@@ -3,7 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { environment } from '../environments/environment';
-import { initDummyData } from './scripts/init-data';
+
 
 @Component({
   selector: 'app-root',
@@ -20,9 +20,5 @@ import { initDummyData } from './scripts/init-data';
 export class AppComponent {
   title = 'ceylon-deaf-adventures';
 
-  ngOnInit() {
 
-    initDummyData().then(() => console.log('Dummy data initialized'));
-
-  }
 }
