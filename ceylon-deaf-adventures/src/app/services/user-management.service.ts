@@ -1,13 +1,16 @@
 import { Injectable, inject } from '@angular/core';
-import { Auth, createUserWithEmailAndPassword, updatePassword, User as FirebaseUser } from '@angular/fire/auth';
+import { Auth, createUserWithEmailAndPassword, updatePassword, User as FirebaseUser, signOut as firebaseSignOut } from '@angular/fire/auth';
+import { initializeApp, FirebaseApp } from '@angular/fire/app';
+import { getAuth, Auth as FirebaseAuth } from 'firebase/auth';
 import { Observable, from, throwError, combineLatest, BehaviorSubject } from 'rxjs';
 import { map, switchMap, catchError, tap, first } from 'rxjs/operators';
 import { FirestoreService } from './firestore.service';
 import { AuthService } from './auth.service';
-import { 
-  User, 
-  UserRole, 
-  UserPermissions, 
+import { environment } from '../../environments/environment';
+import {
+  User,
+  UserRole,
+  UserPermissions,
   PermissionKey,
   createDefaultPermissions,
   isAdmin,
@@ -22,14 +25,35 @@ export class UserManagementService {
   private firestoreService = inject(FirestoreService);
   private authService = inject(AuthService);
 
+  // Secondary auth instance for creating users without affecting current session
+  private secondaryApp: FirebaseApp | null = null;
+  private secondaryAuth: FirebaseAuth | null = null;
+
   // State management for users list
   private usersSubject$ = new BehaviorSubject<User[]>([]);
   public users$ = this.usersSubject$.asObservable();
   private loading$ = new BehaviorSubject<boolean>(false);
 
   constructor() {
+    // Initialize secondary Firebase app for user creation
+    this.initializeSecondaryAuth();
     // Load users on service initialization
     this.loadUsers();
+  }
+
+  /**
+   * Initialize secondary Firebase Auth instance
+   * This allows creating users without logging out the current admin
+   */
+  private initializeSecondaryAuth(): void {
+    try {
+      // Create a secondary Firebase app instance
+      this.secondaryApp = initializeApp(environment.firebase, 'Secondary');
+      this.secondaryAuth = getAuth(this.secondaryApp);
+      console.log('Secondary Auth initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize secondary auth:', error);
+    }
   }
 
   /**
@@ -91,17 +115,30 @@ export class UserManagementService {
       throw new Error('Insufficient permissions to create users');
     }
 
+    // Ensure secondary auth is initialized
+    if (!this.secondaryAuth) {
+      throw new Error('Secondary authentication not initialized');
+    }
+
     this.loading$.next(true);
 
     try {
-      // Create Firebase Authentication account
+      console.log('🔨 Creating user account:', userData.email);
+
+      // Create Firebase Authentication account using SECONDARY auth
+      // This prevents logging out the current admin
       const userCredential = await createUserWithEmailAndPassword(
-        this.auth,
+        this.secondaryAuth,
         userData.email,
         userData.password
       );
 
       const firebaseUser = userCredential.user;
+      console.log('✅ Firebase Auth user created with UID:', firebaseUser.uid);
+
+      // Immediately sign out from secondary auth to clean up
+      await firebaseSignOut(this.secondaryAuth);
+      console.log('🔓 Signed out from secondary auth');
 
       // Create user document in Firestore
       const userDoc: Omit<User, 'id'> = {
@@ -117,15 +154,17 @@ export class UserManagementService {
         notes: userData.notes
       };
 
+      console.log('💾 Creating Firestore document for user');
       const docId = await this.firestoreService.create('users', userDoc);
+      console.log('✅ Firestore document created with ID:', docId);
 
       // Reload users list
       this.loadUsers();
 
       return docId;
     } catch (error: any) {
-      console.error('Error creating user:', error);
-      
+      console.error('❌ Error creating user:', error);
+
       // Handle specific Firebase Auth errors
       let errorMessage = 'Failed to create user account';
       switch (error.code) {
@@ -141,7 +180,7 @@ export class UserManagementService {
         default:
           errorMessage = error.message || errorMessage;
       }
-      
+
       throw new Error(errorMessage);
     } finally {
       this.loading$.next(false);

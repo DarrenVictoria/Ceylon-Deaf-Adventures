@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__ide__getDiagnostics",
+      "Bash(npm run build:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(tasklist:*)",
+      "Bash(findstr:*)",
+      "Bash(attrib:*)",
+      "Bash(takeown:*)",
+      "Bash(icacls:*)",
+      "Bash(del firebase-debug.log)",
+      "Bash(test:*)",
+      "Bash(firebase projects:list:*)",
+      "Bash(npm run build:prod:*)",
+      "Bash(npm run:*)",
+      "Bash(ng build:*)",
+      "Bash(firebase deploy:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

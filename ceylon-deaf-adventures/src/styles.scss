@@ -29,89 +29,89 @@ body {
 
 /* Custom color palette for Ceylon Deaf Adventures - warm tropical Sri Lankan theme */
 :root {
-    /* Updated color palette for Ceylon Deaf Adventures - warm tropical Sri Lankan theme */
-    --background: oklch(0.99 0.005 85);
-    /* Warm white with slight sandy tint */
-    --foreground: oklch(0.15 0.02 180);
-    /* Deep ocean blue-gray for text */
-    --card: oklch(0.97 0.01 85);
-    /* Light sandy beige for cards */
-    --card-foreground: oklch(0.15 0.02 180);
-    --popover: oklch(0.99 0.005 85);
-    --popover-foreground: oklch(0.15 0.02 180);
-    --primary: oklch(0.45 0.15 160);
-    /* Tropical teal-green */
-    --primary-foreground: oklch(0.99 0.005 85);
-    --secondary: oklch(0.35 0.12 200);
-    /* Deep ocean blue */
-    --secondary-foreground: oklch(0.99 0.005 85);
-    --muted: oklch(0.94 0.01 85);
-    /* Soft sandy background */
-    --muted-foreground: oklch(0.45 0.05 180);
-    --accent: oklch(0.65 0.18 35);
-    /* Warm coral-orange accent */
-    --accent-foreground: oklch(0.99 0.005 85);
-    --destructive: oklch(0.55 0.2 25);
-    --destructive-foreground: oklch(0.99 0.005 85);
-    --border: oklch(0.88 0.02 85);
-    --input: oklch(0.97 0.01 85);
-    --ring: oklch(0.45 0.15 160);
-    --chart-1: oklch(0.45 0.15 160);
-    /* Tropical teal */
-    --chart-2: oklch(0.65 极 18 35);
-    /* Coral orange */
-    --chart-3: oklch(0.35 0.12 200);
-    /* Ocean blue */
-    --chart-4: oklch(0.55 0.12 120);
-    /* Forest green */
-    --chart-5: oklch(0.7 0.15 60);
-    /* Golden yellow */
+    /* Updated color palette for Ceylon Deaf Adventures - Navy & Gold Theme */
+    --background: #f8fafc;
+    --foreground: #0b1f3a;
+    --card: #ffffff;
+    --card-foreground: #0b1f3a;
+    --popover: #ffffff;
+    --popover-foreground: #0b1f3a;
+    --primary: #0b1f3a;
+    --primary-foreground: #ffffff;
+    --secondary: #1e293b;
+    --secondary-foreground: #ffffff;
+    --muted: #f1f5f9;
+    --muted-foreground: #64748b;
+    --accent: #f4b416;
+    --accent-foreground: #0b1f3a;
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    --border: #e2e8f0;
+    --input: #e2e8f0;
+    --ring: #0b1f3a;
+    --chart-1: #0b1f3a;
+    --chart-2: #f4b416;
+    --chart-3: #1e293b;
+    --chart-4: #64748b;
+    --chart-5: #94a3b8;
     --radius: 0.75rem;
-    /* Slightly more rounded for friendlier feel */
-    --sidebar: oklch(0.97 0.01 85);
-    --sidebar-foreground: oklch(0.15 0.02 180);
-    --sidebar-primary: oklch(0.45 0.15 160);
-    --sidebar-primary-foreground: oklch(0.99 0.005 85);
-    --sidebar-accent: oklch(0.65 0.18 35);
-    --sidebar-accent-foreground: oklch(0.99 0.005 85);
-    --sidebar-border: oklch(0.88 0.02 85);
-    --sidebar-ring: oklch(0.45 0.15 160);
+    --sidebar: #ffffff;
+    --sidebar-foreground: #0b1f3a;
+    --sidebar-primary: #0b1f3a;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #f4b416;
+    --sidebar-accent-foreground: #0b1f3a;
+    --sidebar-border: #e2e8f0;
+    --sidebar-ring: #0b1f3a;
 }
 
 .dark {
-    /* Dark mode with warm, accessible colors */
-    --background: oklch(0.12 0.02 180);
-    --foreground: oklch(0.95 0.01 85);
-    --card: oklch(0.15 0.02 180);
-    --card-foreground: oklch(0.95 0.01 85);
-    --popover: oklch(0.12 极 02 180);
-    --popover-foreground: oklch(0.95 0.01 85);
-    --primary: oklch(0.55 0.15 160);
-    --primary-foreground: oklch(0.12 0.02 180);
-    --secondary: oklch(0.25 0.05 180);
-    --secondary-foreground: oklch(0.95 0.01 85);
-    --muted: oklch(0.18 0.02 180);
-    --muted-foreground: oklch(0.65 0.05 180);
-    --accent: oklch(0.7 0.18 35);
-    --accent-foreground: oklch(0.12 0.02 180);
-    --destructive: oklch(0.6 0.2 25);
-    --destructive-foreground: oklch(0.95 0.01 85);
-    --border: oklch(0.22 0.02 180);
-    --input: oklch(0.18 0.02 极 180);
-    --ring: oklch(0.55 0.15 160);
-    --chart-1: oklch(0.55 0.15 160);
-    --chart-2: oklch(0.7 0.18 35);
-    --chart-3: oklch(0.45 0.12 200);
-    --chart-4: oklch(0.6 0.12 120);
-    --chart-5: oklch(0.75 0.15 60);
-    --sidebar: oklch(0.15 0.02 180);
-    --sidebar-foreground: oklch(0.95 0.01 85);
-    --sidebar-primary: oklch(0.55 0.15 160);
-    --sidebar-primary-foreground: oklch(0.12 0.02 180);
-    --sidebar-accent: oklch(0.7 0.18 35);
-    --sidebar-accent-foreground: oklch(0.12 0.02 180);
-    --sidebar-border: oklch(0.22 0.02 180);
-    --sidebar-ring: oklch(0.55 0.15 160);
+    /* Dark mode with Navy & Gold Theme */
+    --background: #020617;
+    --foreground: #f8fafc;
+    --card: #0b1f3a;
+    --card-foreground: #f8fafc;
+    --popover: #0b1f3a;
+    --popover-foreground: #f8fafc;
+    --primary: #f4b416; /* Yellow primary in dark mode for contrast? Or keep Navy? User said "everything uses #0b1f3a and f4b416". Usually Primary is the main brand color. Let's keep Primary=Navy (or accessible light variant) and Accent=Yellow. But Navy on Dark is bad. Let's flip or use Yellow as primary in dark? The user said "use #0b1f3a and f4b416". 
+    Actually, #0b1f3a is very dark. In dark mode, it might be the background.
+    Let's make --background #0b1f3a in dark mode?
+    The user said: "switch our whole design system and everything to use #0b1f3a and f4b416".
+    I will assume #0b1f3a is the primary brand color (Navy).
+    In dark mode, using it as a background makes sense.
+    */
+    --background: #0b1f3a;
+    --foreground: #f8fafc;
+    --card: #112a4d; /* Slightly lighter navy for cards */
+    --card-foreground: #f8fafc;
+    --popover: #112a4d;
+    --popover-foreground: #f8fafc;
+    --primary: #f4b416; /* Use Yellow as primary action color in dark mode for visibility */
+    --primary-foreground: #0b1f3a;
+    --secondary: #1e293b;
+    --secondary-foreground: #f8fafc;
+    --muted: #1e293b;
+    --muted-foreground: #94a3b8;
+    --accent: #f4b416;
+    --accent-foreground: #0b1f3a;
+    --destructive: #7f1d1d;
+    --destructive-foreground: #f8fafc;
+    --border: #1e293b;
+    --input: #1e293b;
+    --ring: #f4b416;
+    --chart-1: #f4b416;
+    --chart-2: #38bdf8;
+    --chart-3: #1e293b;
+    --chart-4: #94a3b8;
+    --chart-5: #64748b;
+    --sidebar: #0b1f3a;
+    --sidebar-foreground: #f8fafc;
+    --sidebar-primary: #f4b416;
+    --sidebar-primary-foreground: #0b1f3a;
+    --sidebar-accent: #112a4d;
+    --sidebar-accent-foreground: #f4b416;
+    --sidebar-border: #1e293b;
+    --sidebar-ring: #f4b416;
 }
 
 /* Base styles */

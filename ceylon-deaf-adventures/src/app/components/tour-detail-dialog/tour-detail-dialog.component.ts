@@ -48,7 +48,7 @@ import { BookingDialogComponent } from '../booking-dialog/booking-dialog.compone
             </div>
             <div class="hero-badge duration-badge">
               <mat-icon class="badge-icon">schedule</mat-icon>
-              <span class="badge-text">{{ data.tour.durationDays }}{{ data.tour.durationDays === 1 ? ' Day' : ' Days' }}</span>
+              <span class="badge-text">{{ data.tour.durationDays }} Days / {{ data.tour.durationNights || (data.tour.durationDays > 1 ? data.tour.durationDays - 1 : 0) }} Nights</span>
             </div>
           </div>
           <h2 class="hero-title">{{ data.tour.title }}</h2>
@@ -314,12 +314,12 @@ import { BookingDialogComponent } from '../booking-dialog/booking-dialog.compone
     
     /* Global Variables */
     :host {
-      --primary-color: #2dd4bf;
-      --primary-light: #5eead4;
-      --primary-dark: #0f766e;
-      --accent-color: #f97316;
-      --accent-light: #fed7aa;
-      --secondary-color: #6366f1;
+      --primary-color: #0b1f3a;
+      --primary-light: #1e3a5f;
+      --primary-dark: #061121;
+      --accent-color: #f4b416;
+      --accent-light: #fcd34d;
+      --secondary-color: #475569;
       --success-color: #10b981;
       --warning-color: #f59e0b;
       --error-color: #ef4444;

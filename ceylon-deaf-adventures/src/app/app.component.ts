@@ -3,26 +3,24 @@ import { RouterOutlet } from '@angular/router';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { environment } from '../environments/environment';
-import { initDummyData } from './scripts/init-data';
+
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, NavigationComponent, FooterComponent],
   template: `
-    <div class="min-h-screen bg-background">
+    <div class="min-h-screen bg-background flex flex-col">
       <app-navigation />
-      <router-outlet />
-      <app-footer />
+      <div class="flex-grow">
+        <router-outlet />
+      </div>
+      <app-footer class="mt-auto" />
     </div>
   `
 })
 export class AppComponent {
   title = 'ceylon-deaf-adventures';
 
-  ngOnInit() {
 
-    initDummyData().then(() => console.log('Dummy data initialized'));
-
-  }
 }

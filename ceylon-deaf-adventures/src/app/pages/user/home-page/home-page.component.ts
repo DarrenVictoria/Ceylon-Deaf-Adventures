@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,6 +8,9 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatRippleModule } from '@angular/material/core';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatChipsModule } from '@angular/material/chips';
+import { ToursService } from '../../../services/tours.service';
+import { BlogsService } from '../../../services/blogs.service';
+import { DestinationsService } from '../../../services/destinations.service';
 
 @Component({
   selector: 'app-home-page',
@@ -25,38 +28,28 @@ import { MatChipsModule } from '@angular/material/chips';
   ],
   template: `
     <!-- Development Notice Modal -->
-    <div 
-      *ngIf="showDevelopmentNotice" 
+      <!--<div 
+      *ngIf="showShopLaunch" 
       class="modal-overlay"
-      (click)="closeDevelopmentNotice()"
+      (click)="closeShopLaunch()"
     >
-      <mat-card class="modal-card" (click)="$event.stopPropagation()">
-        <mat-card-header class="development-notice-header">
-          <div mat-card-avatar class="notice-avatar">
-            <mat-icon class="notice-icon">construction</mat-icon>
-          </div>
-          <mat-card-title>Development Notice</mat-card-title>
-          <button 
-            mat-icon-button 
-            (click)="closeDevelopmentNotice()"
-            class="close-button"
-          >
-            <mat-icon>close</mat-icon>
-          </button>
-        </mat-card-header>
-        <mat-card-content class="notice-content">
-          <p>
-            This website is currently under development. Some features may not be fully functional yet. 
-            We appreciate your patience as we work to create the best accessible tourism experience.
-          </p>
+      <mat-card class="modal-card shop-launch-card" (click)="$event.stopPropagation()">
+        <button 
+          mat-icon-button 
+          (click)="closeShopLaunch()"
+          class="close-button"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+        <mat-card-content class="shop-launch-content">
+          <img 
+            src="/Shops_Coming.jpeg" 
+            alt="Shop Launching on November 1st, 2025"
+            class="launch-image"
+          />
         </mat-card-content>
-        <mat-card-actions align="end">
-          <button mat-raised-button color="primary" (click)="closeDevelopmentNotice()">
-            Understood
-          </button>
-        </mat-card-actions>
       </mat-card>
-    </div>
+    </div>-->
 
     <section class="hero-section">
       <div class="hero-background"></div>
@@ -117,64 +110,133 @@ import { MatChipsModule } from '@angular/material/chips';
       </div>
     </section>
 
-    <!-- Key Value Points -->
-    <section class="value-points-section" style="padding:4rem;">
+
+
+    <!-- About Highlight Section -->
+    <section class="about-highlight-section">
       <div class="container">
-        <div class="value-points-grid">
-          <mat-card class="value-card" matRipple>
-            <mat-card-content class="value-content">
-              <div class="value-icon primary-gradient">
-                <mat-icon>emoji_events</mat-icon>
-              </div>
-              <h3>1st Deaf-Friendly Provider</h3>
-              <p>Sri Lanka's pioneering accessible tourism company</p>
-            </mat-card-content>
-          </mat-card>
-
-          <mat-card class="value-card" matRipple>
-            <mat-card-content class="value-content">
-              <div class="value-icon accent-gradient">
-                <mat-icon>schedule</mat-icon>
-              </div>
-              <h3>8+ Years Experience</h3>
-              <p>Accessible tourism expertise since 2014</p>
-            </mat-card-content>
-          </mat-card>
-
-          <mat-card class="value-card" matRipple>
-            <mat-card-content class="value-content">
-              <div class="value-icon secondary-gradient">
-                <mat-icon>groups</mat-icon>
-              </div>
-              <h3>Qualified Deaf Guides</h3>
-              <p>Sign language interpreters & Deaf guides</p>
-            </mat-card-content>
-          </mat-card>
-      
-
+        <div class="highlight-grid">
+          <!-- Image Column -->
+          <div class="highlight-image-col">
+            <div class="image-wrapper">
+              <img src="/ayubowan-srilanka.jpg" alt="Ayubowan Sri Lanka" class="highlight-image" />
+              <div class="image-shape"></div>
+            </div>
+          </div>
           
-          
+          <!-- Content Column -->
+          <div class="highlight-content-col">
+            <h2>We Create Unforgettable, <span class="text-primary">Barrier-Free Journeys</span></h2>
+            <p class="highlight-subtext">Experience Sri Lanka through adventures designed by and for the Deaf community.</p>
+            
+            <ul class="highlight-list">
+              <li>
+                <div class="list-icon primary-gradient">
+                  <mat-icon>accessible_forward</mat-icon>
+                </div>
+                <div class="list-content">
+                  <h3>1st Deaf-Friendly Provider</h3>
+                  <p>Sri Lanka's pioneering accessible tourism company.</p>
+                </div>
+              </li>
+              <li>
+                <div class="list-icon accent-gradient">
+                  <mat-icon>hearing_disabled</mat-icon>
+                </div>
+                <div class="list-content">
+                  <h3>Qualified Deaf Guides</h3>
+                  <p>Expert guidance and storytelling in Sign Language.</p>
+                </div>
+              </li>
+              <li>
+                <div class="list-icon secondary-gradient">
+                  <mat-icon>explore</mat-icon>
+                </div>
+                <div class="list-content">
+                  <h3>Tailored Adventures</h3>
+                  <p>Custom itineraries crafted for every traveler's needs.</p>
+                </div>
+              </li>
+            </ul>
+
+            <a [routerLink]="['/about']" class="btn btn-primary mt-8">
+              Learn More About Us
+            </a>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Why Travel With Us -->
-    <section class="why-travel-section" style="padding:4rem 0;">
+
+    <!-- Popular Tours Section -->
+    <section class="popular-tours-section" *ngIf="popularTours.length > 0">
       <div class="container">
         <div class="section-header">
-          <h2>Why Travel With Us</h2>
-          <p class="section-subtitle">
-            Experience Sri Lanka through barrier-free adventures designed by and for the Deaf community
-          </p>
+          <p class="section-tag">Popular Tours</p>
+          <h2>Top Picks for the <span class="text-primary">Ultimate Journey</span></h2>
+          <div class="header-decoration">
+            <!-- Optional creative elements like the plane/tent doodles in the reference -->
+             <mat-icon class="doodle-icon plane">flight_takeoff</mat-icon>
+          </div>
         </div>
 
-        <div class="features-grid">
-          <div class="feature-item" *ngFor="let feature of features">
-            <div class="feature-icon" [ngClass]="feature.gradient">
-              <mat-icon>{{ feature.icon }}</mat-icon>
+        <div class="popular-tours-scroll-wrapper">
+          <div class="popular-tours-track">
+            
+            <div class="popular-tour-card" *ngFor="let tour of popularTours" [routerLink]="['/tours', tour.slug]">
+              <div class="tour-image-box">
+                <img [src]="tour.images[0]" [alt]="tour.title" loading="lazy">
+                <div class="badges-container">
+                  <span class="badge feature-badge">Popular</span>
+                  <!-- <span class="badge discount-badge">28% Off</span> -->
+                </div>
+                <div class="duration-badge">
+                  {{ tour.durationDays }} Days / {{ tour.durationNights || (tour.durationDays > 1 ? tour.durationDays - 1 : 0) }} Nights
+                </div>
+              </div>
+
+              <div class="tour-content">
+                <!-- <div class="rating-row">
+                  <div class="stars">
+                    <mat-icon *ngFor="let i of [1,2,3,4,5]" class="star-icon">star</mat-icon>
+                  </div>
+                  <span class="rating-text">{{ tour.rating }} ({{ tour.reviewCount }} reviews)</span>
+                </div> -->
+
+                <h3>{{ tour.title }}</h3>
+                <div class="location-row">
+                  <mat-icon>location_on</mat-icon>
+                  <span>{{ tour.location[0] }}</span> 
+                  <span *ngIf="tour.location.length > 1">+{{ tour.location.length - 1 }} more</span>
+                </div>
+
+                <p class="tour-excerpt">{{ tour.shortDescription | slice:0:100 }}...</p>
+
+                <div class="info-grid">
+                  <div class="info-item">
+                    <span class="label">Price</span>
+                    <span class="value" *ngIf="!tour.isNegotiable && tour.priceDisplay > 0">\${{ tour.priceDisplay }}</span>
+                    <span class="value negotiable-price" *ngIf="tour.isNegotiable || tour.priceDisplay === 0">Negotiable</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="label">Days</span>
+                    <span class="value">{{ tour.durationDays }}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="label">Guest</span>
+                    <span class="value">{{ tour.capacity }}</span>
+                  </div>
+                </div>
+
+                <div class="action-row">
+                  <button mat-flat-button color="primary" class="book-btn" [routerLink]="['/tours', tour.slug]">
+                    Book Now
+                    <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+                  </button>
+                </div>
+              </div>
             </div>
-            <h3>{{ feature.title }}</h3>
-            <p>{{ feature.description }}</p>
+
           </div>
         </div>
       </div>
@@ -193,7 +255,7 @@ import { MatChipsModule } from '@angular/material/chips';
         <div class="destinations-grid">
           <mat-card 
             class="destination-card" 
-            *ngFor="let destination of destinations"
+            *ngFor="let destination of destinations.slice(0, 8)"
             matRipple
           >
             <div class="destination-image-container">
@@ -216,7 +278,7 @@ import { MatChipsModule } from '@angular/material/chips';
                 mat-button 
                 color="primary" 
                 class="learn-more-btn"
-                [routerLink]="['/tours']"
+                [routerLink]="['/destinations', destination.slug]"
               >
                 Learn More
                 <mat-icon>arrow_forward</mat-icon>
@@ -238,6 +300,8 @@ import { MatChipsModule } from '@angular/material/chips';
         </div>
       </div>
     </section>
+
+
 
     <!-- Testimonials -->
     <section class="testimonials-section">
@@ -279,6 +343,119 @@ import { MatChipsModule } from '@angular/material/chips';
         </div>
       </div>
     </section>
+
+
+
+
+    <!-- Blog Section -->
+    <section class="blog-section" *ngIf="latestBlogs.length > 0">
+      <div class="container">
+        <div class="section-header">
+          <p class="section-tag" style="text-align: center;">Latest Blog & News</p>
+          <h2>Latest News & Articles from the <br><span class="text-primary">Blog Posts</span></h2>
+        </div>
+
+        <div class="blog-grid">
+          <div class="blog-card" *ngFor="let blog of latestBlogs">
+            <div class="blog-image-container">
+              <img [src]="blog.featuredImage || '/c1.JPG'" [alt]="blog.title" class="blog-image">
+            </div>
+            <div class="blog-content">
+              <div class="blog-meta">
+                <span class="blog-date">
+                  <mat-icon>calendar_today</mat-icon>
+                  {{ blog.createdAt?.toDate() | date:'d MMMM y' }}
+                </span>
+                <span class="blog-comments">
+                  <mat-icon>chat_bubble_outline</mat-icon>
+                  Comments ({{ blog.commentCount }})
+                </span>
+              </div>
+              
+              <h3 class="blog-title">{{ blog.title }}</h3>
+              <p class="blog-excerpt">{{ blog.excerpt }}</p>
+              
+              <div class="blog-footer">
+                <div class="blog-author">
+                  <img [src]="blog.authorPhoto || '/assets/avatar-placeholder.png'" class="author-avatar" onError="this.src='https://ui-avatars.com/api/?name=Admin'">
+                  <span class="author-name">{{ blog.authorName || 'Admin' }}</span>
+                </div>
+                <button mat-button class="read-more-btn" [routerLink]="['/blogs', blog.slug]">
+                  Read More
+                  <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Image Carousel Section -->
+    <!-- Image Carousel Section (Commented out)
+    <section class="gallery-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Adventure Gallery</h2>
+          <p class="section-subtitle">Glimpses of the unforgettable moments awaiting you</p>
+        </div>
+        
+        <div class="slider-wrapper">
+          <button mat-icon-button class="nav-btn prev" (click)="prevSlide()">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          
+          <div class="single-slide-container">
+            <div class="slide-content">
+              <img [src]="slides[currentSlide].image" [alt]="slides[currentSlide].alt" loading="lazy">
+              <div class="carousel-caption">{{ slides[currentSlide].caption }}</div>
+            </div>
+            
+            <div class="slide-indicators">
+              <span 
+                *ngFor="let slide of slides; let i = index" 
+                class="indicator-dot"
+                [class.active]="i === currentSlide"
+                (click)="setSlide(i)"
+              ></span>
+            </div>
+          </div>
+
+          <button mat-icon-button class="nav-btn next" (click)="nextSlide()">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      </div>
+    </section>
+    -->
+
+    <!-- Video Section -->
+    <!-- Video Section (Commented out)
+    <section class="video-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>A beautiful review from our guest from China 🇨🇳🤍</h2>
+          <p class="section-subtitle">
+            This is what inclusive, deaf-friendly tourism in Sri Lanka looks like.
+            <br>
+            Sign language connects cultures. Travel creates opportunities.
+          </p>
+        </div>
+        <div class="video-wrapper">
+          <iframe 
+            width="560" 
+            height="315" 
+            src="https://www.youtube.com/embed/JtyqnuHbedY" 
+            title="Guest Review from China" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            referrerpolicy="strict-origin-when-cross-origin" 
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+    </section>
+    -->
   `,
   styles: [`
     /* Global Variables */
@@ -286,12 +463,12 @@ import { MatChipsModule } from '@angular/material/chips';
       font-size: 20px !important;
     }
     :host {
-      --primary-color: #2dd4bf;
-      --primary-light: #5eead4;
-      --primary-dark: #0f766e;
-      --accent-color: #f97316;
-      --accent-light: #fed7aa;
-      --secondary-color: #6366f1;
+      --primary-color: #0b1f3a;
+      --primary-light: #1e3a5f;
+      --primary-dark: #061121;
+      --accent-color: #f4b416;
+      --accent-light: #fcd34d;
+      --secondary-color: #475569;
       --success-color: #10b981;
       --background-color: #ffffff;
       --surface-color: #f8fafc;
@@ -299,6 +476,13 @@ import { MatChipsModule } from '@angular/material/chips';
       --text-secondary: #6b7280;
       --text-muted: #9ca3af;
       display: block;
+    }
+
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
     }
 
     /* Modal Styles */
@@ -324,6 +508,21 @@ import { MatChipsModule } from '@angular/material/chips';
       animation: slideUp 0.3s ease-out;
       background-color: #ffffff;
       border-radius: 12px;
+    }
+
+    .launch-image {
+      max-width: 22rem;
+      width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      border-radius: 8px;
+    }
+
+    @media (min-width: 1024px) {
+      .launch-image {
+        max-width: 30rem;
+      }
     }
 
     .development-notice-header {
@@ -409,6 +608,11 @@ import { MatChipsModule } from '@angular/material/chips';
       }
     }
 
+    .hero-text {
+      position: relative;
+      z-index: 20;
+    }
+
     .hero-title {
       font-size: 3rem;
       font-weight: 800;
@@ -425,8 +629,8 @@ import { MatChipsModule } from '@angular/material/chips';
     }
 
     .highlight-text {
-      color: var(--primary-color);
-      background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+      color: var(--accent-color);
+      background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -461,6 +665,8 @@ import { MatChipsModule } from '@angular/material/chips';
       justify-content: center;
       min-height: 400px;
       position: relative;
+      z-index: 10;
+      pointer-events: none;
     }
 
     @media (min-width: 1024px) {
@@ -477,6 +683,8 @@ import { MatChipsModule } from '@angular/material/chips';
       align-items: flex-end;
       justify-content: center;
       transform: scale(1.5);
+      z-index: 10;
+      pointer-events: none;
     }
 
     .welcome-video {
@@ -501,6 +709,7 @@ import { MatChipsModule } from '@angular/material/chips';
       filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5));
       transition: transform 0.3s ease;
       margin-bottom: -3rem;
+      pointer-events: none;
     }
 
     .welcome-video-canvas:hover {
@@ -611,8 +820,8 @@ import { MatChipsModule } from '@angular/material/chips';
     }
 
     .value-icon {
-      width: 80px;
-      height: 80px;
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -621,8 +830,13 @@ import { MatChipsModule } from '@angular/material/chips';
     }
 
     .value-icon mat-icon {
-      font-size: 32px;
+      font-size: 70px !important;
+      width: 70px !important;
+      height: 70px !important;
       color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .primary-gradient {
@@ -641,6 +855,25 @@ import { MatChipsModule } from '@angular/material/chips';
       background: linear-gradient(135deg, var(--success-color), #6ee7b7);
     }
 
+    .info-item .value {
+      font-weight: 700;
+      color: var(--primary-color);
+      display: block;
+    }
+    
+    .info-item .value.negotiable-price {
+        font-size: 0.9rem;
+        color: var(--accent-color);
+        font-style: italic;
+    }
+
+    .action-row {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 32px;
+    }
+
     .value-content h3 {
       font-size: 1.25rem;
       font-weight: 700;
@@ -654,68 +887,161 @@ import { MatChipsModule } from '@angular/material/chips';
       margin: 0;
     }
 
-    /* Why Travel Section */
-    .why-travel-section {
+    /* About Highlight Section */
+    .about-highlight-section {
       padding: 80px 0;
-      background: white;
+      background: #fff;
+      overflow: hidden;
     }
 
-    .section-header {
-      text-align: center;
-      margin-bottom: 64px;
+    .highlight-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 48px;
+      align-items: center;
     }
 
-    .section-header h2 {
+    @media (min-width: 1024px) {
+      .highlight-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+      }
+    }
+
+    .highlight-image-col {
+      position: relative;
+    }
+
+    .image-wrapper {
+      position: relative;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      transform: rotate(-2deg);
+      transition: transform 0.3s ease;
+    }
+
+    .image-wrapper:hover {
+      transform: rotate(0);
+    }
+
+    .highlight-image {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+
+    .image-wrapper:hover .highlight-image {
+      transform: scale(1.05);
+    }
+
+    .highlight-content-col h2 {
       font-size: 2.5rem;
       font-weight: 800;
-      color: var(--text-primary);
+      line-height: 1.2;
       margin-bottom: 16px;
+      color: var(--text-primary);
     }
 
-    .section-subtitle {
-      font-size: 1.25rem;
+    .text-primary {
+      color: var(--primary-color);
+    }
+
+    .highlight-subtext {
+      font-size: 1.125rem;
       color: var(--text-secondary);
-      max-width: 600px;
-      margin: 0 auto;
       line-height: 1.6;
+      margin-bottom: 32px;
     }
 
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 48px;
+    .highlight-list {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
     }
 
-    .feature-item {
-      text-align: center;
+    .highlight-list li {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
     }
 
-    .feature-icon {
-      width: 100px;
-      height: 100px;
+    .list-icon {
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 24px;
-      animation: float 6s ease-in-out infinite;
-    }
-
-    .feature-icon mat-icon {
-      font-size: 40px;
+      flex-shrink: 0;
       color: white;
     }
 
-    .feature-item h3 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 16px;
+    .list-icon mat-icon {
+      font-size: 28px !important;
+      width: 28px !important;
+      height: 28px !important;
+      line-height: 28px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
     }
 
-    .feature-item p {
+    .list-content h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--text-primary);
+    }
+
+    .list-content p {
       color: var(--text-secondary);
-      line-height: 1.6;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    /* Premium Button Style */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: white;
+      font-weight: 600;
+      font-size: 1.1rem;
+      padding: 16px 40px;
+      border-radius: 50px;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-top: 32px;
+      box-shadow: 0 10px 20px -5px rgba(45, 212, 191, 0.4);
+      border: 1px solid rgba(255,255,255,0.1);
+      letter-spacing: 0.5px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 20px 30px -8px rgba(45, 212, 191, 0.5);
+      background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
+    }
+
+    .btn-primary:active {
+      transform: translateY(-1px);
+    }
+
+    .primary-gradient {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    }
+
+    .accent-gradient {
+      background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
+    }
+
+    .secondary-gradient {
+      background: linear-gradient(135deg, var(--secondary-color), #a5b4fc);
     }
 
     /* Destinations Section */
@@ -726,7 +1052,7 @@ import { MatChipsModule } from '@angular/material/chips';
 
     .destinations-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 32px;
       margin-bottom: 64px;
     }
@@ -793,6 +1119,135 @@ import { MatChipsModule } from '@angular/material/chips';
     .destination-content {
       padding: 24px !important;
     }
+
+    /* Booking Section */
+    .booking-section {
+      padding: 80px 0;
+      background: white;
+    }
+
+    .calendly-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      background: white;
+    }
+
+
+    /* Gallery Section */
+    .gallery-section {
+      padding: 80px 0;
+      background: var(--surface-color);
+    }
+
+    .slider-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .single-slide-container {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      background: black;
+    }
+
+    .slide-content {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .slide-content img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .carousel-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 24px;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      color: white;
+      font-weight: 600;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+
+    .nav-btn {
+      background-color: white !important;
+      color: var(--primary-color) !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .slide-indicators {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+    }
+
+    .indicator-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .indicator-dot.active {
+      background-color: white;
+      transform: scale(1.2);
+    }
+
+
+    /* Video Section */
+    .video-section {
+      padding: 80px 0;
+      background: white;
+    }
+
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+      height: 0;
+      overflow: hidden;
+      max-width: 1000px;
+      margin: 0 auto;
+      border-radius: 24px;
+      box-shadow: 0 20px 64px rgba(0, 0, 0, 0.15);
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
 
     .destination-title {
       font-size: 1.25rem !important;
@@ -1014,13 +1469,366 @@ import { MatChipsModule } from '@angular/material/chips';
         max-height: 400px;
       }
     }
+
+    /* Popular Tours Section */
+    .popular-tours-section {
+      padding: 80px 0;
+      background: #f8fafc; /* Very light slate background */
+    }
+
+    .section-tag {
+      font-family: 'Nothing You Could Do', cursive;
+      color: var(--primary-color);
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .header-decoration {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+
+    .doodle-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      opacity: 0.2;
+      transform: rotate(-15deg);
+    }
+
+    .popular-tours-scroll-wrapper {
+      overflow-x: auto;
+      padding: 20px 0 40px; /* Bottom padding for shadow */
+      margin: 0 -16px; /* Negative margin to allow full-width scroll on mobile */
+      padding-left: 16px; /* Restore padding */
+      padding-right: 16px;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none; /* Firefox */
+    }
+
+    .popular-tours-scroll-wrapper::-webkit-scrollbar {
+      display: none; /* Chrome/Safari */
+    }
+
+    .popular-tours-track {
+      display: flex;
+      gap: 32px;
+      width: max-content;
+    }
+
+    .popular-tour-card {
+      flex: 0 0 340px;
+      background: white;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+      scroll-snap-align: center;
+      position: relative;
+      cursor: pointer;
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .popular-tour-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 16px 32px rgba(0,0,0,0.08);
+    }
+
+    .tour-image-box {
+      position: relative;
+      height: 220px;
+      overflow: hidden;
+    }
+
+    .tour-image-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .popular-tour-card:hover .tour-image-box img {
+      transform: scale(1.05);
+    }
+
+    .badges-container {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .feature-badge {
+      background: #f4b416; /* Orange */
+    }
+
+    .discount-badge {
+      background: #22c55e; /* Green */
+    }
+
+    .duration-badge {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      background: white;
+      color: var(--text-primary);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .tour-content {
+      padding: 24px;
+    }
+
+    .rating-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .stars {
+      display: flex;
+      color: #fbbf24;
+    }
+
+    .star-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+
+    .rating-text {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .tour-content h3 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    .location-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+    }
+
+    .location-row mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+
+    .tour-excerpt {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 24px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      padding: 16px 0;
+      border-top: 1px solid #e2e8f0;
+      border-bottom: 1px solid #e2e8f0;
+      margin-bottom: 20px;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .info-item .label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-item .value {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .book-btn {
+      width: 100%;
+      border-radius: 12px !important;
+      padding: 24px !important;
+      font-size: 1rem !important;
+      font-weight: 600 !important;
+    }
+
+    /* Blog Section */
+    .blog-section {
+      padding: 80px 0;
+      background: #f0fdf4; /* Light green tint matching the reference */
+    }
+
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 32px;
+      margin-top: 48px;
+    }
+
+    .blog-card {
+      background: white;
+      border-radius: 24px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .blog-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    }
+
+    .blog-image-container {
+      height: 240px;
+      overflow: hidden;
+    }
+
+    .blog-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .blog-card:hover .blog-image {
+      transform: scale(1.05);
+    }
+
+    .blog-content {
+      padding: 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .blog-meta {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .blog-meta span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .blog-meta mat-icon {
+      font-size: 16px !important;
+      width: 16px;
+      height: 16px;
+    }
+
+    .blog-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    .blog-excerpt {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 24px;
+      flex: 1;
+      font-size: 0.95rem;
+    }
+
+    .blog-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 20px;
+    }
+
+    .blog-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .author-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .author-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+    }
+
+    .read-more-btn.mat-mdc-button {
+      color: var(--text-secondary);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .read-more-btn.mat-mdc-button:hover {
+      color: var(--primary-color);
+      background: rgba(45, 212, 191, 0.05);
+    }
   `]
 })
-export class HomePageComponent implements AfterViewInit, OnDestroy {
+export class HomePageComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('greenscreenVideo') videoElement!: ElementRef<HTMLVideoElement>;
   @ViewChild('videoCanvas') canvasElement!: ElementRef<HTMLCanvasElement>;
 
-  showDevelopmentNotice = true;
+  private toursService = inject(ToursService);
+  private blogsService = inject(BlogsService);
+  private destinationsService = inject(DestinationsService);
+
+  popularTours: any[] = [];
+  latestBlogs: any[] = [];
+  destinations: any[] = [];
+
+  showShopLaunch = true;
   private animationFrameId: number | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
 
@@ -1029,6 +1837,43 @@ export class HomePageComponent implements AfterViewInit, OnDestroy {
   private smoothness = 0.15;     // Clean edges
   private spill = 0.15;          // Minimal green tint removal
   private minGreen = 100;
+
+  ngOnInit() {
+    this.toursService.listTours().subscribe({
+      next: (tours) => {
+        if (tours && tours.length > 0) {
+          this.popularTours = tours.slice(0, 8).map(tour => ({
+            ...tour,
+            durationString: `${tour.durationDays} Days - ${tour.durationDays - 1} Nights`
+          }));
+        } else {
+          console.warn('No popular tours found or empty list returned');
+        }
+      },
+      error: (err) => {
+        console.error('Error loading popular tours:', err);
+      }
+    });
+
+    // Fetch latest blogs
+    this.blogsService.listPublishedBlogs().subscribe({
+      next: (blogs) => {
+        if (blogs && blogs.length > 0) {
+          // Sort is already done in service, but just to be sure we take top 3
+          this.latestBlogs = blogs.slice(0, 3).map(blog => ({
+            ...blog,
+            // Create a mock comment count if not present
+            commentCount: blog.commentCount || Math.floor(Math.random() * 10) + 1,
+            // Create a truncated excerpt if summary is missing
+            excerpt: blog.summary || (blog.content ? blog.content.substring(0, 100) + '...' : '')
+          }));
+        }
+      },
+      error: (err) => console.error('Error loading blogs:', err)
+    });
+
+    this.destinations = this.destinationsService.getDestinations();
+  }
 
   features = [
     {
@@ -1057,88 +1902,39 @@ export class HomePageComponent implements AfterViewInit, OnDestroy {
     }
   ];
 
-  destinations = [
+
+
+  // Slider Logic
+  currentSlide = 0;
+  slides = [
     {
-      image: '/Esala_Perahara.jpg',
-      alt: 'Kandy Esala Perahera festival',
-      icon: 'celebration',
-      title: 'Kandy Esala Perahera',
-      description: 'Sri Lanka\'s grandest festival with glowing elephants, dancers, drummers and sacred traditions—an unforgettable cultural spectacle in Kandy.',
-      credit: 'Photo: Sovindu Rashmika'
+      image: '/c1.JPG',
+      alt: 'Sri Lankan Adventures',
+      caption: ''
     },
     {
-      image: '/Ella.jpg',
-      alt: 'Ella misty mountain village',
-      icon: 'landscape',
-      title: 'Ella',
-      description: 'A misty mountain village with tea fields, waterfalls and the iconic Nine Arch Bridge—perfect for hikes and scenic train rides.',
-      credit: 'Photo: Lisa'
+      image: '/c2.JPG',
+      alt: 'Cultural Wonders',
+      caption: ''
     },
     {
-      image: '/Nuwara_Eliya.jpg',
-      alt: 'Nuwara Eliya tea country',
-      icon: 'local_cafe',
-      title: 'Nuwara Eliya (Little England)',
-      description: 'Tea country charm with cool climates, colonial vibes and the world\'s finest high-grown Ceylon tea.',
-      credit: 'Photo: Darren Victoria'
-    },
-    {
-      image: 'negombo.jpeg',
-      alt: 'Negombo beach and fish market',
-      icon: 'beach_access',
-      title: 'Negombo',
-      description: 'Golden beaches, a bustling fish market and rich colonial heritage—your coastal gateway near Colombo.',
-      credit: 'Photo: Tristan'
-    },
-    {
-      image: '/Colombo.jpg',
-      alt: 'Colombo city',
-      icon: 'apartment',
-      title: 'Colombo',
-      description: 'Sri Lanka\'s lively capital with temples, markets, parks, museums and modern city vibes all in one.',
-      credit: 'Photo: Isuru Dev Thilina'
-    },
-    {
-      image: '/Sigiriya.jpg',
-      alt: 'Sigiriya Lion Rock',
-      icon: 'terrain',
-      title: 'Sigiriya (Lion Rock)',
-      description: 'A UNESCO wonder—climb through lion paws to ancient palace ruins and breathtaking views.',
-      credit: 'Photo: Lisa'
-    },
-    {
-      image: '/Down_South.jpg',
-      alt: 'South coast beaches and Galle Fort',
-      icon: 'beach_access',
-      title: 'Down South',
-      description: 'Beaches, surfing, whale watching, Galle Fort and lush rainforests—the south is where culture meets paradise.',
-      credit: 'Photo: Lisa'
-    },
-    {
-      image: '/Anuradhapura.jpg',
-      alt: 'Anuradhapura ancient ruins',
-      icon: 'account_balance',
-      title: 'Anuradhapura',
-      description: 'Sri Lanka\'s ancient capital with sacred stupas, ruins and the legendary Sri Maha Bodhi tree.',
-      credit: 'Photo: Isuru Dev Thilina'
-    },
-    {
-      image: '/Sri_Pada.jpg',
-      alt: 'Adam\'s Peak sunrise climb',
-      icon: 'hiking',
-      title: 'Adams Peak (Sri Pada)',
-      description: 'A sacred climb to witness sunrise above the clouds—spiritual unity and natural wonder in one.',
-      credit: 'Photo: Nadeesha Fernando'
-    },
-    {
-      image: '/Pollonaruwa.jpg',
-      alt: 'Pollonaruwa ancient ruins',
-      icon: 'account_balance',
-      title: 'Pollonaruwa',
-      description: 'Polonnaruwa, Sri Lanka\'s medieval capital and a UNESCO World Heritage Site, renowned for its ancient ruins and remarkable Sinhalese architecture.',
-      credit: 'Photo: Isuru Dev Thilina'
+      image: '/c3.jpeg',
+      alt: 'Unforgettable Moments',
+      caption: ''
     }
   ];
+
+  nextSlide() {
+    this.currentSlide = (this.currentSlide + 1) % this.slides.length;
+  }
+
+  prevSlide() {
+    this.currentSlide = (this.currentSlide - 1 + this.slides.length) % this.slides.length;
+  }
+
+  setSlide(index: number) {
+    this.currentSlide = index;
+  }
 
   testimonials = [
     {
@@ -1362,7 +2158,7 @@ export class HomePageComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  closeDevelopmentNotice() {
-    this.showDevelopmentNotice = false;
+  closeShopLaunch() {
+    this.showShopLaunch = false;
   }
 }

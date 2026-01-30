@@ -12,9 +12,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 
 import { UserManagementService } from '../../../services/user-management.service';
-import { 
-  User, 
-  UserRole, 
+import {
+  User,
+  UserRole,
   UserPermissions,
   PermissionKey,
   createDefaultPermissions
@@ -111,10 +111,18 @@ export interface UserFormDialogData {
               <mat-label>Role</mat-label>
               <mat-select formControlName="role" (selectionChange)="onRoleChange()">
                 <mat-option value="manager">Manager</mat-option>
-                <!-- Admin role creation would be handled separately or through database -->
+                <mat-option value="admin">Administrator (Full Access)</mat-option>
               </mat-select>
               <mat-icon matPrefix>badge</mat-icon>
             </mat-form-field>
+            
+            <mat-checkbox 
+                formControlName="isActive" 
+                class="active-checkbox"
+                color="primary"
+            >
+                Account Enabled
+            </mat-checkbox>
           </div>
 
           <!-- Optional Information (Create/Edit modes) -->
@@ -208,6 +216,21 @@ export interface UserFormDialogData {
                 </div>
               </mat-checkbox>
 
+              <mat-checkbox 
+                formControlName="messagesPermission"
+                class="permission-checkbox"
+              >
+                <div class="permission-info">
+                  <div class="permission-label">
+                    <mat-icon>mail</mat-icon>
+                    Messages Management
+                  </div>
+                  <div class="permission-description">
+                    View and reply to contact form inquiries
+                  </div>
+                </div>
+              </mat-checkbox>
+
               <!-- Users permission is not available for managers -->
               <div class="permission-info disabled-permission">
                 <div class="permission-label">
@@ -275,7 +298,7 @@ export interface UserFormDialogData {
     }
 
     .dialog-title mat-icon {
-      color: #2dd4bf;
+      color: #0b1f3a;
       font-size: 1.75rem;
       width: 1.75rem;
       height: 1.75rem;
@@ -447,6 +470,7 @@ export class UserFormDialogComponent implements OnInit {
       formConfig.email = ['', [Validators.required, Validators.email]];
       formConfig.displayName = ['', [Validators.required, Validators.minLength(2)]];
       formConfig.role = ['manager', [Validators.required]];
+      formConfig.isActive = [true];
       formConfig.department = [''];
       formConfig.phone = [''];
       formConfig.notes = [''];
@@ -461,6 +485,7 @@ export class UserFormDialogComponent implements OnInit {
     formConfig.toursPermission = [false];
     formConfig.blogsPermission = [false];
     formConfig.bookingsPermission = [false];
+    formConfig.messagesPermission = [false];
 
     return this.fb.group(formConfig);
   }
@@ -469,13 +494,14 @@ export class UserFormDialogComponent implements OnInit {
     if (!this.data.user) return;
 
     const user = this.data.user;
-    
+
     // Populate basic information
     if (this.data.mode === 'edit') {
       this.userForm.patchValue({
         email: user.email,
         displayName: user.displayName || '',
         role: user.role,
+        isActive: user.isActive,
         department: user.department || '',
         phone: user.phone || '',
         notes: user.notes || ''
@@ -486,17 +512,21 @@ export class UserFormDialogComponent implements OnInit {
     this.userForm.patchValue({
       toursPermission: user.permissions.tours,
       blogsPermission: user.permissions.blogs,
-      bookingsPermission: user.permissions.bookings
+      bookingsPermission: user.permissions.bookings,
+      messagesPermission: user.permissions.messages ?? false
     });
   }
 
   onRoleChange(): void {
-    // Reset permissions when role changes
-    if (this.userForm.get('role')?.value === 'manager') {
+    const role = this.userForm.get('role')?.value;
+
+    // If Admin is selected, enable all permissions visually (though logic handles it)
+    if (role === 'admin') {
       this.userForm.patchValue({
-        toursPermission: false,
-        blogsPermission: false,
-        bookingsPermission: false
+        toursPermission: true,
+        blogsPermission: true,
+        bookingsPermission: true,
+        messagesPermission: true
       });
     }
   }
@@ -535,7 +565,8 @@ export class UserFormDialogComponent implements OnInit {
       tours: formValue.toursPermission,
       blogs: formValue.blogsPermission,
       bookings: formValue.bookingsPermission,
-      users: false // Managers cannot have user management permissions
+      messages: formValue.messagesPermission,
+      users: formValue.role === 'admin' // Admins get user permission
     };
 
     const userData = {
@@ -543,6 +574,7 @@ export class UserFormDialogComponent implements OnInit {
       password: formValue.password,
       displayName: formValue.displayName,
       role: formValue.role as UserRole,
+      isActive: formValue.isActive,
       permissions,
       department: formValue.department,
       phone: formValue.phone,
@@ -566,12 +598,14 @@ export class UserFormDialogComponent implements OnInit {
       tours: formValue.toursPermission,
       blogs: formValue.blogsPermission,
       bookings: formValue.bookingsPermission,
-      users: this.data.user.permissions.users // Keep existing user permission
+      messages: formValue.messagesPermission,
+      users: formValue.role === 'admin' ? true : this.data.user.permissions.users
     };
 
     const updateData: Partial<User> = {
       displayName: formValue.displayName,
       role: formValue.role,
+      isActive: formValue.isActive,
       permissions,
       department: formValue.department,
       phone: formValue.phone,
@@ -588,7 +622,8 @@ export class UserFormDialogComponent implements OnInit {
       tours: formValue.toursPermission,
       blogs: formValue.blogsPermission,
       bookings: formValue.bookingsPermission,
-      users: this.data.user.permissions.users // Keep existing user permission
+      messages: formValue.messagesPermission,
+      users: this.data.user.permissions.users
     };
 
     await this.userManagementService.updateUserPermissions(this.data.user.id, permissions);

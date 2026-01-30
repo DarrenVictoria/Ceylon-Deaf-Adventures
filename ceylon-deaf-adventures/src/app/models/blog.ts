@@ -12,6 +12,7 @@ export interface Blog {
     authorName?: string;
     status: 'draft' | 'published' | 'archived';
     featuredImage?: string; // URL
+    pdfUrl?: string; // Optional PDF download URL
     isFeatured?: boolean;
     allowComments?: boolean;
 
@@ -49,6 +50,7 @@ export function createBlog(partial: Partial<Blog>): Omit<Blog, 'id'> {
         authorName: partial.authorName || '',
         status: partial.status || 'draft',
         featuredImage: partial.featuredImage || '',
+        pdfUrl: partial.pdfUrl || '',
         isFeatured: !!partial.isFeatured,
         allowComments: partial.allowComments !== undefined ? partial.allowComments : true,
         viewCount: partial.viewCount ?? 0,

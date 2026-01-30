@@ -220,12 +220,12 @@ import { takeUntil } from 'rxjs/operators';
   styles: [`
     /* Global Variables */
     :host {
-      --primary-color: #2dd4bf;
-      --primary-light: #5eead4;
-      --primary-dark: #0f766e;
-      --accent-color: #f97316;
-      --accent-light: #fed7aa;
-      --secondary-color: #6366f1;
+      --primary-color: #0b1f3a;
+      --primary-light: #1e3a5f;
+      --primary-dark: #061121;
+      --accent-color: #f4b416;
+      --accent-light: #fcd34d;
+      --secondary-color: #475569;
       --success-color: #10b981;
       --warning-color: #f59e0b;
       --error-color: #ef4444;

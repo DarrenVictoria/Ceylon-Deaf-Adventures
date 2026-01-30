@@ -94,6 +94,26 @@ import { ConnectionStatusComponent } from '../connection-status/connection-statu
               <mat-icon>article</mat-icon>
               <span>Manage Blogs</span>
             </a>
+
+            <a 
+              [routerLink]="['/admin/products']" 
+              routerLinkActive="active"
+              mat-stroked-button
+              class="nav-btn"
+            >
+              <mat-icon>storefront</mat-icon>
+              <span>Manage Products</span>
+            </a>
+
+            <a 
+              [routerLink]="['/admin/product-reservations']" 
+              routerLinkActive="active"
+              mat-stroked-button
+              class="nav-btn"
+            >
+              <mat-icon>shopping_bag</mat-icon>
+              <span>Reservations</span>
+            </a>
             
             <a 
               [routerLink]="['/admin/bookings']" 
@@ -103,6 +123,16 @@ import { ConnectionStatusComponent } from '../connection-status/connection-statu
             >
               <mat-icon>book_online</mat-icon>
               <span>Manage Bookings</span>
+            </a>
+
+            <a 
+              [routerLink]="['/admin/messages']" 
+              routerLinkActive="active"
+              mat-stroked-button
+              class="nav-btn"
+            >
+              <mat-icon>mail</mat-icon>
+              <span>Messages</span>
             </a>
             
             <!-- User Management - Only visible to admins -->
@@ -152,7 +182,7 @@ import { ConnectionStatusComponent } from '../connection-status/connection-statu
     }
 
     .admin-nav-title mat-icon {
-      color: #2dd4bf;
+      color: #0b1f3a;
       font-size: 1.75rem !important;
       width: 1.75rem;
       height: 1.75rem;
@@ -170,8 +200,8 @@ import { ConnectionStatusComponent } from '../connection-status/connection-statu
     }
 
     .back-to-site-btn:hover {
-      color: #2dd4bf !important;
-      border-color: #2dd4bf !important;
+      color: #0b1f3a !important;
+      border-color: #0b1f3a !important;
     }
 
     .user-menu {
@@ -190,9 +220,9 @@ import { ConnectionStatusComponent } from '../connection-status/connection-statu
     }
 
     .user-menu-button:hover {
-      color: #2dd4bf !important;
-      border-color: #2dd4bf !important;
-      background-color: rgba(45, 212, 191, 0.05);
+      color: #0b1f3a !important;
+      border-color: #0b1f3a !important;
+      background-color: rgba(244, 180, 22, 0.1);
     }
 
     .user-info {
@@ -241,16 +271,18 @@ import { ConnectionStatusComponent } from '../connection-status/connection-statu
     }
 
     .nav-btn:hover {
-      color: #2dd4bf !important;
-      border-color: #2dd4bf !important;
-      background-color: rgba(45, 212, 191, 0.05);
+      color: #0b1f3a !important;
+      border-color: #0b1f3a !important;
+      background-color: rgba(244, 180, 22, 0.1);
     }
 
     .nav-btn.active {
-      color: #2dd4bf !important;
-      border-color: #2dd4bf !important;
-      background-color: rgba(45, 212, 191, 0.1);
+      color: #0b1f3a !important;
+      border-color: #0b1f3a !important;
+      background-color: #f4b416 !important;
+      color: #0b1f3a !important;
       font-weight: 700 !important;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
 
     @media (max-width: 768px) {

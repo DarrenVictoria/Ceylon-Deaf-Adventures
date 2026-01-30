@@ -147,6 +147,39 @@ import { MatDividerModule } from '@angular/material/divider';
       </div>
     </section>
 
+    <!-- Our Team -->
+    <section class="team-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Our Team</h2>
+          <p class="section-subtitle">Meet the passionate individuals driving our mission</p>
+        </div>
+
+        <div class="team-grid">
+          <mat-card class="team-card" *ngFor="let member of teamMembers" matRipple>
+            <div class="team-image-container">
+              <img [src]="member.image" [alt]="member.name" class="team-image" />
+              <div class="team-image-overlay" [ngClass]="member.gradient"></div>
+            </div>
+            <mat-card-content class="team-content">
+              <h3 class="team-name">{{ member.name }}</h3>
+              <p class="team-position">{{ member.position }}</p>
+              <mat-divider class="team-divider"></mat-divider>
+              <div class="qualifications-section">
+                <h4 class="qualifications-title">Qualifications & Experience</h4>
+                <ul class="qualifications-list">
+                  <li *ngFor="let qualification of member.qualifications" class="qualification-item">
+                    <mat-icon class="qualification-icon">check_circle</mat-icon>
+                    <span>{{ qualification }}</span>
+                  </li>
+                </ul>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </section>
+
     <!-- Core Values -->
     <section class="values-section">
       <div class="container">
@@ -259,6 +292,19 @@ import { MatDividerModule } from '@angular/material/divider';
       </div>
     </section>
 
+    <!-- Location Section -->
+    <section class="location-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Visit Us</h2>
+          <p class="section-subtitle">Find our dedicated guest house</p>
+        </div>
+        <div class="map-container">
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3958.37910436873!2d79.8539194!3d7.197514000000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae2eef51a462b23%3A0xd81445904cca819a!2sLilly%20Palace%20Villa%20Guest%20House!5e0!3m2!1sen!2slk!4v1765740338655!5m2!1sen!2slk" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+    </section>
+
     <!-- Closing CTA -->
     <section class="cta-section">
       <div class="cta-background"></div>
@@ -291,12 +337,12 @@ import { MatDividerModule } from '@angular/material/divider';
       font-size: 24px !important;}
     /* Global Variables */
     :host {
-      --primary-color: #2dd4bf;
-      --primary-light: #5eead4;
-      --primary-dark: #0f766e;
-      --accent-color: #f97316;
-      --accent-light: #fed7aa;
-      --secondary-color: #6366f1;
+      --primary-color: #0b1f3a;
+      --primary-light: #1e3a5f;
+      --primary-dark: #061121;
+      --accent-color: #f4b416;
+      --accent-light: #fcd34d;
+      --secondary-color: #475569;
       --success-color: #10b981;
       --background-color: #ffffff;
       --surface-color: #f8fafc;
@@ -705,6 +751,129 @@ import { MatDividerModule } from '@angular/material/divider';
       line-height: 1.6;
     }
 
+    /* Team Section */
+    .team-section {
+      padding: 100px 0;
+      background: white;
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 40px;
+      margin-top: 60px;
+    }
+
+    .team-card {
+      border-radius: 24px !important;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .team-card:hover {
+      transform: translateY(-12px);
+      box-shadow: 0 20px 64px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .team-image-container {
+      position: relative;
+      width: 100%;
+      height: 320px;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--surface-color), #e2e8f0);
+    }
+
+    .team-image {
+      width: 100%;
+
+       scale:0.9;
+      object-fit: cover;
+      object-position: center;
+      transition: transform 0.3s ease;
+    }
+
+    .team-card:hover .team-image {
+      transform: scale(1.05);
+    }
+
+    .team-image-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      opacity: 0.1;
+      pointer-events: none;
+    }
+
+    .team-content {
+      padding: 32px 24px !important;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .team-name {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .team-position {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--accent-color);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .team-divider {
+      margin: 20px 0 !important;
+    }
+
+    .qualifications-section {
+      flex: 1;
+    }
+
+    .qualifications-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+    }
+
+    .qualifications-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .qualification-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .qualification-icon {
+      color: var(--success-color);
+      font-size: 20px !important;
+      width: 20px !important;
+      height: 20px !important;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
     /* Values Section */
     .values-section {
       padding: 100px 0;
@@ -1105,29 +1274,38 @@ import { MatDividerModule } from '@angular/material/divider';
       .hero-title {
         font-size: 2.5rem;
       }
-      
+
       .section-title {
         font-size: 2rem;
       }
-      
+
       .container {
         padding: 0 16px;
       }
-      
+
       .timeline-item {
         grid-template-columns: 1fr;
         text-align: center;
         gap: 16px;
       }
-      
+
       .timeline-line {
         display: none;
       }
-      
+
+      .team-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      .team-image-container {
+        height: 280px;
+      }
+
       .cta-title {
         font-size: 2rem;
       }
-      
+
       .stat-number {
         font-size: 2.5rem;
       }
@@ -1137,15 +1315,48 @@ import { MatDividerModule } from '@angular/material/divider';
       .hero-title {
         font-size: 2rem;
       }
-      
+
       .hero-description {
         font-size: 1.1rem;
       }
-      
+
       .values-grid,
-      .stats-grid {
+      .stats-grid,
+      .team-grid {
         grid-template-columns: 1fr;
       }
+
+      .team-image-container {
+        height: 240px;
+      }
+
+      .team-name {
+        font-size: 1.3rem;
+      }
+
+      .team-position {
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Location Section */
+    .location-section {
+      padding: 100px 0;
+      background: var(--surface-color);
+    }
+
+    .map-container {
+      width: 100%;
+      height: 450px;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 20px 64px rgba(0, 0, 0, 0.15);
+      margin-top: 40px;
+    }
+
+    .map-container iframe {
+      width: 100%;
+      height: 100%;
     }
   `]
 })
@@ -1239,6 +1450,69 @@ export class AboutPageComponent {
       progress: 95,
       gradient: 'success-gradient',
       colorClass: 'success-progress'
+    }
+  ];
+
+  teamMembers = [
+    {
+      name: 'Indika Waas',
+      position: 'Business Owner & Senior Advisor',
+      image: '/indika-vass.png',
+      qualifications: [
+        '10+ years accessible tourism experience',
+        'Original pioneer of deaf-friendly hospitality in Sri Lanka',
+        'Extensive international deaf community network',
+        'Strategic guidance and cultural authenticity'
+      ],
+      gradient: 'primary-gradient'
+    },
+    {
+      name: 'Praveen Waas',
+      position: 'Founder & CEO',
+      image: '/praveen-waas.png',
+      qualifications: [
+        'Entrepreneurship student (Ug), University of Sri Jayewardenepura',
+        '10+ years voluntary service experience',
+        'Raised by deaf parents, deep community understanding',
+        'Visionary leader driving inclusive tourism innovation'
+      ],
+      gradient: 'accent-gradient'
+    },
+    {
+      name: 'Pathum Devaka',
+      position: 'Operations Manager',
+      image: '/pathum-devaka.png',
+      qualifications: [
+        'BSc Business and Strategic Management',
+        '5+ years export industry experience',
+        'Deaf community background (deaf parents)',
+        'Responsible for tour logistics and quality control'
+      ],
+      gradient: 'secondary-gradient'
+    },
+    {
+      name: 'Niyola Fernando',
+      position: 'Finance & Administration Officer',
+      image: '/niyola-fernando.png',
+      qualifications: [
+        'MSc Accountancy & Finance, Nottingham Trent University',
+        '3+ years financial sector experience',
+        'Budget management and compliance oversight',
+        'Grant applications and sustainable growth planning'
+      ],
+      gradient: 'success-gradient'
+    },
+    {
+      name: 'Darren Victoria',
+      position: 'Chief Technical Officer',
+      image: '/darren-victoria.png',
+      qualifications: [
+        'Graduate BSc (Hons) in Software Engineering (First Class)',
+        '4+ years experience in Full Stack Development Industry',
+        'Experience as a Industry Level Solutions Architect & DevOps Lead',
+        '25+ Business and Tech Driven Solutions'
+      ],
+      gradient: 'primary-gradient'
     }
   ];
 }

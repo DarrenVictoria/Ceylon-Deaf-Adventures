@@ -10,7 +10,7 @@ export class ToursService {
     private toursCache$ = new BehaviorSubject<Tour[] | null>(null);
     private cacheTimestamp = 0;
     private readonly CACHE_DURATION = 5 * 60 * 1000;
-    private readonly CONNECTION_TIMEOUT = 15000; // 15 seconds
+    private readonly CONNECTION_TIMEOUT = 30000; // 30 seconds
 
     private fs = inject(FirestoreService);
 
@@ -48,10 +48,17 @@ export class ToursService {
         const now = Date.now();
         const isCacheValid = this.toursCache$.value && (now - this.cacheTimestamp < this.CACHE_DURATION);
 
+        // If we have valid cached data, return it immediately via the BehaviorSubject
         if (isCacheValid && this.toursCache$.value) {
-            return of(this.applyClientSideFilters(this.toursCache$.value, filters));
+            console.log('✅ Returning cached tours immediately:', this.toursCache$.value.length);
+            return this.toursCache$.pipe(
+                map(tours => tours ? this.applyClientSideFilters(tours, filters) : []),
+                shareReplay(1)
+            );
         }
 
+        // Otherwise fetch from Firestore and update cache
+        console.log('🔄 Fetching fresh tours from Firestore...');
         return this.fetchToursFromFirestore().pipe(
             tap(tours => {
                 this.toursCache$.next(tours);
@@ -60,7 +67,12 @@ export class ToursService {
             map(tours => this.applyClientSideFilters(tours, filters)),
             catchError(error => {
                 console.error('Error fetching tours:', error);
-                return of([]);
+                // If we have stale cache, return it rather than empty array
+                const staleTours = this.toursCache$.value || [];
+                if (staleTours.length > 0) {
+                    console.log('⚠️ Returning stale cache due to error');
+                }
+                return of(this.applyClientSideFilters(staleTours, filters));
             }),
             shareReplay(1)
         );
@@ -69,12 +81,12 @@ export class ToursService {
     private fetchToursFromFirestore(): Observable<Tour[]> {
         console.log('🔍 Fetching tours from Firestore for user view...');
         return this.fs.collection<Tour>('tours').pipe(
-            timeout(this.CONNECTION_TIMEOUT),
-            retry({ count: 2, delay: 1000 }),
+            // Removed timeout causing disappearance: timeout(this.CONNECTION_TIMEOUT),
+            // retry({ count: 2, delay: 1000 }),
             map(tours => {
                 console.log('📊 All tours from Firestore:', tours.length);
                 console.log('📋 Tours data:', tours.map(t => ({ id: t.id, title: t.title, published: t.published })));
-                
+
                 // Filter published tours on the client side
                 const publishedTours = tours.filter(tour => {
                     // Handle different possible types for published field
@@ -87,22 +99,22 @@ export class ToursService {
                     const bTime = b.createdAt?.toDate?.() || new Date(0);
                     return bTime.getTime() - aTime.getTime();
                 });
-                
+
                 console.log('✅ Published tours for user view:', publishedTours.length);
                 return publishedTours;
             }),
             catchError(error => {
                 console.error('Firestore connection error:', error);
-                
+
                 // If it's a connection/listener error, try to reconnect
-                if (error.message?.includes('Database connection error') || 
+                if (error.message?.includes('Database connection error') ||
                     error.message?.includes('Database listener conflict')) {
                     console.log('Attempting to recover from Firestore error...');
                     // Clear any existing listeners and try again
                     this.fs.clearAllListeners();
                     return throwError(() => error);
                 }
-                
+
                 return of([]);
             })
         );
@@ -120,10 +132,10 @@ export class ToursService {
     async createTour(tour: any): Promise<string> {
         try {
             console.log('Creating tour in Firestore:', tour);
-            
+
             // Validate tour data
             this.validateTourData(tour);
-            
+
             // Ensure proper data structure
             const cleanTour = {
                 ...tour,
@@ -134,15 +146,15 @@ export class ToursService {
                 features: Array.isArray(tour.features) ? tour.features.filter(Boolean) : [tour.features].filter(Boolean),
                 images: Array.isArray(tour.images) ? tour.images.filter(Boolean) : [tour.images].filter(Boolean)
             };
-            
+
             console.log('Clean tour data:', cleanTour);
-            
+
             const tourId = await this.fs.create('tours', cleanTour);
             console.log('Tour created with ID:', tourId);
-            
+
             // Force cache invalidation and refresh
             await this.forceRefreshCache();
-            
+
             return tourId;
         } catch (error: any) {
             console.error('Error creating tour:', error);
@@ -153,7 +165,7 @@ export class ToursService {
     async updateTour(id: string, changes: any): Promise<void> {
         try {
             console.log('Updating tour in Firestore:', id, changes);
-            
+
             // Validate changes
             if (changes.location) {
                 changes.location = Array.isArray(changes.location) ? changes.location.filter(Boolean) : [changes.location].filter(Boolean);
@@ -164,13 +176,13 @@ export class ToursService {
             if (changes.images) {
                 changes.images = Array.isArray(changes.images) ? changes.images.filter(Boolean) : [changes.images].filter(Boolean);
             }
-            
+
             await this.fs.update(`tours/${id}`, changes);
             console.log('Tour updated successfully');
-            
+
             // Force cache refresh
             await this.forceRefreshCache();
-            
+
         } catch (error: any) {
             console.error('Error updating tour:', error);
             throw new Error('Failed to update tour: ' + (error.message || 'Unknown error'));
@@ -182,10 +194,10 @@ export class ToursService {
             console.log('Deleting tour:', id);
             await this.fs.delete(`tours/${id}`);
             console.log('Tour deleted successfully');
-            
+
             // Force cache refresh
             await this.forceRefreshCache();
-            
+
         } catch (error) {
             console.error('Error deleting tour:', error);
             throw error;
@@ -214,19 +226,19 @@ export class ToursService {
         this.cacheTimestamp = 0;
         this.toursCache$.next(null);
     }
-    
+
     private async forceRefreshCache(): Promise<void> {
         this.invalidateCache();
         // Wait a bit for Firestore to sync
         await new Promise(resolve => setTimeout(resolve, 1000));
         this.preloadTours();
     }
-    
+
     // Add method to get all tours for admin purposes (bypassing cache)
     getAllToursAdmin(): Observable<Tour[]> {
         return this.fs.collection<Tour>('tours').pipe(
-            timeout(this.CONNECTION_TIMEOUT),
-            retry({ count: 2, delay: 1000 }),
+            // Removed timeout to prevent data disappearing on slow connections
+            retry({ count: 3, delay: 2000 }), // Increased retries
             map(tours => {
                 return tours.sort((a, b) => {
                     const aTime = a.createdAt?.toDate?.() || new Date(0);
@@ -236,11 +248,12 @@ export class ToursService {
             }),
             catchError(error => {
                 console.error('Error fetching admin tours:', error);
-                return of([]);
+                // Return generic error to be handled by component instead of silent empty array
+                return throwError(() => new Error('Failed to load tours. Please check your connection.'));
             })
         );
     }
-    
+
     // Debug method to check published tours
     debugPublishedTours(): Observable<any> {
         console.log('🔧 Debug: Checking all tours and their published status...');
@@ -271,12 +284,12 @@ export class ToursService {
                 throw new Error(`Missing required field: ${field}`);
             }
         }
-        
+
         // Validate arrays
         if (!Array.isArray(tour.location) || tour.location.length === 0) {
             throw new Error('At least one location is required');
         }
-        
+
         if (!Array.isArray(tour.images) || tour.images.length === 0) {
             throw new Error('At least one image is required');
         }
