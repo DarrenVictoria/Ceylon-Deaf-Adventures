@@ -214,7 +214,7 @@ import { takeUntil } from 'rxjs/operators';
       font-size: 2.5rem;
       width: 2.5rem;
       height: 2.5rem;
-      color: #2dd4bf;
+      color: #0b1f3a;
     }
 
     .admin-subtitle {
@@ -400,7 +400,7 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class BookingsListComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  
+
   bookings: Booking[] = [];
   loading = false;
   displayedColumns: string[] = ['guest', 'tour', 'details', 'price', 'status', 'created', 'actions'];
@@ -410,7 +410,7 @@ export class BookingsListComponent implements OnInit, OnDestroy {
     private debugService: FirebaseDebugService,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadBookings();
@@ -459,7 +459,7 @@ export class BookingsListComponent implements OnInit, OnDestroy {
 
   formatDate(timestamp: any): string {
     if (!timestamp) return 'N/A';
-    
+
     let date: Date;
     if (timestamp.toDate) {
       date = timestamp.toDate();
@@ -468,25 +468,25 @@ export class BookingsListComponent implements OnInit, OnDestroy {
     } else {
       date = new Date(timestamp);
     }
-    
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
+
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
     });
   }
 
   getTimeAgo(timestamp: any): string {
     if (!timestamp) return 'Unknown';
-    
+
     const now = Date.now();
     const time = this.getTimestamp(timestamp);
     const diff = now - time;
-    
+
     const minutes = Math.floor(diff / (1000 * 60));
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    
+
     if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
     if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
     if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
@@ -521,17 +521,17 @@ export class BookingsListComponent implements OnInit, OnDestroy {
   async updateStatus(booking: Booking, newStatus: 'pending' | 'confirmed' | 'rejected' | 'cancelled') {
     try {
       await this.bookingsService.updateBookingStatus(booking.id!, newStatus);
-      
+
       // Update local state
       const index = this.bookings.findIndex(b => b.id === booking.id);
       if (index !== -1) {
         this.bookings[index] = { ...this.bookings[index], status: newStatus };
         this.cdr.markForCheck();
       }
-      
+
       this.snackBar.open(
-        `Booking ${newStatus} successfully!`, 
-        'Close', 
+        `Booking ${newStatus} successfully!`,
+        'Close',
         { duration: 3000 }
       );
     } catch (error: any) {

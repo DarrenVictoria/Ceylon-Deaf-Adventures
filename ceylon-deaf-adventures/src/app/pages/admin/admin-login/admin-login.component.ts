@@ -120,15 +120,26 @@ import { Subject, takeUntil, combineLatest } from 'rxjs';
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #FFD580 0%, #ADD8E6 100%);
+      background: #0b1f3a;
       padding: 20px;
+      position: relative;
+    }
+    
+    .login-container::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f4b416' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
     }
 
     .login-card {
       width: 100%;
       max-width: 400px;
       border-radius: 16px !important;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+      position: relative;
+      z-index: 1;
     }
 
     .login-header {
@@ -143,12 +154,12 @@ import { Subject, takeUntil, combineLatest } from 'rxjs';
       gap: 12px;
       font-size: 1.5rem;
       font-weight: 700;
-      color: #1f2937;
+      color: #0b1f3a;
       margin: 0;
     }
 
     .login-title mat-icon {
-      color: #2dd4bf;
+      color: #0b1f3a;
       font-size: 1.75rem;
       width: 1.75rem;
       height: 1.75rem;
@@ -198,6 +209,15 @@ import { Subject, takeUntil, combineLatest } from 'rxjs';
       font-weight: 600;
       position: relative;
       margin-top: 8px;
+      background-color: #0b1f3a !important;
+      color: #f4b416 !important;
+      transition: all 0.2s ease;
+    }
+    
+    .login-button:hover {
+        background-color: #153763 !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(11, 31, 58, 0.3);
     }
 
     .spinner {
@@ -214,7 +234,7 @@ import { Subject, takeUntil, combineLatest } from 'rxjs';
     }
 
     .back-button:hover {
-      color: #2dd4bf !important;
+      color: #0b1f3a !important;
     }
 
     /* Responsive design */

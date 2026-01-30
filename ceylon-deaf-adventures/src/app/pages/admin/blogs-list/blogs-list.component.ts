@@ -268,7 +268,7 @@ import { takeUntil } from 'rxjs/operators';
       font-size: 2.5rem;
       width: 2.5rem;
       height: 2.5rem;
-      color: #2dd4bf;
+      color: #0b1f3a;
     }
 
     .admin-subtitle {
@@ -324,7 +324,7 @@ import { takeUntil } from 'rxjs/operators';
     }
 
     .view-options button.active {
-      background-color: #2dd4bf;
+      background-color: #0b1f3a;
       color: white;
     }
 
@@ -551,7 +551,7 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class BlogsListComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  
+
   blogs: Blog[] = [];
   loading = false;
   viewMode: 'table' | 'grid' = 'table';
@@ -563,7 +563,7 @@ export class BlogsListComponent implements OnInit, OnDestroy {
     private router: Router,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadBlogs();
@@ -614,17 +614,17 @@ export class BlogsListComponent implements OnInit, OnDestroy {
     try {
       const newStatus = blog.status === 'published' ? 'draft' : 'published';
       await this.blogsService.updateBlog(blog.id!, { status: newStatus });
-      
+
       // Update local state
       const index = this.blogs.findIndex(b => b.id === blog.id);
       if (index !== -1) {
         this.blogs[index] = { ...this.blogs[index], status: newStatus };
         this.cdr.markForCheck();
       }
-      
+
       this.snackBar.open(
-        `Blog ${newStatus === 'published' ? 'published' : 'unpublished'} successfully!`, 
-        'Close', 
+        `Blog ${newStatus === 'published' ? 'published' : 'unpublished'} successfully!`,
+        'Close',
         { duration: 3000 }
       );
     } catch (error: any) {
@@ -636,17 +636,17 @@ export class BlogsListComponent implements OnInit, OnDestroy {
     try {
       const newFeatured = !blog.isFeatured;
       await this.blogsService.updateBlog(blog.id!, { isFeatured: newFeatured });
-      
+
       // Update local state
       const index = this.blogs.findIndex(b => b.id === blog.id);
       if (index !== -1) {
         this.blogs[index] = { ...this.blogs[index], isFeatured: newFeatured };
         this.cdr.markForCheck();
       }
-      
+
       this.snackBar.open(
-        `Blog ${newFeatured ? 'added to featured' : 'removed from featured'} successfully!`, 
-        'Close', 
+        `Blog ${newFeatured ? 'added to featured' : 'removed from featured'} successfully!`,
+        'Close',
         { duration: 3000 }
       );
     } catch (error: any) {
@@ -661,11 +661,11 @@ export class BlogsListComponent implements OnInit, OnDestroy {
 
     try {
       await this.blogsService.deleteBlog(blog.id!);
-      
+
       // Update local state
       this.blogs = this.blogs.filter(b => b.id !== blog.id);
       this.cdr.markForCheck();
-      
+
       this.snackBar.open('Blog deleted successfully!', 'Close', { duration: 3000 });
     } catch (error: any) {
       this.snackBar.open('Error deleting blog: ' + error.message, 'Close', { duration: 5000 });
@@ -681,7 +681,7 @@ export class BlogsListComponent implements OnInit, OnDestroy {
 
   formatDate(timestamp: any): string {
     if (!timestamp) return 'N/A';
-    
+
     let date: Date;
     if (timestamp.toDate) {
       date = timestamp.toDate();
@@ -690,11 +690,11 @@ export class BlogsListComponent implements OnInit, OnDestroy {
     } else {
       date = new Date(timestamp);
     }
-    
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
+
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
     });
   }
 

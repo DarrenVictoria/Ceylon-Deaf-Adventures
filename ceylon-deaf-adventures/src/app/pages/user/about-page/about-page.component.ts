@@ -292,6 +292,19 @@ import { MatDividerModule } from '@angular/material/divider';
       </div>
     </section>
 
+    <!-- Location Section -->
+    <section class="location-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Visit Us</h2>
+          <p class="section-subtitle">Find our dedicated guest house</p>
+        </div>
+        <div class="map-container">
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3958.37910436873!2d79.8539194!3d7.197514000000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae2eef51a462b23%3A0xd81445904cca819a!2sLilly%20Palace%20Villa%20Guest%20House!5e0!3m2!1sen!2slk!4v1765740338655!5m2!1sen!2slk" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+    </section>
+
     <!-- Closing CTA -->
     <section class="cta-section">
       <div class="cta-background"></div>
@@ -324,12 +337,12 @@ import { MatDividerModule } from '@angular/material/divider';
       font-size: 24px !important;}
     /* Global Variables */
     :host {
-      --primary-color: #2dd4bf;
-      --primary-light: #5eead4;
-      --primary-dark: #0f766e;
-      --accent-color: #f97316;
-      --accent-light: #fed7aa;
-      --secondary-color: #6366f1;
+      --primary-color: #0b1f3a;
+      --primary-light: #1e3a5f;
+      --primary-dark: #061121;
+      --accent-color: #f4b416;
+      --accent-light: #fcd34d;
+      --secondary-color: #475569;
       --success-color: #10b981;
       --background-color: #ffffff;
       --surface-color: #f8fafc;
@@ -1324,6 +1337,26 @@ import { MatDividerModule } from '@angular/material/divider';
       .team-position {
         font-size: 0.9rem;
       }
+    }
+
+    /* Location Section */
+    .location-section {
+      padding: 100px 0;
+      background: var(--surface-color);
+    }
+
+    .map-container {
+      width: 100%;
+      height: 450px;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 20px 64px rgba(0, 0, 0, 0.15);
+      margin-top: 40px;
+    }
+
+    .map-container iframe {
+      width: 100%;
+      height: 100%;
     }
   `]
 })

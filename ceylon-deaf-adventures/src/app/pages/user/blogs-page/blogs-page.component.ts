@@ -259,12 +259,12 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
   styles: [`
     /* Global Variables */
     :host {
-      --primary-color: #2dd4bf;
-      --primary-light: #5eead4;
-      --primary-dark: #0f766e;
-      --accent-color: #f97316;
-      --accent-light: #fed7aa;
-      --secondary-color: #6366f1;
+      --primary-color: #0b1f3a;
+      --primary-light: #1e3a5f;
+      --primary-dark: #061121;
+      --accent-color: #f4b416;
+      --accent-light: #fcd34d;
+      --secondary-color: #475569;
       --success-color: #10b981;
       --warning-color: #f59e0b;
       --error-color: #ef4444;
@@ -963,7 +963,7 @@ export class BlogsPageComponent implements OnInit, OnDestroy {
       }
 
       // Tag filter
-      if (filters.selectedTag && 
+      if (filters.selectedTag &&
         !blog.tags?.some(tag => tag.toLowerCase() === filters.selectedTag.toLowerCase())) {
         return false;
       }
@@ -1002,7 +1002,7 @@ export class BlogsPageComponent implements OnInit, OnDestroy {
   getExcerpt(content: string, maxLength: number = 150): string {
     if (!content) return '';
     const cleanContent = content.replace(/<[^>]*>/g, ''); // Remove HTML tags
-    return cleanContent.length > maxLength 
+    return cleanContent.length > maxLength
       ? cleanContent.substring(0, maxLength) + '...'
       : cleanContent;
   }
@@ -1018,7 +1018,7 @@ export class BlogsPageComponent implements OnInit, OnDestroy {
   debugBlogs(): void {
     console.log('🔧 Starting blogs debug...');
     this.blogsService.debugBlogStatuses().subscribe();
-    
+
     // Also check what the current user blogs observable has
     this.allBlogs$.subscribe(blogs => {
       console.log('🔧 Current user blogs:', blogs);

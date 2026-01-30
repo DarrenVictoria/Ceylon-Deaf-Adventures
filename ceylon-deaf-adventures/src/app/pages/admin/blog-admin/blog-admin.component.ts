@@ -331,7 +331,7 @@ interface ImageUpload {
       font-size: 2.5rem;
       width: 2.5rem;
       height: 2.5rem;
-      color: #2dd4bf;
+      color: #0b1f3a;
     }
 
     .admin-subtitle {
@@ -367,7 +367,7 @@ interface ImageUpload {
     }
 
     .section-title mat-icon {
-      color: #2dd4bf;
+      color: #0b1f3a;
       font-size: 1.75rem;
       width: 1.75rem;
       height: 1.75rem;
@@ -422,7 +422,7 @@ interface ImageUpload {
       font-size: 1.25rem;
       width: 1.25rem;
       height: 1.25rem;
-      color: #2dd4bf;
+      color: #0b1f3a;
     }
 
     .image-upload-area {

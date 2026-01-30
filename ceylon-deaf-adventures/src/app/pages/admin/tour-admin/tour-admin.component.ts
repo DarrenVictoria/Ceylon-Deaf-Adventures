@@ -14,7 +14,6 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
 import { AdminNavigationComponent } from '../../../components/admin-navigation/admin-navigation.component';
 import { Timestamp } from '@angular/fire/firestore';
 import { ToursService } from '../../../services/tours.service';
@@ -24,6 +23,7 @@ import { takeUntil } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { inject, Injector, runInInjectionContext } from '@angular/core';
 import { FirebaseDebugService } from '../../../services/firebase-debug.service';
+import { StorageEnhancedService } from '../../../services/storage-enhanced.service';
 
 interface ImageUpload {
   file: File;
@@ -103,12 +103,21 @@ interface ImageUpload {
               <mat-form-field appearance="outline">
                 <mat-label>Duration (Days)</mat-label>
                 <input matInput type="number" formControlName="durationDays" min="1">
-                <mat-icon matSuffix>schedule</mat-icon>
+                <mat-icon matSuffix>wb_sunny</mat-icon>
                 <mat-error *ngIf="tourForm.get('durationDays')?.hasError('required')">
-                  Duration is required
+                  Required
                 </mat-error>
                 <mat-error *ngIf="tourForm.get('durationDays')?.hasError('min')">
                   Must be at least 1 day
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Duration (Nights)</mat-label>
+                <input matInput type="number" formControlName="durationNights" min="0">
+                <mat-icon matSuffix>bedtime</mat-icon>
+                <mat-error *ngIf="tourForm.get('durationNights')?.hasError('required')">
+                  Required
                 </mat-error>
               </mat-form-field>
 
@@ -129,6 +138,12 @@ interface ImageUpload {
                   Price is required
                 </mat-error>
               </mat-form-field>
+
+              <div class="negotiable-toggle">
+                 <mat-checkbox formControlName="isNegotiable">
+                    Price is Negotiable
+                 </mat-checkbox>
+              </div>
 
               <mat-form-field appearance="outline">
                 <mat-label>Currency</mat-label>
@@ -236,34 +251,64 @@ interface ImageUpload {
               Accessibility Features
             </h2>
 
-            <div formGroupName="accessibility" class="checkbox-grid">
-              <mat-checkbox formControlName="visualAlarms">
-                <div class="checkbox-content">
-                  <mat-icon>visibility</mat-icon>
-                  <span>Visual Alarms</span>
-                </div>
-              </mat-checkbox>
+            <div formGroupName="accessibility" class="accessibility-grid">
+               
+               <div class="access-item">
+                  <div class="access-label">
+                    <mat-icon>visibility</mat-icon>
+                    <span>Visual Alarms</span>
+                  </div>
+                  <mat-form-field appearance="outline" class="access-select">
+                    <mat-select formControlName="visualAlarms">
+                      <mat-option value="unavailable">Not Available</mat-option>
+                      <mat-option value="limited">Limited</mat-option>
+                      <mat-option value="available">Available</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+               </div>
 
-              <mat-checkbox formControlName="staffTrained">
-                <div class="checkbox-content">
-                  <mat-icon>school</mat-icon>
-                  <span>Staff Trained</span>
-                </div>
-              </mat-checkbox>
+               <div class="access-item">
+                  <div class="access-label">
+                    <mat-icon>school</mat-icon>
+                    <span>Staff Trained</span>
+                  </div>
+                  <mat-form-field appearance="outline" class="access-select">
+                    <mat-select formControlName="staffTrained">
+                      <mat-option value="unavailable">Not Available</mat-option>
+                      <mat-option value="limited">Limited</mat-option>
+                      <mat-option value="available">Available</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+               </div>
 
-              <mat-checkbox formControlName="ramps">
-                <div class="checkbox-content">
-                  <mat-icon>accessible</mat-icon>
-                  <span>Wheelchair Ramps</span>
-                </div>
-              </mat-checkbox>
+               <div class="access-item">
+                  <div class="access-label">
+                    <mat-icon>accessible</mat-icon>
+                    <span>Wheelchair Ramps</span>
+                  </div>
+                  <mat-form-field appearance="outline" class="access-select">
+                     <mat-select formControlName="ramps">
+                      <mat-option value="unavailable">Not Available</mat-option>
+                      <mat-option value="limited">Limited</mat-option>
+                      <mat-option value="available">Available</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+               </div>
 
-              <mat-checkbox formControlName="captionsProvided">
-                <div class="checkbox-content">
-                  <mat-icon>subtitles</mat-icon>
-                  <span>Captions Provided</span>
-                </div>
-              </mat-checkbox>
+               <div class="access-item">
+                  <div class="access-label">
+                    <mat-icon>subtitles</mat-icon>
+                    <span>Captions Provided</span>
+                  </div>
+                   <mat-form-field appearance="outline" class="access-select">
+                     <mat-select formControlName="captionsProvided">
+                      <mat-option value="unavailable">Not Available</mat-option>
+                      <mat-option value="limited">Limited</mat-option>
+                      <mat-option value="available">Available</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+               </div>
+
             </div>
           </mat-card-content>
         </mat-card>
@@ -399,7 +444,7 @@ interface ImageUpload {
       font-size: 2.5rem;
       width: 2.5rem;
       height: 2.5rem;
-      color: #2dd4bf;
+      color: #0b1f3a;
     }
 
     .admin-subtitle {
@@ -435,7 +480,7 @@ interface ImageUpload {
     }
 
     .section-title mat-icon {
-      color: #2dd4bf;
+      color: #0b1f3a;
       font-size: 1.75rem;
       width: 1.75rem;
       height: 1.75rem;
@@ -485,7 +530,7 @@ interface ImageUpload {
       font-size: 1.25rem;
       width: 1.25rem;
       height: 1.25rem;
-      color: #2dd4bf;
+      color: #0b1f3a;
     }
 
     .publish-checkbox {
@@ -493,7 +538,7 @@ interface ImageUpload {
       padding: 16px;
       background: #f0fdfa;
       border-radius: 12px;
-      border: 1px solid #2dd4bf;
+      border: 1px solid #0b1f3a;
     }
 
     .image-upload-area {
@@ -565,7 +610,7 @@ interface ImageUpload {
       position: absolute;
       top: 8px;
       left: 8px;
-      background: #2dd4bf;
+      background: #0b1f3a;
       color: white;
       padding: 4px 12px;
       border-radius: 12px;
@@ -628,7 +673,7 @@ export class TourAdminComponent implements OnInit, OnDestroy {
   existingImages: string[] = [];
 
   // Properly inject all services
-  private storage = inject(Storage);
+  private storageService = inject(StorageEnhancedService);
   private fb = inject(FormBuilder);
   private toursService = inject(ToursService);
   private snackBar = inject(MatSnackBar);
@@ -684,17 +729,20 @@ export class TourAdminComponent implements OnInit, OnDestroy {
       shortDescription: ['', [Validators.required, Validators.minLength(10)]],
       fullDescription: ['', [Validators.required, Validators.minLength(50)]],
       durationDays: [1, [Validators.required, Validators.min(1)]],
+      durationNights: [0, [Validators.required, Validators.min(0)]],
       priceDisplay: [0, [Validators.required, Validators.min(0)]],
       currency: ['USD', Validators.required],
+      isNegotiable: [false],
       capacity: [10, [Validators.required, Validators.min(1)]],
+      images: [[]],
       features: this.fb.array([this.fb.control('', Validators.required)]),
       accessibility: this.fb.group({
-        visualAlarms: [false],
-        staffTrained: [false],
-        ramps: [false],
-        captionsProvided: [false]
+        visualAlarms: ['unavailable'],
+        staffTrained: ['unavailable'],
+        ramps: ['unavailable'],
+        captionsProvided: ['unavailable']
       }),
-      nextAvailableDates: this.fb.array([this.fb.control(new Date())]),
+      nextAvailableDates: this.fb.array([]),
       published: [false]
     });
   }
@@ -746,9 +794,13 @@ export class TourAdminComponent implements OnInit, OnDestroy {
     if (!input.files?.length) return;
 
     const files = Array.from(input.files).slice(0, 10);
+    let hasInvalidFile = false;
 
     files.forEach(file => {
-      if (file.type.startsWith('image/') && file.size < 10 * 1024 * 1024) {
+      // Validate file using the storage service
+      const validation = this.storageService.validateFile(file, 10, ['image/']);
+
+      if (validation.valid) {
         const reader = new FileReader();
         reader.onload = (e) => {
           this.imageUploads.push({
@@ -760,9 +812,14 @@ export class TourAdminComponent implements OnInit, OnDestroy {
         };
         reader.readAsDataURL(file);
       } else {
-        this.snackBar.open('Please select valid image files under 10MB', 'Close', { duration: 3000 });
+        hasInvalidFile = true;
+        this.snackBar.open(validation.error || 'Invalid file', 'Close', { duration: 4000 });
       }
     });
+
+    if (!hasInvalidFile && files.length > 0) {
+      this.snackBar.open(`${files.length} image(s) selected`, 'Close', { duration: 2000 });
+    }
 
     input.value = '';
   }
@@ -782,38 +839,57 @@ export class TourAdminComponent implements OnInit, OnDestroy {
       return this.existingImages;
     }
 
-    // Run in injection context
-    return runInInjectionContext(this.injector, async () => {
-      this.isUploading = true;
-      const uploadedUrls: string[] = [...this.existingImages];
+    this.isUploading = true;
+    const uploadedUrls: string[] = [...this.existingImages];
 
-      try {
-        for (let i = 0; i < this.imageUploads.length; i++) {
-          const upload = this.imageUploads[i];
-          const timestamp = Date.now();
-          const randomId = Math.random().toString(36).substring(2, 15);
-          const fileExt = upload.file.name.split('.').pop();
-          const fileName = `tours/${timestamp}_${randomId}.${fileExt}`;
+    try {
+      console.log(`Starting upload of ${this.imageUploads.length} images...`);
 
-          const storageRef = ref(this.storage, fileName);
-          const snapshot = await uploadBytes(storageRef, upload.file);
-          const downloadURL = await getDownloadURL(snapshot.ref);
+      for (let i = 0; i < this.imageUploads.length; i++) {
+        const upload = this.imageUploads[i];
+        const timestamp = Date.now();
+        const randomId = Math.random().toString(36).substring(2, 15);
+        const fileExt = upload.file.name.split('.').pop();
+        const fileName = `tours/${timestamp}_${randomId}.${fileExt}`;
+
+        console.log(`Uploading image ${i + 1}/${this.imageUploads.length}: ${upload.file.name}`);
+
+        try {
+          // Use the enhanced storage service with retry logic
+          const downloadURL = await this.storageService.uploadFileWithRetry(fileName, upload.file);
 
           upload.downloadURL = downloadURL;
           upload.uploadProgress = 100;
           uploadedUrls.push(downloadURL);
 
+          console.log(`✅ Image ${i + 1} uploaded successfully`);
           this.cdr.markForCheck();
+
+        } catch (uploadError: any) {
+          console.error(`❌ Failed to upload image ${i + 1}:`, uploadError);
+
+          // Show specific error for this image
+          this.snackBar.open(
+            `Failed to upload "${upload.file.name}": ${uploadError.message}`,
+            'Close',
+            { duration: 6000 }
+          );
+
+          throw uploadError; // Re-throw to stop the entire upload process
         }
-        return uploadedUrls;
-      } catch (error) {
-        console.error('Error uploading images:', error);
-        throw new Error('Failed to upload images: ' + (error instanceof Error ? error.message : 'Unknown error'));
-      } finally {
-        this.isUploading = false;
-        this.cdr.markForCheck();
       }
-    });
+
+      console.log(`✅ All ${this.imageUploads.length} images uploaded successfully`);
+      return uploadedUrls;
+
+    } catch (error: any) {
+      console.error('Error in upload process:', error);
+      throw new Error(error.message || 'Failed to upload images');
+
+    } finally {
+      this.isUploading = false;
+      this.cdr.markForCheck();
+    }
   }
 
   async onSubmit() {
@@ -851,6 +927,7 @@ export class TourAdminComponent implements OnInit, OnDestroy {
         shortDescription: formValue.shortDescription.trim(),
         fullDescription: formValue.fullDescription.trim(),
         durationDays: Number(formValue.durationDays),
+        durationNights: Number(formValue.durationNights),
         priceDisplay: Number(formValue.priceDisplay),
         currency: formValue.currency,
         capacity: Number(formValue.capacity),
@@ -916,6 +993,7 @@ export class TourAdminComponent implements OnInit, OnDestroy {
       type: 'group',
       currency: 'USD',
       durationDays: 1,
+      durationNights: 0,
       capacity: 10,
       priceDisplay: 0,
       published: false
@@ -947,6 +1025,17 @@ export class TourAdminComponent implements OnInit, OnDestroy {
     console.log('Starting Firebase connection test...');
     this.debugService.logFirebaseConfig();
     await this.debugService.testFirestoreConnection();
+
+    // Also test storage
+    console.log('Testing Firebase Storage...');
+    const storageTest = await this.storageService.testStorageConnection();
+    if (storageTest.success) {
+      console.log('✅', storageTest.message);
+      this.snackBar.open(storageTest.message, 'Close', { duration: 3000 });
+    } else {
+      console.error('❌', storageTest.message);
+      this.snackBar.open(storageTest.message, 'Close', { duration: 6000 });
+    }
   }
 
   onCancel() {

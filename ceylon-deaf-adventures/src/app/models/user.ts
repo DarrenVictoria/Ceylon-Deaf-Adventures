@@ -6,7 +6,7 @@ export type UserRole = 'admin' | 'manager';
 /**
  * Permission keys for different system modules
  */
-export type PermissionKey = 'tours' | 'blogs' | 'bookings' | 'users';
+export type PermissionKey = 'tours' | 'blogs' | 'bookings' | 'users' | 'messages';
 
 /**
  * User permissions interface
@@ -16,6 +16,7 @@ export interface UserPermissions {
   blogs: boolean;
   bookings: boolean;
   users: boolean; // Only admins can manage users
+  messages: boolean;
 }
 
 /**
@@ -29,15 +30,15 @@ export interface User {
   role: UserRole;
   isActive: boolean;
   permissions: UserPermissions;
-  
+
   // Timestamps
   createdAt?: any; // Firestore Timestamp
   updatedAt?: any; // Firestore Timestamp
   lastLoginAt?: any; // Firestore Timestamp
-  
+
   // User management info
   createdBy?: string; // UID of admin who created this user
-  
+
   // Optional profile info
   profilePicture?: string;
   phone?: string;
@@ -53,7 +54,8 @@ export function createAdminPermissions(): UserPermissions {
     tours: true,
     blogs: true,
     bookings: true,
-    users: true // Admins can manage everything including users
+    users: true, // Admins can manage everything including users
+    messages: true
   };
 }
 
@@ -65,7 +67,8 @@ export function createManagerPermissions(): UserPermissions {
     tours: false,
     blogs: false,
     bookings: false,
-    users: false // Managers get no permissions by default - admin sets them
+    users: false, // Managers get no permissions by default - admin sets them
+    messages: false
   };
 }
 
@@ -88,12 +91,12 @@ export function createDefaultPermissions(role: UserRole): UserPermissions {
  */
 export function hasPermission(user: User | null, permission: PermissionKey): boolean {
   if (!user || !user.isActive) return false;
-  
+
   // Admin role has all permissions
   if (user.role === 'admin') {
     return true;
   }
-  
+
   // For managers, check specific permissions
   return user.permissions[permission] ?? false;
 }

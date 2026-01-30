@@ -10,10 +10,12 @@ import { environment } from '../environments/environment';
   standalone: true,
   imports: [RouterOutlet, NavigationComponent, FooterComponent],
   template: `
-    <div class="min-h-screen bg-background">
+    <div class="min-h-screen bg-background flex flex-col">
       <app-navigation />
-      <router-outlet />
-      <app-footer />
+      <div class="flex-grow">
+        <router-outlet />
+      </div>
+      <app-footer class="mt-auto" />
     </div>
   `
 })

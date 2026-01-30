@@ -13,12 +13,13 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatBadgeModule } from '@angular/material/badge';
 import { ToursService } from '../../../services/tours.service';
 import { Tour } from '../../../models/tour';
-import { Observable, combineLatest, startWith, Subject, BehaviorSubject } from 'rxjs';
-import { map, takeUntil, debounceTime, distinctUntilChanged, shareReplay, tap } from 'rxjs/operators';
+import { Observable, BehaviorSubject, combineLatest, Subject } from 'rxjs';
+import { map, startWith, takeUntil, debounceTime, distinctUntilChanged, shareReplay, tap } from 'rxjs/operators';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { BookingDialogComponent } from '../../../components/booking-dialog/booking-dialog.component';
 import { TourDetailDialogComponent } from '../../../components/tour-detail-dialog/tour-detail-dialog.component';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-tours-page',
@@ -38,7 +39,8 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
     MatDividerModule,
     MatBadgeModule,
     MatDialogModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    RouterLink
   ],
   template: `
     <!-- Hero Section -->
@@ -52,13 +54,18 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
               Accessible <span class="highlight-text">Adventures</span> for Everyone
             </h1>
             <p class="hero-description">
-              From whale watching to cultural immersion — discover Sri Lanka barrier-free with expert visual guides and
-              sign language interpretation.
+              From whale watching to cultural immersion — discover Sri Lanka barrier-free with expert visual guides and sign language interpretation.
             </p>
+            
             <div class="hero-stats">
               <div class="stat-item">
                 <mat-icon class="stat-icon">tour</mat-icon>
-                <span class="stat-number">{{ (allTours$ | async)?.length || 0 }}</span>
+                <ng-container *ngIf="tourCount$ | async as count; else loadingCount">
+                  <span class="stat-number">{{ count }}</span>
+                </ng-container>
+                <ng-template #loadingCount>
+                  <span class="stat-number loading-skeleton">-</span>
+                </ng-template>
                 <span class="stat-label">Tours Available</span>
               </div>
               <div class="stat-item">
@@ -87,53 +94,53 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
               Find Your Perfect Tour
             </h3>
             <form [formGroup]="filterForm" class="filter-form">
-              <mat-form-field  class="filter-field">
+              <mat-form-field class="filter-field" appearance="outline">
                 <mat-label>Search tours...</mat-label>
                 <input matInput formControlName="searchText" placeholder="Enter destination or activity">
                 <mat-icon matSuffix>search</mat-icon>
               </mat-form-field>
-              
-              <mat-form-field  class="filter-field">
+
+              <mat-form-field class="filter-field" appearance="outline">
                 <mat-label>Tour Type</mat-label>
                 <mat-select formControlName="selectedType">
                   <mat-option value="">All Types</mat-option>
                   <mat-option value="group">
-                    <mat-icon>groups</mat-icon>
-                    Group Tours
+                    <mat-icon>groups</mat-icon> Group Tours
                   </mat-option>
                   <mat-option value="private">
-                    <mat-icon>person</mat-icon>
-                    Private Tours
+                    <mat-icon>person</mat-icon> Private Tours
                   </mat-option>
                   <mat-option value="deaf_guide">
-                    <mat-icon>accessibility</mat-icon>
-                    Deaf Guide Tours
+                    <mat-icon>accessibility</mat-icon> Deaf Guide Tours
                   </mat-option>
                   <mat-option value="adventure">
-                    <mat-icon>hiking</mat-icon>
-                    Adventure Tours
+                    <mat-icon>hiking</mat-icon> Adventure Tours
                   </mat-option>
                 </mat-select>
               </mat-form-field>
-              
-              <mat-form-field  class="filter-field">
+
+              <mat-form-field class="filter-field" appearance="outline">
                 <mat-label>Locations</mat-label>
                 <mat-select formControlName="selectedLocations" multiple>
                   <mat-option *ngFor="let loc of uniqueLocations$ | async" [value]="loc">
-                    <mat-icon>place</mat-icon>
                     {{ loc }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
+              
+              <button mat-flat-button color="primary" class="clear-filters-btn" (click)="clearFilters()" [disabled]="!filterForm.dirty">
+                Clear Filters
+              </button>
             </form>
           </mat-card-content>
         </mat-card>
       </div>
     </section>
 
-    <!-- Tour Cards Section -->
+    <!-- Tours Section -->
     <section class="tours-section">
       <div class="container">
+        
         <!-- Loading State -->
         <div *ngIf="isLoading$ | async" class="loading-container">
           <mat-spinner diameter="50"></mat-spinner>
@@ -155,27 +162,22 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
         <!-- Tours Grid -->
         <div *ngIf="!(isLoading$ | async) && (filteredTours$ | async)?.length! > 0" class="tours-grid">
-          <mat-card 
-            *ngFor="let tour of filteredTours$ | async; trackBy: trackByTourId" 
-            class="tour-card"
-            matRipple
-          >
+          <mat-card *ngFor="let tour of filteredTours$ | async; trackBy: trackByTourId" class="tour-card" matRipple>
             <!-- Tour Image -->
             <div class="tour-image-container">
-              <img
-                [src]="getImageUrl(tour.images[0])"
-                [alt]="tour.title"
-                class="tour-image"
-                (error)="onImageError($event)"
-              />
+              <img [src]="getImageUrl(tour.images[0])" [alt]="tour.title" class="tour-image" (error)="onImageError($event)" />
               <div class="tour-overlay">
-                <div class="tour-type-badge">
-                  <mat-icon class="badge-icon">{{ getTypeIcon(tour.type) }}</mat-icon>
-                  <span class="badge-text">{{ tour.type | titlecase }}</span>
+                <div class="tour-badges-top">
+                    <span class="tour-type-badge">
+                        <mat-icon class="badge-icon">{{ getTypeIcon(tour.type) }}</mat-icon>
+                        {{ tour.type | titlecase }}
+                    </span>
                 </div>
-                <div class="tour-duration-badge">
-                  <mat-icon class="badge-icon">schedule</mat-icon>
-                  <span class="badge-text">{{ tour.durationDays }}{{ tour.durationDays === 1 ? ' Day' : ' Days' }}</span>
+                <div class="tour-badges-bottom">
+                    <span class="tour-duration-badge">
+                        <mat-icon class="badge-icon">schedule</mat-icon>
+                        {{ tour.durationDays }} Days / {{ tour.durationNights || (tour.durationDays > 1 ? tour.durationDays - 1 : 0) }} Nights
+                    </span>
                 </div>
               </div>
             </div>
@@ -217,31 +219,21 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
               <mat-divider class="content-divider"></mat-divider>
 
-              <!-- Pricing and Actions -->
-              <div class="tour-footer">
-                <div class="pricing-info">
-                  <span class="price-amount">{{ tour.currency }} {{ tour.priceDisplay }}</span>
-                  <span class="price-per">per person</span>
+              <!-- Card Action Footer -->
+              <div class="card-footer">
+                <div class="price-info">
+                  <span class="price-label">From</span>
+                  <span class="price-value" *ngIf="!tour.isNegotiable && tour.priceDisplay > 0">
+                      {{ tour.currency }} {{ tour.priceDisplay }}
+                  </span>
+                  <span class="price-value negotiable" *ngIf="tour.isNegotiable || tour.priceDisplay === 0">
+                      Negotiable
+                  </span>
                 </div>
-                <div class="tour-actions">
-                  <button 
-                    mat-stroked-button 
-                    color="primary"
-                    class="action-btn view-btn"
-                    (click)="openDetailDialog(tour)"
-                  >
-                    <mat-icon>info</mat-icon>
+                <div class="card-actions">
+                  <a [routerLink]="['/tours', tour.slug]" class="btn-details">
                     Details
-                  </button>
-                  <button 
-                    mat-raised-button 
-                    color="primary"
-                    class="action-btn book-btn"
-                    (click)="openBookingDialog(tour)"
-                  >
-                    <mat-icon>event</mat-icon>
-                    Book Now
-                  </button>
+                  </a>
                 </div>
               </div>
             </mat-card-content>
@@ -275,618 +267,457 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
     </section>
   `,
   styles: [`
-    mat-icon {
-      font-size: 20px !important;
-  }
-    /* Global Variables */
+    /* Global Variables - Scoped to Component */
     :host {
-      --primary-color: #2dd4bf;
-      --primary-light: #5eead4;
-      --primary-dark: #0f766e;
-      --accent-color: #f97316;
-      --accent-light: #fed7aa;
-      --secondary-color: #6366f1;
-      --success-color: #10b981;
-      --warning-color: #f59e0b;
-      --error-color: #ef4444;
-      --background-color: #ffffff;
-      --surface-color: #f8fafc;
+      --primary-color: #0b1f3a;
+      --primary-light: #1e3a5f;
+      --accent-color: #f4b416;
       --text-primary: #1f2937;
       --text-secondary: #6b7280;
       --text-muted: #9ca3af;
+      --surface-color: #f8fafc;
+      --success-color: #10b981;
       display: block;
+      background-color: #f3f4f6;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 16px;
     }
 
     /* Hero Section */
     .hero-section {
       position: relative;
-      max-height: 70vh;
-      display: flex;
-      align-items: center;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 80px 0 120px;
       overflow: hidden;
-     
+      margin-bottom: -60px; /* Overlap with filters */
+      text-align: center;
     }
-
+    
     .hero-background {
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-       
-      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-      opacity: 0.1;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(135deg, var(--primary-color) 0%, #112e52 100%);
+      opacity: 0.9;
+      z-index: 1;
     }
-
-    .hero-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(255, 219, 187, 0.6);
-      
-      }
 
     .hero-content {
       position: relative;
       z-index: 10;
-      width: 100%;
-      padding: 80px 0;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    .hero-text {
-      text-align: center;
-      max-width: 800px;
-      margin: 0 auto;
     }
 
     .hero-title {
       font-size: 3rem;
       font-weight: 800;
-      color: var(--text-primary);
-      line-height: 1.1;
       margin-bottom: 24px;
-      animation: fadeInUp 1s ease-out;
+      line-height: 1.2;
     }
 
     .highlight-text {
       color: var(--accent-color);
-      background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
     }
 
     .hero-description {
-      font-size: 1.25rem;
-      color: var(--text-secondary);
-      line-height: 1.6;
-      margin-bottom: 48px;
-      animation: fadeInUp 1s ease-out 0.2s both;
+        font-size: 1.25rem;
+        max-width: 700px;
+        margin: 0 auto 48px;
+        opacity: 0.9;
+        line-height: 1.6;
     }
 
     .hero-stats {
-      display: flex;
-      justify-content: center;
-      gap: 48px;
-      flex-wrap: wrap;
-      animation: fadeInUp 1s ease-out 0.4s both;
+        display: flex;
+        justify-content: center;
+        gap: 60px;
+        flex-wrap: wrap;
     }
-
+    
     .stat-item {
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
     }
-
+    
     .stat-icon {
-      font-size: 32px;
-      color: var(--primary-color);
-      margin-bottom: 8px;
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+        color: var(--accent-color);
+        margin-bottom: 8px;
     }
-
+    
     .stat-number {
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      line-height: 1;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: white;
     }
-
+    
     .stat-label {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      font-weight: 500;
+        font-size: 0.9rem;
+        opacity: 0.8;
+        font-weight: 500;
     }
 
-    /* Filters Section */
+    /* Filter Section */
     .filters-section {
-      padding: 80px 0;
-      background: linear-gradient(135deg, var(--surface-color), white);
+        position: relative;
+        z-index: 20;
+        margin-bottom: 48px;
     }
-
+    
     .filter-card {
-      border-radius: 20px !important;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
-      border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
     }
-
+    
     .filter-content {
-      padding: 32px !important;
+        padding: 32px;
     }
-
+    
     .filter-title {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 24px;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
     }
-
+    
     .filter-form {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 24px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        align-items: flex-start;
+    }
+    
+    .clear-filters-btn {
+        height: 56px;
+        margin-top: 4px; 
     }
 
-    .filter-field {
-      width: 100%;
-    }
-
-    /* Tours Section */
+    /* Tours Grid */
     .tours-section {
-      padding: 80px 0;
-      background: white;
+        padding-bottom: 80px;
+    }
+    
+    .tours-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 32px;
+    }
+    
+    .tour-card {
+        border-radius: 16px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        background: white;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .tour-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    .tour-image-container {
+        height: 240px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .tour-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .tour-card:hover .tour-image {
+        transform: scale(1.05);
+    }
+    
+    .tour-overlay {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.6) 100%);
+        pointer-events: none;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    .card-actions {
+      display: flex;
+      justify-content: flex-end;
     }
 
-    .loading-container {
-      display: flex;
-      flex-direction: column;
+    .btn-details {
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 80px 20px;
-      gap: 24px;
-    }
-
-    .loading-text {
-      font-size: 1.125rem;
-      color: var(--text-secondary);
-      margin: 0;
-    }
-
-    .no-results {
-      text-align: center;
-      padding: 80px 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 24px;
-    }
-
-    .no-results-icon {
-      font-size: 64px;
-      color: var(--text-muted);
-    }
-
-    .no-results-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin: 0;
-    }
-
-    .no-results-description {
-      font-size: 1.125rem;
-      color: var(--text-secondary);
-      max-width: 400px;
-      line-height: 1.6;
-      margin: 0;
-    }
-
-    .tours-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-      gap: 32px;
-    }
-
-    .tour-card {
-      border-radius: 20px !important;
-      overflow: hidden;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
-      border: 1px solid #e2e8f0;
-    }
-
-    .tour-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 20px 64px rgba(0, 0, 0, 0.15) !important;
-    }
-
-    .tour-image-container {
-      position: relative;
-      height: 240px;
-      overflow: hidden;
-    }
-
-    .tour-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s ease;
-    }
-
-    .tour-card:hover .tour-image {
-      transform: scale(1.05);
-    }
-
-    .tour-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.6));
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      padding: 16px;
-    }
-
-    .tour-type-badge,
-    .tour-duration-badge {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 20px;
-      padding: 8px 12px;
+      padding: 8px 24px;
+      background-color: var(--primary-color);
       color: white;
-    }
-
-    .badge-icon {
-      font-size: 16px;
-    }
-
-    .badge-text {
-      font-size: 0.75rem;
+      text-decoration: none;
       font-weight: 600;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-details:hover {
+      background-color: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(11, 31, 58, 0.2);
+    }
+    
+    .tour-type-badge {
+        background: rgba(11, 31, 58, 0.85);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .tour-badges-bottom {
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    .tour-duration-badge {
+         color: white;
+         font-size: 0.85rem;
+         font-weight: 500;
+         display: flex;
+         align-items: center;
+         gap: 6px;
+         text-shadow: 0 1px 3px rgba(0,0,0,0.5);
     }
 
     .tour-content {
-      padding: 24px !important;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+        padding: 24px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
     }
-
+    
     .tour-header {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+        margin-bottom: 12px;
     }
-
-    .tour-title {
+    
+    .price-value {
       font-size: 1.25rem;
       font-weight: 700;
-      color: var(--text-primary);
-      margin: 0;
-      line-height: 1.3;
+      color: var(--primary-color);
+    }
+    
+    .price-value.negotiable {
+        font-size: 1.1rem;
+        color: var(--accent-color);
+        font-style: italic;
     }
 
+    .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #f1f5f9;
+        gap: 16px;
+    }
+    
     .tour-locations {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+        margin-bottom: 12px;
     }
-
+    
     .location-chip {
-      background-color: rgba(var(--primary-color), 0.1) !important;
-      color: var(--primary-color) !important;
-      font-size: 0.75rem !important;
-      height: 28px !important;
-      border-radius: 14px !important;
-    }
-
-    .more-locations {
-      background-color: rgba(var(--text-muted), 0.1) !important;
-      color: var(--text-muted) !important;
+        /* Ensuring ViewEncapsulation doesn't break style binding for chips if deeply nested */
+        font-size: 0.75rem !important;
+        background-color: #f1f5f9 !important;
     }
 
     .tour-description {
-      color: var(--text-secondary);
-      line-height: 1.6;
-      font-size: 0.9rem;
-      margin: 0;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
-
+    
     .tour-features {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: auto;
     }
-
+    
     .feature-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(var(--success-color), 0.1);
-      border-radius: 16px;
-      padding: 6px 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        color: var(--primary-light);
+        background: #e0f2fe;
+        padding: 4px 10px;
+        border-radius: 6px;
     }
-
+    
     .feature-icon {
-      font-size: 16px;
+        font-size: 16px;
+        width: 16px;
+        height: 16px; 
     }
-
-    .feature-icon.success {
-      color: var(--success-color);
-    }
-
-    .feature-text {
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: var(--success-color);
-    }
-
+    
     .content-divider {
-      margin: 8px 0 !important;
+        margin: 20px 0;
     }
-
+    
     .tour-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
     }
-
+    
     .pricing-info {
-      display: flex;
-      flex-direction: column;
+        display: flex;
+        flex-direction: column;
     }
-
+    
     .price-amount {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--primary-color);
-      line-height: 1;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--primary-color);
+        line-height: 1;
     }
-
+    
     .price-per {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-      margin-top: 2px;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
     }
-
+    
     .tour-actions {
-      display: flex;
-      gap: 8px;
+        display: flex;
+        gap: 8px;
     }
-
+    
     .action-btn {
-      font-size: 0.875rem !important;
-      padding: 8px 16px !important;
-      height: auto !important;
-      border-radius: 20px !important;
-      font-weight: 600 !important;
-      min-width: auto !important;
+        border-radius: 8px;
     }
-
-    .view-btn {
-      border-color: var(--primary-color) !important;
-      color: var(--primary-color) !important;
-    }
-
-    .book-btn {
-      background-color: var(--primary-color) !important;
-      color: white !important;
-    }
-
+    
     /* Accessibility Section */
     .accessibility-section {
-      padding: 100px 0;
-      background: linear-gradient(135deg, var(--surface-color), #f1f5f9);
+        background: white;
+        padding: 100px 0;
     }
-
+    
     .section-header {
-      text-align: center;
-      margin-bottom: 80px;
+        text-align: center;
+        margin-bottom: 60px;
     }
-
+    
     .section-title {
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: var(--text-primary);
-      margin-bottom: 16px;
-    }
-
-    .section-subtitle {
-      font-size: 1.25rem;
-      color: var(--text-secondary);
-      max-width: 600px;
-      margin: 0 auto;
-      line-height: 1.6;
-    }
-
-    .accessibility-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 32px;
-    }
-
-    .accessibility-card {
-      border-radius: 20px !important;
-      transition: all 0.3s ease;
-      background: white;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
-    }
-
-    .accessibility-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 20px 64px rgba(0, 0, 0, 0.15) !important;
-    }
-
-    .accessibility-content {
-      padding: 40px 32px !important;
-      text-align: center;
-    }
-
-    .accessibility-icon {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 24px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    }
-
-    .accessibility-icon mat-icon {
-      font-size: 32px;
-      color: white;
-    }
-
-    .primary-gradient {
-      background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
-    }
-
-    .accent-gradient {
-      background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
-    }
-
-    .secondary-gradient {
-      background: linear-gradient(135deg, var(--secondary-color), #a5b4fc);
-    }
-
-    .success-gradient {
-      background: linear-gradient(135deg, var(--success-color), #6ee7b7);
-    }
-
-    .accessibility-title {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 16px;
-    }
-
-    .accessibility-description {
-      color: var(--text-secondary);
-      line-height: 1.6;
-      font-size: 0.95rem;
-    }
-
-    /* Animations */
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* Material Design Overrides */
-    ::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline {
-      border-radius: 12px;
-    }
-
-    ::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-thick {
-      border-color: var(--primary-color);
-    }
-
-    ::ng-deep .mat-mdc-option .mat-icon {
-      margin-right: 12px;
-      color: var(--text-secondary);
-    }
-
-    ::ng-deep .mat-mdc-chip-listbox .mat-mdc-chip {
-      border-radius: 16px;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .hero-title {
         font-size: 2.5rem;
-      }
-      
-      .hero-stats {
-        gap: 32px;
-      }
-      
-      .section-title {
-        font-size: 2rem;
-      }
-      
-      .container {
-        padding: 0 16px;
-      }
-      
-      .filter-form {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-      
-      .tours-grid {
-        grid-template-columns: 1fr;
-        gap: 24px;
-      }
-      
-      .tour-footer {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 16px;
-      }
-      
-      .tour-actions {
-        justify-content: stretch;
-      }
-      
-      .action-btn {
-        flex: 1;
-      }
+        font-weight: 800;
+        color: var(--primary-color);
+        margin-bottom: 16px;
     }
-
-    @media (max-width: 480px) {
-      .hero-title {
-        font-size: 2rem;
-      }
-      
-      .hero-description {
-        font-size: 1.1rem;
-      }
-      
-      .hero-stats {
-        flex-direction: column;
-        gap: 24px;
-      }
-      
-      .accessibility-grid {
-        grid-template-columns: 1fr;
-      }
+    
+    .section-subtitle {
+        font-size: 1.25rem;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .accessibility-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 32px;
+    }
+    
+    .accessibility-card {
+        text-align: center;
+        height: 100%;
+        border-radius: 16px;
+        background: #f8fafc;
+        box-shadow: none;
+        border: 1px solid #e2e8f0;
+        transition: transform 0.3s ease;
+    }
+    
+    .accessibility-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    }
+    
+    .accessibility-content {
+        padding: 40px;
+    }
+    
+    .accessibility-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        color: white;
+    }
+    
+    .primary-gradient { background: linear-gradient(135deg, #0b1f3a, #1e3a5f); }
+    .accent-gradient { background: linear-gradient(135deg, #f4b416, #fbbf24); }
+    .success-gradient { background: linear-gradient(135deg, #10b981, #34d399); }
+    
+    .accessibility-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        color: var(--primary-color);
+    }
+    
+    .accessibility-description {
+        color: var(--text-secondary);
+        line-height: 1.6;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .hero-title { font-size: 2.25rem; }
+        .hero-stats { gap: 32px; }
+        .tours-grid { grid-template-columns: 1fr; }
+        .tour-footer { flex-direction: column; align-items: stretch; text-align: center; }
+        .tour-actions { justify-content: center; margin-top: 12px; }
+        .pricing-info { align-items: center; }
     }
   `]
 })
 export class ToursPageComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   isLoading$ = new BehaviorSubject<boolean>(true);
+  tourCount$ = new BehaviorSubject<number | null>(null);
 
   allTours$!: Observable<Tour[]>;
   filteredTours$!: Observable<Tour[]>;
@@ -934,54 +765,58 @@ export class ToursPageComponent implements OnInit, OnDestroy {
     this.filterForm = this.fb.group({
       searchText: [''],
       selectedType: [''],
-      selectedLocations: [[]]
+      selectedLocations: [[]],
+    });
+
+    this.filterForm.valueChanges.pipe(
+      takeUntil(this.destroy$),
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      this.filterTours();
     });
   }
 
   private loadTours() {
-    console.log('🏖️ Loading tours for user page...');
-    // Load tours with caching
-    this.allTours$ = this.toursService.listTours().pipe(
-      tap((tours: Tour[]) => {
-        console.log('🏖️ Tours received in user component:', tours.length);
-        console.log('🏖️ Tour titles:', tours.map((t: Tour) => t.title));
-      }),
-      shareReplay(1),
-      takeUntil(this.destroy$)
-    );
+    this.isLoading$.next(true);
 
-    // Extract unique locations
-    this.uniqueLocations$ = this.allTours$.pipe(
-      map(tours => [...new Set(tours.flatMap(t => t.location))].sort()),
+    this.allTours$ = this.toursService.listTours().pipe(
+      tap(tours => {
+        this.isLoading$.next(false);
+        this.tourCount$.next(tours.length);
+      }),
       shareReplay(1)
     );
 
-    // Set up filtered tours with debouncing
+    this.uniqueLocations$ = this.allTours$.pipe(
+      map(tours => {
+        const locations = new Set<string>();
+        tours.forEach(tour => tour.location.forEach(loc => locations.add(loc)));
+        return Array.from(locations).sort();
+      })
+    );
+
+    // Initial filter setup
     this.filteredTours$ = combineLatest([
       this.allTours$,
-      this.filterForm.valueChanges.pipe(
-        startWith(this.filterForm.value),
-        debounceTime(300),
-        distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))
-      )
+      this.filterForm.valueChanges.pipe(startWith(this.filterForm.value))
     ]).pipe(
-      map(([tours, filters]) => this.filterTours(tours, filters)),
-      shareReplay(1)
+      map(([tours, filters]) => this.applyFilters(tours, filters))
     );
-
-    // Handle loading state
-    this.allTours$.subscribe(() => {
-      this.isLoading$.next(false);
-    });
   }
 
-  private filterTours(tours: Tour[], filters: any): Tour[] {
+  private filterTours() {
+    // Triggered by valueChanges, observable chain handles it
+  }
+
+  private applyFilters(tours: Tour[], filters: any): Tour[] {
     return tours.filter(tour => {
       // Search filter
       if (filters.searchText) {
         const searchLower = filters.searchText.toLowerCase();
-        if (!tour.title.toLowerCase().includes(searchLower) &&
-          !tour.shortDescription.toLowerCase().includes(searchLower)) {
+        const matchesTitle = tour.title.toLowerCase().includes(searchLower);
+        const matchesDesc = tour.shortDescription.toLowerCase().includes(searchLower);
+        if (!matchesTitle && !matchesDesc) {
           return false;
         }
       }
@@ -992,9 +827,11 @@ export class ToursPageComponent implements OnInit, OnDestroy {
       }
 
       // Location filter
-      if (filters.selectedLocations.length &&
-        !tour.location.some(location => filters.selectedLocations.includes(location))) {
-        return false;
+      if (filters.selectedLocations && filters.selectedLocations.length > 0) {
+        const hasLocation = tour.location.some(location =>
+          filters.selectedLocations.includes(location)
+        );
+        if (!hasLocation) return false;
       }
 
       return true;
@@ -1032,55 +869,31 @@ export class ToursPageComponent implements OnInit, OnDestroy {
   }
 
   getTypeIcon(type: string): string {
-    const icons = {
+    const icons: { [key: string]: string } = {
       adventure: 'hiking',
       group: 'groups',
       private: 'person',
       deaf_guide: 'accessibility'
     };
-    return icons[type as keyof typeof icons] || 'tour';
+    return icons[type] || 'tour';
   }
 
   getImageUrl(imageUrl: string | undefined): string {
     if (!imageUrl) {
       return this.getPlaceholderImage();
     }
-
-    // If it's already a full URL (from Firebase Storage), return it
     if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
       return imageUrl;
     }
-
-    // If it's a path, it might be a legacy path - return placeholder
     return this.getPlaceholderImage();
   }
 
-  /**
-   * Handle image load errors
-   */
   onImageError(event: Event): void {
     const img = event.target as HTMLImageElement;
     img.src = this.getPlaceholderImage();
   }
 
-  /**
-   * Get placeholder image
-   */
   private getPlaceholderImage(): string {
-    // You can use a default image from your assets or a placeholder service
-    return 'tour-placeholder.jpg'; // or use '/placeholder.svg?height=300&width=500'
-  }
-
-  /**
-   * Debug method to check tours
-   */
-  debugTours(): void {
-    console.log('🔧 Starting tours debug...');
-    this.toursService.debugPublishedTours().subscribe();
-    
-    // Also check what the current user tours observable has
-    this.allTours$.subscribe(tours => {
-      console.log('🔧 Current user tours:', tours);
-    });
+    return 'tour-placeholder.jpg';
   }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { FirestoreService } from './firestore.service';
 import { Review } from '../models/review';
+import { query, where, CollectionReference, Query } from '@angular/fire/firestore';
 
 @Injectable({ providedIn: 'root' })
 export class ReviewsService {
@@ -12,7 +13,9 @@ export class ReviewsService {
     }
 
     listReviews(entityId: string, options?: any): Observable<Review[]> {
-        return this.fs.collection<Review>('reviews', ref => ref.where('entityId', '==', entityId).where('approved', '==', true));
+        return this.fs.collection<Review>('reviews', (ref: CollectionReference) =>
+            query(ref, where('entityId', '==', entityId), where('approved', '==', true)) as Query
+        );
     }
 
     approveReview(reviewId: string): Promise<void> {

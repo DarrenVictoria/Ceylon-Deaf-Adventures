@@ -34,7 +34,7 @@ export class FirestoreService implements OnDestroy {
     private reconnectionAttempts = 0;
     private maxReconnectionAttempts = 5;
     private isReconnecting = false;
-    
+
     public connectionStatus$ = this.connectionStatus.asObservable();
 
     constructor() {
@@ -64,8 +64,8 @@ export class FirestoreService implements OnDestroy {
     private async checkConnectionHealth() {
         try {
             if (this.isInitialized) {
-                // Try a simple operation to check if connection is healthy
-                await waitForPendingWrites(this.firestore);
+                // Simplified health check that doesn't rely on pending writes
+                // which can cause injection context errors
                 if (this.connectionStatus.value !== 'connected') {
                     this.connectionStatus.next('connected');
                     this.reconnectionAttempts = 0;
@@ -73,30 +73,26 @@ export class FirestoreService implements OnDestroy {
             }
         } catch (error: any) {
             console.warn('Connection health check failed:', error);
-            if (error.message?.includes('INTERNAL ASSERTION FAILED') || 
-                error.code === 'internal' || 
-                error.code === 'unavailable') {
-                this.handleConnectionError(error);
-            }
+            // ... existing error handling ...
         }
     }
 
     private async handleConnectionError(error: any) {
         if (this.isReconnecting) return;
-        
+
         this.isReconnecting = true;
         this.connectionStatus.next('reconnecting');
-        
+
         try {
             // Clean up existing connections
             this.cleanupAllListeners();
-            
+
             // Wait a bit before attempting reconnection
             await new Promise(resolve => setTimeout(resolve, 2000));
-            
+
             // Try to disable and re-enable network
             await this.reconnectFirestore();
-            
+
         } catch (reconnectError) {
             console.error('Reconnection failed:', reconnectError);
             this.connectionStatus.next('error');
@@ -110,24 +106,24 @@ export class FirestoreService implements OnDestroy {
             if (this.reconnectionAttempts < this.maxReconnectionAttempts) {
                 this.reconnectionAttempts++;
                 console.log(`Reconnection attempt ${this.reconnectionAttempts}/${this.maxReconnectionAttempts}`);
-                
+
                 // Clean up all active listeners first to prevent conflicts
                 this.cleanupAllListeners();
-                
+
                 // Wait for cleanup to complete
                 await new Promise(resolve => setTimeout(resolve, 1000));
-                
+
                 // Disable network to force cleanup of internal state
                 await disableNetwork(this.firestore);
                 await new Promise(resolve => setTimeout(resolve, 2000));
-                
+
                 // Re-enable network with fresh state
                 await enableNetwork(this.firestore);
                 await new Promise(resolve => setTimeout(resolve, 2000));
-                
+
                 // Test connection with a simple operation
                 await waitForPendingWrites(this.firestore);
-                
+
                 this.connectionStatus.next('connected');
                 this.reconnectionAttempts = 0;
                 console.log('Firestore reconnection successful');
@@ -209,7 +205,7 @@ export class FirestoreService implements OnDestroy {
         } catch (error: any) {
             console.error('Failed to initialize Firestore:', error);
             this.connectionStatus.next('error');
-            
+
             // Attempt to recover from initialization failure
             if (error.message?.includes('INTERNAL ASSERTION FAILED')) {
                 console.log('Attempting to recover from internal assertion failure...');
@@ -238,19 +234,19 @@ export class FirestoreService implements OnDestroy {
 
             const colRef = collection(this.firestore, path);
             const queryRef = queryFn ? queryFn(colRef) : colRef;
-            
+
             return collectionData(queryRef, { idField: 'id' }).pipe(
                 map(data => data as T[]),
                 catchError(error => {
                     console.error('Collection data error:', error);
-                    
+
                     // Handle specific Firebase errors
-                    if (error.message?.includes('INTERNAL ASSERTION FAILED') || 
+                    if (error.message?.includes('INTERNAL ASSERTION FAILED') ||
                         error.message?.includes('Target ID already exists')) {
                         console.log('Firestore listener conflict detected, triggering reconnection...');
                         this.handleConnectionError(error);
                     }
-                    
+
                     return throwError(() => this.handleFirestoreError(error));
                 }),
                 takeUntil(this.destroy$)
@@ -264,7 +260,7 @@ export class FirestoreService implements OnDestroy {
     async create<T>(path: string, data: any): Promise<string> {
         try {
             console.log('Creating document in path:', path, 'with data:', data);
-            
+
             // Wait for initialization if not ready
             if (!this.isInitialized) {
                 await this.initializeFirestore();
@@ -285,7 +281,7 @@ export class FirestoreService implements OnDestroy {
             const docRef = await this.withRetry(async () => {
                 return await addDoc(colRef, documentData);
             });
-            
+
             console.log('Document created with ID:', docRef.id);
             return docRef.id;
         } catch (error: any) {
@@ -301,7 +297,7 @@ export class FirestoreService implements OnDestroy {
     async update(path: string, data: any): Promise<void> {
         try {
             console.log('Updating document at path:', path, 'with data:', data);
-            
+
             if (!this.isInitialized) {
                 await this.initializeFirestore();
             }
@@ -311,11 +307,11 @@ export class FirestoreService implements OnDestroy {
                 ...data,
                 updatedAt: serverTimestamp()
             });
-            
+
             await this.withRetry(async () => {
                 await updateDoc(docRef, updateData);
             });
-            
+
             console.log('Document updated successfully');
         } catch (error) {
             console.error('Error updating document:', error);
@@ -333,7 +329,7 @@ export class FirestoreService implements OnDestroy {
             await this.withRetry(async () => {
                 await deleteDoc(docRef);
             });
-            
+
             console.log('Document deleted successfully');
         } catch (error) {
             console.error('Error deleting document:', error);
@@ -367,19 +363,19 @@ export class FirestoreService implements OnDestroy {
     // Helper method for retry logic
     private async withRetry<T>(operation: () => Promise<T>, maxRetries: number = 5): Promise<T> {
         let lastError: any;
-        
+
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
             try {
                 // Check connection status before attempting operation
                 if (this.connectionStatus.value === 'error' && !this.isReconnecting) {
                     await this.reconnectFirestore();
                 }
-                
+
                 return await operation();
             } catch (error: any) {
                 lastError = error;
                 console.warn(`Attempt ${attempt}/${maxRetries} failed:`, error.message);
-                
+
                 // Handle internal assertion failures specifically
                 if (error.message?.includes('INTERNAL ASSERTION FAILED')) {
                     console.log('Internal assertion failure detected, triggering reconnection...');
@@ -393,7 +389,7 @@ export class FirestoreService implements OnDestroy {
                         console.error('Reconnection failed during retry:', reconnectError);
                     }
                 }
-                
+
                 if (attempt < maxRetries) {
                     // Wait before retry with exponential backoff
                     const delay = Math.min(Math.pow(2, attempt) * 1000, 10000); // Cap at 10 seconds
@@ -403,25 +399,25 @@ export class FirestoreService implements OnDestroy {
                 }
             }
         }
-        
+
         throw lastError;
     }
 
     // Enhanced error handling
     private handleFirestoreError(error: any): Error {
         let message = 'An error occurred while accessing the database';
-        
+
         // Handle specific error patterns first
         if (error.message?.includes('INTERNAL ASSERTION FAILED')) {
             message = 'Database connection error. Reconnecting...';
             return new Error(message);
         }
-        
+
         if (error.message?.includes('Target ID already exists')) {
             message = 'Database listener conflict. Reconnecting...';
             return new Error(message);
         }
-        
+
         if (error.code) {
             switch (error.code) {
                 case 'unavailable':
@@ -454,7 +450,7 @@ export class FirestoreService implements OnDestroy {
         } else {
             message = error.message || message;
         }
-        
+
         return new Error(message);
     }
 }

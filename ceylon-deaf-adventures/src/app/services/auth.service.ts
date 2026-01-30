@@ -5,7 +5,6 @@ import { BehaviorSubject, Observable, from, of, combineLatest } from 'rxjs';
 import { map, switchMap, tap, catchError, first } from 'rxjs/operators';
 import { FirestoreService } from './firestore.service';
 import { User, isAuthorizedUser, canManageUsers, hasPermission, PermissionKey } from '../models/user';
-import { serverTimestamp } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -42,7 +41,6 @@ export class AuthService {
             next: (user) => {
               if (user && isAuthorizedUser(user)) {
                 this.currentUserSubject$.next(user);
-                this.updateLastLogin(user.uid);
               } else {
                 console.warn('User not authorized for admin access:', firebaseUser.email);
                 this.signOut(); // Sign out non-admin users
@@ -75,25 +73,6 @@ export class AuthService {
         return of(null);
       })
     );
-  }
-
-  /**
-   * Update user's last login timestamp
-   */
-  private updateLastLogin(uid: string): void {
-    // Find the document ID for this user
-    this.firestoreService.collection<User>('users').pipe(
-      map(users => users.find(user => user.uid === uid)),
-      first()
-    ).subscribe(user => {
-      if (user?.id) {
-        this.firestoreService.update(`users/${user.id}`, {
-          lastLoginAt: serverTimestamp()
-        }).catch(error => {
-          console.error('Error updating last login:', error);
-        });
-      }
-    });
   }
 
   /**

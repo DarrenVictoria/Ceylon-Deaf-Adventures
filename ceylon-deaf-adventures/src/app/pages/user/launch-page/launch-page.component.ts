@@ -52,9 +52,9 @@ import { MatIconModule } from '@angular/material/icon';
       height: 100vh;
       overflow: hidden;
       background: linear-gradient(135deg,
-        #0f766e 0%,    /* Primary dark */
-        #2dd4bf 50%,   /* Primary color */
-        #f97316 100%   /* Accent color */
+        #061121 0%,    /* Primary dark */
+        #0b1f3a 50%,   /* Primary color */
+        #f4b416 100%   /* Accent color */
       );
       display: flex;
       align-items: center;
@@ -332,12 +332,12 @@ export class LaunchPageComponent implements OnInit, OnDestroy {
 
   private createConfetti() {
     const colors = [
-      '#2dd4bf', // Primary
-      '#f97316', // Accent
-      '#fed7aa', // Accent light
-      '#6366f1', // Secondary
+      '#0b1f3a', // Primary
+      '#f4b416', // Accent
+      '#fcd34d', // Accent light
+      '#475569', // Secondary
       '#10b981', // Success
-      '#fbbf24', // Gold
+      '#facc15', // Gold
     ];
 
     // Create 150 confetti pieces

@@ -156,19 +156,6 @@ import { MatDivider, MatDividerModule } from '@angular/material/divider';
                 </td>
               </ng-container>
 
-              <!-- Last Login Column -->
-              <ng-container matColumnDef="lastLogin">
-                <th mat-header-cell *matHeaderCellDef>Last Login</th>
-                <td mat-cell *matCellDef="let user" class="last-login-cell">
-                  <span *ngIf="user.lastLoginAt; else never">
-                    {{ formatDate(user.lastLoginAt) }}
-                  </span>
-                  <ng-template #never>
-                    <span class="never-logged-in">Never</span>
-                  </ng-template>
-                </td>
-              </ng-container>
-
               <!-- Actions Column -->
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef>Actions</th>
@@ -250,7 +237,7 @@ import { MatDivider, MatDividerModule } from '@angular/material/divider';
     }
 
     .users-title mat-icon {
-      color: #2dd4bf;
+      color: #0b1f3a;
       font-size: 1.75rem;
       width: 1.75rem;
       height: 1.75rem;
@@ -454,7 +441,6 @@ export class UsersListComponent implements OnInit, OnDestroy {
     'role',
     'permissions',
     'status',
-    'lastLogin',
     'actions'
   ];
 

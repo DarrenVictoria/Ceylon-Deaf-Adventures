@@ -6,6 +6,8 @@ import { AboutPageComponent } from './pages/user/about-page/about-page.component
 import { ShopPageComponent } from './pages/user/shop-page/shop-page.component';
 import { BlogsPageComponent } from './pages/user/blogs-page/blogs-page.component';
 import { BlogDetailComponent } from './pages/user/blog-detail/blog-detail.component';
+import { TourDetailPageComponent } from './pages/user/tour-detail-page/tour-detail-page.component';
+import { DestinationDetailPageComponent } from './pages/user/destination-detail-page/destination-detail-page.component';
 import { ToursListComponent } from './pages/admin/tours-list/tours-list.component';
 import { TourAdminComponent } from './pages/admin/tour-admin/tour-admin.component';
 import { BlogsListComponent } from './pages/admin/blogs-list/blogs-list.component';
@@ -21,8 +23,11 @@ export const routes: Routes = [
     { path: 'tours', component: ToursPageComponent },
     { path: 'about', component: AboutPageComponent },
     { path: 'shop', component: ShopPageComponent },
+    { path: 'contact', loadComponent: () => import('./pages/user/contact-page/contact-page.component').then(m => m.ContactPageComponent) },
     { path: 'blogs', component: BlogsPageComponent },
     { path: 'blogs/:slug', component: BlogDetailComponent },
+    { path: 'tours/:slug', component: TourDetailPageComponent },
+    { path: 'destinations/:slug', component: DestinationDetailPageComponent },
     {
         path: 'admin',
         children: [
@@ -66,6 +71,11 @@ export const routes: Routes = [
                 canActivate: [adminGuard]
             },
             {
+                path: 'messages',
+                loadComponent: () => import('./pages/admin/messages-list/messages-list.component').then(m => m.MessagesListComponent),
+                canActivate: [adminGuard]
+            },
+            {
                 path: 'users',
                 component: UsersListComponent,
                 canActivate: [adminGuard]
@@ -74,6 +84,26 @@ export const routes: Routes = [
                 path: '',
                 redirectTo: 'tours',
                 pathMatch: 'full'
+            },
+            {
+                path: 'products',
+                loadComponent: () => import('./pages/admin/products-list/products-list.component').then(m => m.ProductsListComponent),
+                canActivate: [adminGuard]
+            },
+            {
+                path: 'products/new',
+                loadComponent: () => import('./pages/admin/product-admin/product-admin.component').then(m => m.ProductAdminComponent),
+                canActivate: [adminGuard]
+            },
+            {
+                path: 'products/edit/:id',
+                loadComponent: () => import('./pages/admin/product-admin/product-admin.component').then(m => m.ProductAdminComponent),
+                canActivate: [adminGuard]
+            },
+            {
+                path: 'product-reservations',
+                loadComponent: () => import('./pages/admin/product-reservations-list/product-reservations-list.component').then(m => m.ProductReservationsListComponent),
+                canActivate: [adminGuard]
             },
         ],
     },

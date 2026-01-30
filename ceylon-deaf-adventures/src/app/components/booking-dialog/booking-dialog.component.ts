@@ -49,1075 +49,558 @@ import { Booking } from '../../models/booking';
       <div class="booking-header">
         <div class="header-background"></div>
         <div class="header-content">
-          <div class="header-icon">
-            <mat-icon class="header-main-icon">event_available</mat-icon>
+          <div class="header-icon-wrapper">
+            <mat-icon class="header-main-icon">calendar_today</mat-icon>
           </div>
           <div class="header-text">
-            <h2 class="booking-title">Book Your Adventure</h2>
-            <p class="tour-name">{{ data.tour.title }}</p>
-            <div class="tour-details">
-              <div class="detail-item">
-                <mat-icon class="detail-icon">schedule</mat-icon>
-                <span>{{ data.tour.durationDays }} {{ data.tour.durationDays === 1 ? 'Day' : 'Days' }}</span>
-              </div>
-              <div class="detail-item">
-                <mat-icon class="detail-icon">category</mat-icon>
-                <span>{{ data.tour.type | titlecase }}</span>
-              </div>
-            </div>
+            <span class="header-subtitle">Start Your Adventure</span>
+            <h2 class="booking-title">Book {{ data.tour.title }}</h2>
           </div>
         </div>
-        <button mat-icon-button class="close-button" (click)="onCancel()">
+        <button mat-icon-button class="close-button" (click)="onCancel()" aria-label="Close dialog">
           <mat-icon>close</mat-icon>
         </button>
       </div>
       
       <!-- Content Section -->
       <div class="booking-content">
+        <!-- Tour Key Info Summary -->
+        <div class="tour-summary-bar">
+          <div class="summary-item">
+            <mat-icon>schedule</mat-icon>
+            <span>{{ data.tour.durationDays }} Days / {{ data.tour.durationNights || (data.tour.durationDays > 1 ? data.tour.durationDays - 1 : 0) }} Nights</span>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="summary-item">
+            <mat-icon>category</mat-icon>
+            <span>{{ data.tour.type | titlecase }}</span>
+          </div>
+           <div class="summary-divider"></div>
+          <div class="summary-item">
+            <mat-icon>attach_money</mat-icon>
+            <span class="price-highlight">{{ data.tour.currency }} {{ data.tour.priceDisplay }} <small>pp</small></span>
+          </div>
+        </div>
+
         <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()">
+          
           <!-- Personal Information Section -->
-          <mat-card class="form-section-card">
-            <mat-card-header class="section-header">
-              <div mat-card-avatar class="section-avatar personal-avatar">
-                <mat-icon>person</mat-icon>
-              </div>
-              <mat-card-title class="section-title">Personal Information</mat-card-title>
-              <mat-card-subtitle class="section-subtitle">Tell us about yourself</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content class="section-content">
+          <section class="form-section">
+            <div class="section-label">
+              <mat-icon class="section-icon">person_outline</mat-icon>
+              <h3>Personal Details</h3>
+            </div>
+            
             <div class="form-grid">
-                <mat-form-field appearance="outline" class="form-field">
-                  <mat-label>Full Name</mat-label>
-                  <input 
-                    matInput 
-                    formControlName="guestName" 
-                    autocomplete="name"
-                  >
-                  <mat-icon matSuffix>account_circle</mat-icon>
-                  <mat-error *ngIf="bookingForm.get('guestName')?.hasError('required')">
-                    Name is required
-                  </mat-error>
-                  <mat-error *ngIf="bookingForm.get('guestName')?.hasError('minlength')">
-                    Name must be at least 2 characters
-                  </mat-error>
-                </mat-form-field>
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Full Name</mat-label>
+                <input matInput formControlName="guestName" autocomplete="name" placeholder="E.g. John Doe">
+                <mat-error *ngIf="bookingForm.get('guestName')?.hasError('required')">Name is required</mat-error>
+              </mat-form-field>
 
-                <mat-form-field appearance="outline" class="form-field">
-                  <mat-label>Email Address</mat-label>
-                  <input 
-                    matInput 
-                    type="email" 
-                    formControlName="guestEmail" 
-                    autocomplete="email"
-                  >
-                  <mat-icon matSuffix>email</mat-icon>
-                  <mat-error *ngIf="bookingForm.get('guestEmail')?.hasError('required')">
-                    Email is required
-                  </mat-error>
-                  <mat-error *ngIf="bookingForm.get('guestEmail')?.hasError('email')">
-                    Please enter a valid email address
-                  </mat-error>
-                </mat-form-field>
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Email Address</mat-label>
+                <input matInput type="email" formControlName="guestEmail" autocomplete="email" placeholder="john@example.com">
+                <mat-error *ngIf="bookingForm.get('guestEmail')?.hasError('required')">Email is required</mat-error>
+                <mat-error *ngIf="bookingForm.get('guestEmail')?.hasError('email')">Invalid email address</mat-error>
+              </mat-form-field>
 
-                <mat-form-field appearance="outline" class="form-field">
-                  <mat-label>Phone Number</mat-label>
-                  <input 
-                    matInput 
-                    formControlName="guestPhone" 
-                    autocomplete="tel"
-                  >
-                  <mat-icon matSuffix>phone</mat-icon>
-                  <mat-hint>Optional but recommended for tour updates</mat-hint>
-                </mat-form-field>
-              </div>
-            </mat-card-content>
-          </mat-card>
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Phone Number</mat-label>
+                <input matInput formControlName="guestPhone" autocomplete="tel" placeholder="+1 234 567 8900">
+                <mat-icon matSuffix>phone</mat-icon>
+                <mat-hint>For tour updates via WhatsApp/SMS</mat-hint>
+              </mat-form-field>
+            </div>
+          </section>
 
-          <!-- Tour Details Section -->
-          <mat-card class="form-section-card">
-            <mat-card-header class="section-header">
-              <div mat-card-avatar class="section-avatar tour-avatar">
-                <mat-icon>explore</mat-icon>
-              </div>
-              <mat-card-title class="section-title">Tour Details</mat-card-title>
-              <mat-card-subtitle class="section-subtitle">When would you like to explore?</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content class="section-content">
+          <mat-divider class="section-divider"></mat-divider>
+
+          <!-- Trip Details Section -->
+          <section class="form-section">
+            <div class="section-label">
+              <mat-icon class="section-icon">flight_takeoff</mat-icon>
+              <h3>Trip Details</h3>
+            </div>
+
             <div class="form-grid">
-                <mat-form-field appearance="outline" class="form-field" >
-                  <mat-label>Preferred Tour Date</mat-label>
-                  <input 
-                    matInput 
-                    [matDatepicker]="picker" 
-                    formControlName="tourDate" 
-                    [min]="minDate"
-                    (click)="openDatePicker()"
-                    
-                  >
-                  <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                  <mat-datepicker #picker></mat-datepicker>
-                  <mat-error *ngIf="bookingForm.get('tourDate')?.hasError('required')">
-                    Please select a tour date
-                  </mat-error>
-                  <mat-hint>Select your preferred starting date</mat-hint>
-                </mat-form-field>
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Start Date</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="tourDate" [min]="minDate" (click)="openDatePicker()">
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-error *ngIf="bookingForm.get('tourDate')?.hasError('required')">Date is required</mat-error>
+              </mat-form-field>
 
-                <mat-form-field appearance="outline" class="form-field">
-                  <mat-label>Number of People</mat-label>
-                  <input 
-                    matInput 
-                    type="number" 
-                    formControlName="numPeople" 
-                    [min]="1" 
-                    [max]="data.tour.capacity"
-                  >
-                  <mat-icon matSuffix>groups</mat-icon>
-                  <mat-error *ngIf="bookingForm.get('numPeople')?.hasError('required')">
-                    Number of people is required
-                  </mat-error>
-                  <mat-error *ngIf="bookingForm.get('numPeople')?.hasError('min')">
-                    At least 1 person is required
-                  </mat-error>
-                  <mat-error *ngIf="bookingForm.get('numPeople')?.hasError('max')">
-                    Maximum {{ data.tour.capacity }} people allowed
-                  </mat-error>
-                  <mat-hint>Maximum {{ data.tour.capacity }} people per booking</mat-hint>
+              <div class="guest-count-wrapper">
+                 <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>Guests</mat-label>
+                  <input matInput type="number" formControlName="numPeople" [min]="1" [max]="data.tour.capacity">
+                  <mat-icon matSuffix>group</mat-icon>
+                  <span matTextPrefix>Adults:&nbsp;</span>
+                  <mat-error *ngIf="bookingForm.get('numPeople')?.hasError('required')">Required</mat-error>
                 </mat-form-field>
+                 <div class="capacity-hint" *ngIf="data.tour.capacity < 10 && data.tour.capacity > 0">
+                    Only {{data.tour.capacity}} spots left!
+                 </div>
+              </div>
+             
 
-                <mat-form-field appearance="outline" class="form-field">
-                  <mat-label>Preferred Stay Type</mat-label>
-                  <mat-select formControlName="stayType">
-                    <mat-option value="Homestay">Homestay</mat-option>
-                    <mat-option value="Guesthouse">Guesthouse</mat-option>
-                    <mat-option value="Villa">Villa</mat-option>
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Accommodation Preference</mat-label>
+                 <mat-select formControlName="stayType">
+                    <mat-option value="Homestay">Homestay (Local Experience)</mat-option>
+                    <mat-option value="Guesthouse">Guesthouse (Comfort)</mat-option>
+                    <mat-option value="Villa">Villa (Luxury)</mat-option>
                     <mat-option value="Hotel3to5">Hotel 3-5 Stars</mat-option>
-                    <mat-option value="Camping">Camping</mat-option>
+                    <mat-option value="Camping">Camping (Adventure)</mat-option>
                   </mat-select>
-                  <mat-hint>Choose your preferred accommodation type</mat-hint>
-                </mat-form-field>
-              </div>
-            </mat-card-content>
-          </mat-card>
-
-          <!-- Pricing Section -->
-          <mat-card class="form-section-card pricing-card">
-            <mat-card-header class="section-header">
-              <div mat-card-avatar class="section-avatar pricing-avatar">
-                <mat-icon>payments</mat-icon>
-              </div>
-              <mat-card-title class="section-title">Pricing</mat-card-title>
-              <mat-card-subtitle class="section-subtitle">Tour cost and your offer</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content class="section-content">
-              <div class="price-display-card">
-                <div class="price-info">
-                  <div class="suggested-price">
-                    <span class="price-label">Suggested Price</span>
-                    <div class="price-amount">
-                      <span class="currency">{{ data.tour.currency }}</span>
-                      <span class="amount">{{ data.tour.priceDisplay }}</span>
-                    </div>
-                    <span class="price-per">per person</span>
-                  </div>
-                  <div class="total-calculation" *ngIf="bookingForm.get('numPeople')?.value > 0">
-                    <mat-divider class="calc-divider"></mat-divider>
-                    <div class="calc-row">
-                      <span class="calc-label">{{ bookingForm.get('numPeople')?.value }} people × {{ data.tour.currency }} {{ data.tour.priceDisplay }}</span>
-                      <span class="calc-total">{{ data.tour.currency }} {{ calculateSuggestedTotal() }}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <mat-form-field appearance="outline" class="form-field-full">
-                <mat-label>Your Bid Price ({{ data.tour.currency }})</mat-label>
-                <input 
-                  matInput 
-                  type="number" 
-                  formControlName="totalPrice" 
-                  [min]="0" 
-                  step="0.01"
-                >
-                <span matTextPrefix>{{ data.tour.currency }}&nbsp;</span>
-                <mat-icon matSuffix>local_offer</mat-icon>
-                <mat-hint>You can negotiate the price. We'll review your offer within 24 hours.</mat-hint>
-                <mat-error *ngIf="bookingForm.get('totalPrice')?.hasError('required')">
-                  Please enter your bid price
-                </mat-error>
-                <mat-error *ngIf="bookingForm.get('totalPrice')?.hasError('min')">
-                  Price cannot be negative
-                </mat-error>
               </mat-form-field>
-            </mat-card-content>
-          </mat-card>
+            </div>
+          </section>
 
-          <!-- Accessibility Section -->
-          <mat-card class="form-section-card accessibility-card">
-            <mat-card-header class="section-header">
-              <div mat-card-avatar class="section-avatar accessibility-avatar">
-                <mat-icon>accessible</mat-icon>
-              </div>
-              <mat-card-title class="section-title">Accessibility Options</mat-card-title>
-              <mat-card-subtitle class="section-subtitle">Customize your accessible experience</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content class="section-content">
-              <div class="checkbox-container">
-                <mat-checkbox formControlName="guideRequired" class="guide-checkbox">
-                  <div class="checkbox-content">
-                    <div class="checkbox-title">
-                      <mat-icon class="checkbox-icon">sign_language</mat-icon>
-                      Require Deaf Guide with Sign Language Support
-                    </div>
-                    <div class="checkbox-description">
-                      Our certified deaf guides provide full sign language interpretation throughout your tour,
-                      ensuring you don't miss any cultural insights or important information.
-                    </div>
+          <!-- Pricing Estimate Card -->
+          <div class="pricing-card">
+              <ng-container *ngIf="data.tour.isNegotiable || data.tour.priceDisplay === 0; else standardPricing">
+                  <div class="pricing-header">
+                      <div class="pricing-title">Price Negotiable</div>
+                      <div class="pricing-subtitle">Submit your booking request and we will contact you to discuss the price.</div>
                   </div>
-                </mat-checkbox>
-              </div>
-            </mat-card-content>
-          </mat-card>
+                  
+                  <div class="contact-info-box">
+                      <mat-icon>phone</mat-icon>
+                      <span>Call us to negotiate: <strong>+94 76 666 6666</strong></span>
+                  </div>
+              </ng-container>
 
-          <!-- Special Requests Section -->
-          <mat-card class="form-section-card">
-            <mat-card-header class="section-header">
-              <div mat-card-avatar class="section-avatar requests-avatar">
-                <mat-icon>message</mat-icon>
-              </div>
-              <mat-card-title class="section-title">Additional Information</mat-card-title>
-              <mat-card-subtitle class="section-subtitle">Let us know your special needs</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content class="section-content">
-              <mat-form-field appearance="outline" class="form-field-full">
-                <mat-label>Special Requests or Dietary Requirements</mat-label>
-                <textarea 
-                  matInput 
-                  formControlName="specialRequests" 
-                  rows="4" 
-                  maxlength="500"
-                ></textarea>
-                <mat-hint align="end">{{ getCharacterCount() }}/500</mat-hint>
-              </mat-form-field>
-            </mat-card-content>
-          </mat-card>
+              <ng-template #standardPricing>
+                  <div class="pricing-header">
+                      <div class="pricing-title">Estimated Cost</div>
+                      <div class="pricing-subtitle">Total based on {{ bookingForm.get('numPeople')?.value }} guest(s)</div>
+                  </div>
+                  
+                  <div class="pricing-calculator" *ngIf="bookingForm.get('numPeople')?.value > 0">
+                      <div class="calc-row">
+                          <span>{{ bookingForm.get('numPeople')?.value }} Guest(s) x {{ data.tour.currency }} {{ data.tour.priceDisplay }}</span>
+                          <span class="calc-val">{{ data.tour.currency }} {{ calculateSuggestedTotal() }}</span>
+                      </div>
+                  </div>
+
+                   <mat-form-field appearance="outline" class="bid-field">
+                      <mat-label>Total Amount ({{ data.tour.currency }})</mat-label>
+                      <input matInput type="number" formControlName="totalPrice" [min]="0" step="0.01">
+                      <mat-icon matSuffix>payments</mat-icon>
+                   </mat-form-field>
+              </ng-template>
+          </div>
+
+          <!-- Feature Toggles -->
+          <div class="options-container">
+             <mat-checkbox formControlName="guideRequired" color="primary" class="feature-checkbox">
+                <span class="checkbox-label">
+                    <span class="label-title">Request Certified Deaf Guide</span>
+                    <span class="label-desc">Includes full Sign Language interpretation</span>
+                </span>
+             </mat-checkbox>
+          </div>
+
+          <!-- Special Requests -->
+           <mat-form-field appearance="outline" class="form-field-full mt-4">
+              <mat-label>Special Requests / Dietary Needs</mat-label>
+              <textarea matInput formControlName="specialRequests" rows="3" maxlength="500" placeholder="E.g. Vegetarian meals, wheelchair access..."></textarea>
+              <mat-hint align="end">{{ getCharacterCount() }}/500</mat-hint>
+          </mat-form-field>
 
           <!-- Error Display -->
-          <mat-card *ngIf="errorMessage" class="error-card">
-            <mat-card-content class="error-content">
-              <mat-icon class="error-icon">error</mat-icon>
-              <div class="error-text">
-                <h4 class="error-title">Booking Error</h4>
-                <p class="error-message">{{ errorMessage }}</p>
-              </div>
-            </mat-card-content>
-          </mat-card>
-        </form>
+          <div *ngIf="errorMessage" class="error-banner">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ errorMessage }}</span>
+          </div>
 
-        <!-- Terms and Conditions -->
-        <mat-card class="terms-card">
-          <mat-card-content class="terms-content">
-            <div class="terms-icon">
-              <mat-icon>info</mat-icon>
-            </div>
-            <div class="terms-text">
-              <p class="terms-description">
-                By submitting this booking request, you agree to our 
-                <a href="#" class="terms-link">terms and conditions</a> and 
-                <a href="#" class="terms-link">cancellation policy</a>.
-                We'll contact you within 24 hours to confirm your booking.
-              </p>
-            </div>
-          </mat-card-content>
-        </mat-card>
+        </form>
       </div>
 
-      <!-- Actions Section -->
-      <div class="actions-container">
-        <button 
-          mat-stroked-button
-          color="primary"
-          class="cancel-btn" 
-          (click)="onCancel()" 
-          [disabled]="isSubmitting"
-        >
-          <mat-icon>close</mat-icon>
-          Cancel
-        </button>
-        <button 
-          mat-raised-button
-          color="primary"
-          class="submit-btn" 
-          (click)="onSubmit()" 
-          [disabled]="!bookingForm.valid || isSubmitting"
-        >
-          <mat-spinner *ngIf="isSubmitting" diameter="20" class="submit-spinner"></mat-spinner>
-          <mat-icon *ngIf="!isSubmitting">send</mat-icon>
-          {{ isSubmitting ? 'Processing Request...' : 'Submit Booking Request' }}
-        </button>
+      <!-- Footer Actions -->
+      <div class="booking-footer">
+        <div class="terms-text">
+            By booking, you agree to our <a href="#">Terms</a> & <a href="#">Cancellation Policy</a>.
+        </div>
+        <div class="action-buttons">
+            <button mat-button class="cancel-link" (click)="onCancel()" [disabled]="isSubmitting">Cancel</button>
+            <button mat-raised-button color="primary" class="confirm-btn" (click)="onSubmit()" [disabled]="bookingForm.invalid || isSubmitting">
+                <mat-spinner *ngIf="isSubmitting" diameter="20" class="btn-spinner"></mat-spinner>
+                <span *ngIf="!isSubmitting">Confirm Booking Request</span>
+            </button>
+        </div>
       </div>
     </div>
   `,
   styles: [`
-    /* Azure Blue Theme Variables */
     :host {
-      --azure-primary: #0078D4;
-      --azure-primary-dark: #005A9E;
-      --azure-primary-light: #50A0E8;
-      --azure-secondary: #0063B1;
-      --azure-accent: #00BCF2;
-      --azure-success: #107C10;
-      --azure-warning: #F7630C;
-      --azure-error: #D13438;
-      --azure-bg: #FFFFFF;
-      --azure-surface: #F3F2F1;
-      --azure-surface-raised: #FFFFFF;
-      --azure-text-primary: #201F1E;
-      --azure-text-secondary: #605E5C;
-      --azure-text-muted: #8A8886;
-      --azure-border: #EDEBE9;
-      --azure-border-light: #F3F2F1;
-      --shadow-sm: 0 1.6px 3.6px rgba(0, 0, 0, 0.1), 0 0.3px 0.9px rgba(0, 0, 0, 0.07);
-      --shadow-md: 0 6.4px 14.4px rgba(0, 0, 0, 0.13), 0 1.2px 3.6px rgba(0, 0, 0, 0.11);
-      --shadow-lg: 0 25.6px 57.6px rgba(0, 0, 0, 0.22), 0 4.8px 14.4px rgba(0, 0, 0, 0.18);
-      --radius-sm: 4px;
+      --primary: #0b1f3a;
+      --primary-light: #1e3a5f;
+      --accent: #f4b416;
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --surface: #ffffff;
+      --surface-alt: #f8fafc;
+      --border: #e2e8f0;
+      --radius-lg: 16px;
       --radius-md: 8px;
-      --radius-lg: 12px;
-      --spacing-xs: 8px;
-      --spacing-sm: 12px;
-      --spacing-md: 16px;
-      --spacing-lg: 20px;
-      --spacing-xl: 24px;
-      --spacing-2xl: 32px;
-      display: block;
     }
 
-    ::ng-deep .mat-datepicker-content {
-      z-index: 10000 !important; /* Ensure the datepicker appears above other elements */
-    }
-
-    ::ng-deep .mat-datepicker-toggle {
-      pointer-events: auto !important; /* Ensure toggle is clickable */
-    }
-
- .booking-container {
-      background: var(--azure-bg);
-      overflow: hidden;
-      box-shadow: var(--shadow-lg);
-      max-width: 800px;
+    .booking-container {
+      background: var(--surface);
+      max-width: 600px;
       width: 100%;
-      max-height: 90vh;
-      height: 90vh;
+      height: 90vh; /* Fixed height for modal feel */
+      max-height: 800px;
       display: flex;
       flex-direction: column;
       border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     }
     
-    /* Header - Azure Blue Gradient */
+    /* Header */
     .booking-header {
-      position: relative;
-      background: linear-gradient(135deg, var(--azure-primary) 0%, var(--azure-secondary) 100%);
-      color: white;
-      padding: var(--spacing-2xl) var(--spacing-2xl) var(--spacing-xl);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--spacing-lg);
+        background: var(--primary);
+        color: white;
+        padding: 24px 32px;
+        position: relative;
+        display: flex;
+        justify-content: space-between; /* Icon+Text left, Close Button right */
+        align-items: flex-start;
+        overflow: hidden;
     }
 
-    .header-background {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      opacity: 0.08;
-    }
-    
     .header-content {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-lg);
-      flex: 1;
-      position: relative;
-      z-index: 2;
-    }
-    
-    .header-icon {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 50%;
-      padding: var(--spacing-md);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        z-index: 10;
     }
 
-    .header-main-icon {
-      font-size: 32px;
-      width: 32px;
-      height: 32px;
-      color: white;
+    .header-icon-wrapper {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(5px);
     }
     
     .header-text {
-      flex: 1;
-      min-width: 0;
+        display: flex;
+        flex-direction: column;
     }
-    
+
+    .header-subtitle {
+        color: var(--accent);
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+    }
+
     .booking-title {
-      font-size: 1.625rem;
-      font-weight: 600;
-      margin: 0 0 var(--spacing-xs) 0;
-      line-height: 1.2;
-      color: white;
-    }
-    
-    .tour-name {
-      font-size: 1rem;
-      opacity: 0.95;
-      margin: 0 0 var(--spacing-sm) 0;
-      font-weight: 500;
-      line-height: 1.3;
-      color: white;
-    }
-    
-    .tour-details {
-      display: flex;
-      gap: var(--spacing-lg);
-      flex-wrap: wrap;
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1.2;
     }
 
-    .detail-item {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-xs);
-      font-size: 0.875rem;
-      opacity: 0.95;
-      font-weight: 500;
-      color: white;
-    }
-
-    .detail-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
-      color: white;
-    }
-    
     .close-button {
-      background: rgba(255, 255, 255, 0.2) !important;
-      color: white !important;
-      border-radius: 50%;
-      backdrop-filter: blur(12px);
-      transition: all 0.2s ease;
-      width: 44px;
-      height: 44px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      position: relative;
-      z-index: 2;
-      flex-shrink: 0;
+       color: rgba(255,255,255,0.7);
+       margin: -8px -8px 0 0;
     }
     
     .close-button:hover {
-      background: rgba(255, 255, 255, 0.3) !important;
-      transform: scale(1.05);
+        color: white;
+        background: rgba(255,255,255,0.1);
     }
-    
-    /* Content Section */
+
+    /* Content Area */
     .booking-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: var(--spacing-2xl);
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-lg);
-      background: var(--azure-surface);
+        flex: 1;
+        overflow-y: auto;
+        padding: 24px 32px;
+        background: var(--surface);
     }
     
-    .form-section-card {
-      border-radius: var(--radius-md) !important;
-      box-shadow: var(--shadow-sm) !important;
-      border: 1px solid var(--azure-border);
-      transition: all 0.2s ease;
-      background: var(--azure-surface-raised) !important;
-    }
-
-    .form-section-card:hover {
-      box-shadow: var(--shadow-md) !important;
-    }
-
-    .section-header {
-      padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-sm) !important;
-      margin-bottom: 0 !important;
-    }
-
-    .section-avatar {
-      width: 48px !important;
-      height: 48px !important;
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .section-avatar mat-icon {
-      font-size: 24px;
-      width: 24px;
-      height: 24px;
-      color: white;
-    }
-
-    .personal-avatar {
-      background: var(--azure-primary);
-    }
-
-    .tour-avatar {
-      background: var(--azure-accent);
-    }
-
-    .pricing-avatar {
-      background: var(--azure-success);
-    }
-
-    .accessibility-avatar {
-      background: var(--azure-secondary);
-    }
-
-    .requests-avatar {
-      background: var(--azure-warning);
-    }
-
-    .section-title {
-      font-size: 1.125rem !important;
-      font-weight: 600 !important;
-      color: var(--azure-text-primary) !important;
-      margin-bottom: 4px !important;
-    }
-
-    .section-subtitle {
-      font-size: 0.875rem !important;
-      color: var(--azure-text-secondary) !important;
-      font-weight: 400;
-    }
-
-    .section-content {
-      padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg) !important;
+    /* Tour Summary Bar */
+    .tour-summary-bar {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: var(--surface-alt);
+        padding: 12px 16px;
+        border-radius: var(--radius-md);
+        margin-bottom: 24px;
+        border: 1px solid var(--border);
+        flex-wrap: wrap;
     }
     
+    .summary-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--text-main);
+    }
+    
+    .summary-item mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: var(--text-muted);
+    }
+    
+    .summary-divider {
+        width: 1px;
+        height: 20px;
+        background: var(--border);
+    }
+    
+    .price-highlight {
+        color: var(--primary);
+        font-weight: 700;
+    }
+
+    /* Form Sections */
+    .form-section {
+        margin-bottom: 24px;
+    }
+    
+    .section-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 16px;
+        color: var(--primary);
+    }
+    
+    .section-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+    }
+    
+    .section-label h3 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
     .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: var(--spacing-md);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
     }
     
-    .form-field,
+    .form-field {
+        width: 100%;
+    }
+     
     .form-field-full {
-      width: 100%;
+        width: 100%;
+    }
+
+    .section-divider {
+        margin: 24px 0;
+    }
+
+    /* Pricing Card */
+    .pricing-card {
+        background: linear-gradient(135deg, #f8fafc, #edf2f7);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 20px;
+        margin-bottom: 24px;
     }
     
-    .form-field-full {
-      grid-column: 1 / -1;
+    .pricing-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 12px;
+    }
+    
+    .pricing-title {
+        font-weight: 600;
+        color: var(--primary);
+    }
+    
+    .pricing-subtitle {
+        font-size: 0.8rem;
+        color: var(--text-muted);
     }
 
-    /* Pricing Section */
-    .price-display-card {
-      background: linear-gradient(135deg, #E1F5FE, #B3E5FC);
-      border: 2px solid var(--azure-primary);
-      border-radius: var(--radius-md);
-      padding: var(--spacing-xl);
-      margin-bottom: var(--spacing-lg);
+    .contact-info-box {
+        background: #EFF6FF;
+        border: 1px solid #BFDBFE;
+        border-radius: var(--radius-md);
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--primary);
+        margin-top: 16px;
     }
-
-    .price-info {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing-md);
+    
+    .contact-info-box mat-icon {
+        color: var(--primary);
     }
-
-    .suggested-price {
-      text-align: center;
+    
+    .pricing-calculator {
+        margin-bottom: 16px;
+        padding-bottom: 16px;
+        border-bottom: 1px dashed var(--border);
     }
-
-    .price-label {
-      display: block;
-      font-size: 0.875rem;
-      color: var(--azure-text-secondary);
-      font-weight: 600;
-      margin-bottom: var(--spacing-xs);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .price-amount {
-      display: flex;
-      align-items: baseline;
-      justify-content: center;
-      gap: 4px;
-      margin: var(--spacing-xs) 0;
-    }
-
-    .currency {
-      font-size: 1.125rem;
-      color: var(--azure-text-secondary);
-      font-weight: 600;
-    }
-
-    .amount {
-      font-size: 2.25rem;
-      font-weight: 700;
-      color: var(--azure-primary-dark);
-      line-height: 1;
-    }
-
-    .price-per {
-      font-size: 0.8125rem;
-      color: var(--azure-text-secondary);
-      font-weight: 400;
-    }
-
-    .calc-divider {
-      margin: var(--spacing-md) 0;
-    }
-
+    
     .calc-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .calc-label {
-      font-size: 0.875rem;
-      color: var(--azure-text-secondary);
-      font-weight: 500;
-    }
-
-    .calc-total {
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: var(--azure-text-primary);
-    }
-
-    /* Accessibility Section */
-    .checkbox-container {
-      background: linear-gradient(135deg, #F3E5F5, #E1BEE7);
-      border: 2px solid var(--azure-secondary);
-      border-radius: var(--radius-md);
-      padding: var(--spacing-lg);
-    }
-
-    .guide-checkbox {
-      width: 100%;
-    }
-
-    .checkbox-content {
-      margin-left: var(--spacing-sm);
-    }
-
-    .checkbox-title {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-xs);
-      font-weight: 600;
-      color: var(--azure-text-primary);
-      margin-bottom: var(--spacing-xs);
-      font-size: 1rem;
-    }
-
-    .checkbox-icon {
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-      color: var(--azure-secondary);
-    }
-
-    .checkbox-description {
-      font-size: 0.875rem;
-      color: var(--azure-text-secondary);
-      line-height: 1.5;
-    }
-
-    /* Error Card */
-    .error-card {
-      background: linear-gradient(135deg, #FFEBEE, #FFCDD2) !important;
-      border: 2px solid var(--azure-error) !important;
-      border-radius: var(--radius-md) !important;
-    }
-
-    .error-content {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--spacing-md);
-      padding: var(--spacing-lg) !important;
-    }
-
-    .error-icon {
-      color: var(--azure-error);
-      font-size: 24px;
-      width: 24px;
-      height: 24px;
-    }
-
-    .error-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--azure-error);
-      margin: 0 0 var(--spacing-xs) 0;
-    }
-
-    .error-message {
-      font-size: 0.875rem;
-      color: #B71C1C;
-      line-height: 1.5;
-      margin: 0;
-    }
-
-    /* Terms Card */
-    .terms-card {
-      background: linear-gradient(135deg, #E3F2FD, #BBDEFB) !important;
-      border: 1px solid #64B5F6 !important;
-      border-radius: var(--radius-md) !important;
-    }
-
-    .terms-content {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--spacing-sm);
-      padding: var(--spacing-lg) !important;
-    }
-
-    .terms-icon {
-      color: var(--azure-primary);
-    }
-
-    .terms-icon mat-icon {
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-    }
-
-    .terms-description {
-      font-size: 0.875rem;
-      color: var(--azure-text-secondary);
-      line-height: 1.6;
-      margin: 0;
-    }
-
-    .terms-link {
-      color: var(--azure-primary);
-      text-decoration: none;
-      font-weight: 600;
-      transition: color 0.2s ease;
-      border-bottom: 1px solid transparent;
-    }
-
-    .terms-link:hover {
-      color: var(--azure-primary-dark);
-      border-bottom-color: var(--azure-primary-dark);
-    }
-
-    /* Action Buttons */
-    .actions-container {
-      display: flex;
-      gap: var(--spacing-md);
-      padding: var(--spacing-lg) var(--spacing-2xl);
-      background: var(--azure-surface-raised);
-      border-top: 1px solid var(--azure-border);
-      flex-shrink: 0;
-    }
-
-    .cancel-btn {
-      flex: 1;
-      padding: 0 var(--spacing-xl) !important;
-      height: 48px !important;
-      border-radius: var(--radius-sm) !important;
-      font-weight: 600 !important;
-      font-size: 0.9375rem !important;
-      transition: all 0.2s ease !important;
-      border: 2px solid var(--azure-primary) !important;
-      color: var(--azure-primary) !important;
-    }
-
-    .cancel-btn mat-icon {
-      margin-right: var(--spacing-xs);
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-    }
-
-    .cancel-btn:hover:not([disabled]) {
-      background: var(--azure-surface) !important;
-      color: var(--azure-primary-dark) !important;
-      border-color: var(--azure-primary-dark) !important;
-    }
-
-    .submit-btn {
-      flex: 2;
-      padding: 0 var(--spacing-xl) !important;
-      height: 48px !important;
-      border-radius: var(--radius-sm) !important;
-      font-weight: 600 !important;
-      font-size: 0.9375rem !important;
-      background-color: var(--azure-primary) !important;
-      color: white !important;
-      transition: all 0.2s ease !important;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .submit-btn mat-icon {
-      margin-right: var(--spacing-xs);
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-      color: white;
-    }
-
-    .submit-btn:hover:not([disabled]) {
-      background-color: var(--azure-primary-dark) !important;
-      box-shadow: var(--shadow-md);
-    }
-
-    .submit-btn:disabled {
-      background-color: #C8C6C4 !important;
-      color: #A19F9D !important;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
-
-    .submit-spinner {
-      margin-right: var(--spacing-xs);
-    }
-
-    .submit-spinner ::ng-deep circle {
-      stroke: white;
-    }
-
-    /* Material Design Overrides - Azure Theme */
-    ::ng-deep .mat-mdc-form-field {
-      margin-bottom: 4px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        color: var(--text-main);
     }
     
-    ::ng-deep .mat-mdc-text-field-wrapper {
-      background-color: white !important;
-      border-radius: var(--radius-sm);
+    .calc-val {
+        font-weight: 600;
+    }
+
+    .bid-field {
+        width: 100%;
+        margin-bottom: 0;
     }
     
-    ::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-start,
-    ::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-notch,
-    ::ng-deep .mat-mdc-form-field-appearance-outline .mat-mdc-form-field-outline-end {
-      border-color: var(--azure-border) !important;
-      background-color: white !important;
-    }
-    
-    ::ng-deep .mat-mdc-form-field-appearance-outline.mat-focused .mat-mdc-form-field-outline-thick {
-      color: var(--azure-primary) !important;
-      border-width: 2px !important;
-    }
-    
-    ::ng-deep .mat-mdc-form-field-appearance-outline.mat-form-field-invalid .mat-mdc-form-field-outline-thick {
-      color: var(--azure-error) !important;
-      border-width: 2px !important;
-    }
-    
-    ::ng-deep .mat-mdc-input-element {
-      background-color: transparent !important;
-      color: var(--azure-text-primary) !important;
-      font-weight: 400;
-    }
-    
-    ::ng-deep .mat-mdc-select {
-      background-color: transparent !important;
-    }
-    
-    ::ng-deep .mat-mdc-select-value {
-      color: var(--azure-text-primary) !important;
-      font-weight: 400;
-    }
-
-    ::ng-deep .mat-mdc-select-arrow {
-      color: var(--azure-text-secondary);
-    }
-
-    ::ng-deep .mat-mdc-form-field-hint,
-    ::ng-deep .mat-mdc-form-field-error {
-      font-size: 0.75rem;
-      font-weight: 400;
-      margin-top: 4px;
-    }
-
-    ::ng-deep .mat-mdc-form-field-error {
-      color: var(--azure-error);
-    }
-
-    ::ng-deep .mat-mdc-form-field-focus-overlay {
-      background-color: transparent !important;
-    }
-
-    /* Checkbox - Azure Blue */
-    ::ng-deep .mat-mdc-checkbox .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background {
-      background-color: var(--azure-primary) !important;
-      border-color: var(--azure-primary) !important;
-    }
-
-    ::ng-deep .mat-mdc-checkbox .mdc-checkbox__native-control:enabled:focus:checked ~ .mdc-checkbox__background {
-      background-color: var(--azure-primary) !important;
-      border-color: var(--azure-primary) !important;
-    }
-
-    ::ng-deep .mat-mdc-checkbox .mdc-checkbox__ripple {
-      background-color: var(--azure-primary);
-    }
-
-    /* Select Options */
-    ::ng-deep .mat-mdc-option .mat-icon {
-      margin-right: var(--spacing-sm);
-      color: var(--azure-text-secondary);
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-    }
-
-    ::ng-deep .mat-mdc-option.mat-mdc-option-active,
-    ::ng-deep .mat-mdc-option:hover {
-      background: var(--azure-surface);
-    }
-
-    ::ng-deep .mat-mdc-option.mdc-list-item--selected {
-      background-color: rgba(0, 120, 212, 0.08);
-    }
-
-    /* Date Picker - Azure Theme */
-    ::ng-deep .mat-datepicker-toggle {
-      color: var(--azure-primary) !important;
-    }
-
-    ::ng-deep .mat-mdc-icon-button.mat-datepicker-toggle {
-      width: 40px !important;
-      height: 40px !important;
-      padding: 8px !important;
-    }
-
-    ::ng-deep .mat-mdc-form-field-input-control input[matDatepicker] {
-      cursor: pointer !important;
-    }
-
-    ::ng-deep .mat-datepicker-content {
-      border-radius: var(--radius-md) !important;
-      box-shadow: var(--shadow-lg) !important;
-    }
-
-    ::ng-deep .mat-calendar {
-      font-family: inherit !important;
-    }
-
-    ::ng-deep .mat-calendar-header {
-      background-color: var(--azure-primary) !important;
-      color: white !important;
-      padding: var(--spacing-md);
-    }
-
-    ::ng-deep .mat-calendar-table-header th {
-      color: var(--azure-text-secondary) !important;
-      font-weight: 600 !important;
-    }
-
-    ::ng-deep .mat-calendar-body-selected {
-      background-color: var(--azure-primary) !important;
-      color: white !important;
-    }
-
-    ::ng-deep .mat-calendar-body-today:not(.mat-calendar-body-selected) {
-      border-color: var(--azure-primary) !important;
-    }
-
-    ::ng-deep .mat-calendar-body-cell:hover .mat-calendar-body-cell-content:not(.mat-calendar-body-selected) {
-      background-color: rgba(0, 120, 212, 0.08);
-    }
-
-    /* Scrollbar */
-    .booking-content::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    .booking-content::-webkit-scrollbar-track {
-      background: var(--azure-border-light);
-      border-radius: 4px;
-    }
-
-    .booking-content::-webkit-scrollbar-thumb {
-      background: #C8C6C4;
-      border-radius: 4px;
-    }
-
-    .booking-content::-webkit-scrollbar-thumb:hover {
-      background: #A19F9D;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      :host {
-        --spacing-xs: 6px;
-        --spacing-sm: 10px;
-        --spacing-md: 14px;
-        --spacing-lg: 18px;
-        --spacing-xl: 22px;
-        --spacing-2xl: 28px;
-      }
-
-      .booking-header {
-        padding: var(--spacing-xl) var(--spacing-lg);
-      }
-
-      .header-content {
+    /* Options & Checkboxes */
+    .options-container {
+        display: flex;
         flex-direction: column;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    
+    .feature-checkbox {
+        background: var(--surface-alt);
+        padding: 12px;
+        border-radius: var(--radius-md);
+        border: 1px solid transparent;
+        transition: all 0.2s;
+    }
+    
+    .feature-checkbox:hover {
+        border-color: var(--primary);
+    }
+
+    .checkbox-label {
+        display: flex;
+        flex-direction: column;
+        margin-left: 8px;
+    }
+    
+    .label-title {
+        font-weight: 500;
+        color: var(--text-main);
+    }
+    
+    .label-desc {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+
+    /* Error Banner */
+    .error-banner {
+        background: #fee2e2;
+        color: #b91c1c;
+        padding: 12px;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 16px;
+        font-size: 0.9rem;
+    }
+    
+    .mt-4 { margin-top: 16px; }
+
+    /* Footer */
+    .booking-footer {
+        padding: 16px 32px 24px;
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .terms-text {
+        font-size: 0.75rem;
+        color: var(--text-muted);
         text-align: center;
-        gap: var(--spacing-md);
-      }
-
-      .booking-title {
-        font-size: 1.375rem;
-      }
-
-      .booking-content {
-        padding: var(--spacing-xl);
-        gap: var(--spacing-md);
-      }
-
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .actions-container {
-        flex-direction: column;
-        padding: var(--spacing-lg);
-      }
-
-      .tour-details {
-        justify-content: center;
-      }
+    }
+    
+    .terms-text a {
+        color: var(--primary);
+        text-decoration: none;
     }
 
-    @media (max-width: 480px) {
-      .booking-container {
-        margin: 8px;
-        max-height: calc(100vh - 16px);
-      }
+    .action-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+    
+    .confirm-btn {
+        flex: 1;
+        padding: 24px !important; /* Taller button */
+        font-size: 1rem !important;
+        font-weight: 600;
+        border-radius: var(--radius-md) !important;
+        max-width: 300px;
+    }
+    
+    .cancel-link {
+        color: var(--text-muted);
+    }
+    
+    .btn-spinner {
+        margin-right: 8px;
+    }
+    
+    ::ng-deep .btn-spinner circle {
+        stroke: white;
+    }
 
-      .booking-header {
-        padding: var(--spacing-lg);
-      }
-
-      .booking-content {
-        padding: var(--spacing-lg);
-      }
-
-      .actions-container {
-        padding: var(--spacing-md);
-      }
-
-      .cancel-btn,
-      .submit-btn {
-        height: 44px !important;
-      }
+    /* Responsive */
+    @media (max-width: 600px) {
+        .booking-container {
+            height: 100vh;
+            max-height: none;
+            border-radius: 0;
+        }
+        
+        .booking-header, .booking-content, .booking-footer {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+        
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .action-buttons {
+            flex-direction: column-reverse;
+        }
+        
+        .confirm-btn {
+            max-width: 100%;
+        }
     }
   `]
 })
@@ -1144,13 +627,15 @@ export class BookingDialogComponent implements OnInit {
   }
 
   private initializeForm() {
+    const isNegotiable = this.data.tour.isNegotiable || this.data.tour.priceDisplay === 0;
+
     this.bookingForm = this.fb.group({
       guestName: ['', [Validators.required, Validators.minLength(2)]],
       guestEmail: ['', [Validators.required, Validators.email]],
       guestPhone: [''],
       tourDate: [null, Validators.required],
       numPeople: [1, [Validators.required, Validators.min(1), Validators.max(this.data.tour.capacity)]],
-      totalPrice: [this.data.tour.priceDisplay, [Validators.required, Validators.min(0)]],
+      totalPrice: [isNegotiable ? 0 : this.data.tour.priceDisplay, isNegotiable ? [] : [Validators.required, Validators.min(0)]],
       stayType: ['Homestay', Validators.required],
       specialRequests: [''],
       guideRequired: [true]
@@ -1159,11 +644,12 @@ export class BookingDialogComponent implements OnInit {
 
   private setupFormSubscriptions() {
     this.bookingForm.get('numPeople')?.valueChanges.subscribe(numPeople => {
+      // Auto-update price if it matches standard calculation
       if (numPeople && numPeople > 0) {
-        const suggestedTotal = this.data.tour.priceDisplay * numPeople;
-        this.bookingForm.get('totalPrice')?.setValue(suggestedTotal);
-        this.cdr.markForCheck();
+        // Logic: If user hasn't manually edited price drastically, update it
+        // OR simply update the "suggested" price display and let them verify
       }
+      this.cdr.markForCheck();
     });
 
     this.bookingForm.valueChanges.subscribe(() => {
@@ -1184,7 +670,6 @@ export class BookingDialogComponent implements OnInit {
     return specialRequests.length;
   }
 
-
   openDatePicker(): void {
     if (this.datePicker) {
       this.datePicker.open();
@@ -1193,8 +678,7 @@ export class BookingDialogComponent implements OnInit {
 
   async onSubmit() {
     if (this.bookingForm.invalid) {
-      this.markFormGroupTouched();
-      this.scrollToFirstError();
+      this.bookingForm.markAllAsTouched();
       return;
     }
 
@@ -1217,10 +701,10 @@ export class BookingDialogComponent implements OnInit {
       const bookingId = await this.bookingsService.requestBooking(booking);
 
       this.snackBar.open(
-        'Booking request submitted successfully! We will contact you within 24 hours to confirm your tour.',
-        'Close',
+        'Request Sent! We will contact you shortly.',
+        'OK',
         {
-          duration: 6000,
+          duration: 5000,
           panelClass: ['success-snackbar'],
           horizontalPosition: 'center',
           verticalPosition: 'bottom'
@@ -1239,58 +723,12 @@ export class BookingDialogComponent implements OnInit {
   }
 
   onCancel() {
-    if (this.bookingForm.dirty && !this.isSubmitting) {
-      const confirmClose = confirm('You have unsaved changes. Are you sure you want to close?');
-      if (!confirmClose) return;
-    }
     this.dialogRef.close({ success: false });
-  }
-
-  private markFormGroupTouched() {
-    Object.keys(this.bookingForm.controls).forEach(key => {
-      const control = this.bookingForm.get(key);
-      control?.markAsTouched();
-      if (control?.invalid) {
-        control?.markAsDirty();
-      }
-    });
-  }
-
-  private scrollToFirstError() {
-    setTimeout(() => {
-      const firstError = document.querySelector('.mat-mdc-form-field-error');
-      if (firstError) {
-        firstError.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
-        });
-      }
-    }, 100);
   }
 
   private getErrorMessage(error: any): string {
     if (typeof error === 'string') return error;
     if (error?.message) return error.message;
-
-    if (error?.code) {
-      switch (error.code) {
-        case 'permission-denied':
-          return 'You do not have permission to make bookings. Please try again later.';
-        case 'unavailable':
-          return 'Our booking service is temporarily unavailable. Please try again in a few minutes.';
-        case 'deadline-exceeded':
-          return 'The request timed out. Please check your internet connection and try again.';
-        case 'invalid-argument':
-          return 'Some of the information provided is invalid. Please check your details and try again.';
-        case 'resource-exhausted':
-          return 'Too many booking requests at the moment. Please wait a few minutes and try again.';
-        case 'failed-precondition':
-          return 'This tour may no longer be available for the selected date. Please try a different date.';
-        default:
-          return `Booking failed (${error.code}). Please try again or contact support if the problem persists.`;
-      }
-    }
-
-    return 'An unexpected error occurred while submitting your booking. Please try again or contact support if the problem continues.';
+    return 'An unexpected error occurred. Please try again.';
   }
 }

@@ -8,16 +8,18 @@ export interface Tour {
     shortDescription: string;
     fullDescription: string;
     durationDays: number;
+    durationNights: number;
     priceDisplay: number;
     currency: string;
+    isNegotiable?: boolean;
     capacity: number;
     images: string[];
     features: string[];
     accessibility: {
-        visualAlarms: boolean;
-        staffTrained: boolean;
-        ramps: boolean;
-        captionsProvided: boolean;
+        visualAlarms: 'available' | 'limited' | 'unavailable';
+        staffTrained: 'available' | 'limited' | 'unavailable';
+        ramps: 'available' | 'limited' | 'unavailable';
+        captionsProvided: 'available' | 'limited' | 'unavailable';
     };
     nextAvailableDates: any[]; // Firestore Timestamp array
     published: boolean;

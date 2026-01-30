@@ -1,0 +1,28 @@
+{
+    "compilerOptions": {
+        "outDir": "./out-tsc/app",
+        "types": [],
+        "target": "ES2022",
+        "module": "ES2022",
+        "moduleResolution": "bundler",
+        "experimentalDecorators": true,
+        "strict": false,
+        "skipLibCheck": true,
+        "esModuleInterop": true
+    },
+    "files": [
+        "src/main.ts"
+    ],
+    "include": [
+        "src/**/*.d.ts",
+        "src/**/*.ts"
+    ],
+    "exclude": [
+        "src/**/*.spec.ts",
+        "node_modules",
+        "dist",
+        "**/*.log",
+        "firebase-debug.log",
+        ".firebase"
+    ]
+}

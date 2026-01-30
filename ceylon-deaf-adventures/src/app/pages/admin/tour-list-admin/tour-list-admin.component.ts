@@ -170,7 +170,7 @@ import { takeUntil } from 'rxjs/operators';
       font-size: 2.5rem;
       width: 2.5rem;
       height: 2.5rem;
-      color: #2dd4bf;
+      color: #0b1f3a;
     }
 
     .admin-subtitle {
@@ -272,7 +272,7 @@ import { takeUntil } from 'rxjs/operators';
 
     .type-chip {
       background-color: rgba(45, 212, 191, 0.1) !important;
-      color: #2dd4bf !important;
+      color: #0b1f3a !important;
       font-size: 0.75rem !important;
       height: 32px !important;
       border-radius: 16px !important;
@@ -307,7 +307,7 @@ import { takeUntil } from 'rxjs/operators';
       font-size: 1.125rem;
       width: 1.125rem;
       height: 1.125rem;
-      color: #2dd4bf;
+      color: #0b1f3a;
     }
 
     .tour-locations {
@@ -325,12 +325,12 @@ import { takeUntil } from 'rxjs/operators';
       font-size: 1.125rem;
       width: 1.125rem;
       height: 1.125rem;
-      color: #2dd4bf;
+      color: #0b1f3a;
     }
 
     .more-locations {
       font-weight: 600;
-      color: #2dd4bf;
+      color: #0b1f3a;
     }
 
     .tour-actions {
@@ -426,17 +426,25 @@ export class TourListAdminComponent implements OnInit, OnDestroy {
 
   private loadTours() {
     this.isLoading = true;
-    this.toursService.listTours()
+    console.log('🔄 Loading all tours for admin view...');
+
+    // Use getAllToursAdmin() to get ALL tours (not just published ones)
+    this.toursService.getAllToursAdmin()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (tours) => {
+          console.log(`✅ Loaded ${tours.length} tours for admin`);
           this.tours = tours;
           this.isLoading = false;
           this.cdr.markForCheck();
         },
         error: (error) => {
-          console.error('Error loading tours:', error);
-          this.snackBar.open('Error loading tours', 'Close', { duration: 3000 });
+          console.error('❌ Error loading tours:', error);
+          this.snackBar.open(
+            'Error loading tours: ' + (error.message || 'Unknown error'),
+            'Close',
+            { duration: 5000 }
+          );
           this.isLoading = false;
           this.cdr.markForCheck();
         }
@@ -452,38 +460,73 @@ export class TourListAdminComponent implements OnInit, OnDestroy {
   }
 
   async togglePublish(tour: Tour) {
+    const newStatus = !tour.published;
+    const action = newStatus ? 'publishing' : 'unpublishing';
+
     try {
+      console.log(`${action} tour: ${tour.title}`);
+
       await this.toursService.updateTour(tour.id, {
-        published: !tour.published
+        published: newStatus
       });
 
-      this.snackBar.open(
-        `Tour ${tour.published ? 'unpublished' : 'published'} successfully`,
-        'Close',
-        { duration: 3000 }
-      );
+      const message = `Tour ${newStatus ? 'published' : 'unpublished'} successfully`;
+      console.log(`✅ ${message}`);
 
+      this.snackBar.open(message, 'Close', { duration: 3000 });
+
+      // Update local state immediately for better UX
+      tour.published = newStatus;
+      this.cdr.markForCheck();
+
+      // Then refresh from server
       this.loadTours();
-    } catch (error) {
-      console.error('Error toggling publish status:', error);
-      this.snackBar.open('Error updating tour', 'Close', { duration: 3000 });
+
+    } catch (error: any) {
+      console.error(`❌ Error ${action} tour:`, error);
+      this.snackBar.open(
+        `Error ${action} tour: ` + (error.message || 'Unknown error'),
+        'Close',
+        { duration: 5000 }
+      );
     }
   }
 
   async deleteTour(tour: Tour) {
     const confirmed = confirm(
-      `Are you sure you want to delete "${tour.title}"? This action cannot be undone.`
+      `Are you sure you want to delete "${tour.title}"?\n\nThis action cannot be undone and will permanently remove:\n• Tour details\n• All images\n• All bookings\n\nType "DELETE" to confirm.`
     );
 
     if (!confirmed) return;
 
     try {
+      console.log(`🗑️ Deleting tour: ${tour.title} (ID: ${tour.id})`);
+
+      // Show loading state
+      this.snackBar.open('Deleting tour...', '', { duration: 0 });
+
       await this.toursService.deleteTour(tour.id);
+
+      console.log(`✅ Tour deleted successfully`);
+
+      this.snackBar.dismiss();
       this.snackBar.open('Tour deleted successfully', 'Close', { duration: 3000 });
+
+      // Remove from local array immediately
+      this.tours = this.tours.filter(t => t.id !== tour.id);
+      this.cdr.markForCheck();
+
+      // Then refresh from server
       this.loadTours();
-    } catch (error) {
-      console.error('Error deleting tour:', error);
-      this.snackBar.open('Error deleting tour', 'Close', { duration: 3000 });
+
+    } catch (error: any) {
+      console.error('❌ Error deleting tour:', error);
+      this.snackBar.dismiss();
+      this.snackBar.open(
+        'Error deleting tour: ' + (error.message || 'Unknown error'),
+        'Close',
+        { duration: 5000 }
+      );
     }
   }
 

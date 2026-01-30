@@ -175,7 +175,7 @@ import { takeUntil } from 'rxjs/operators';
       font-size: 2.5rem;
       width: 2.5rem;
       height: 2.5rem;
-      color: #2dd4bf;
+      color: #0b1f3a;
     }
 
     .admin-subtitle {
@@ -320,7 +320,7 @@ import { takeUntil } from 'rxjs/operators';
       font-size: 1.125rem;
       width: 1.125rem;
       height: 1.125rem;
-      color: #2dd4bf;
+      color: #0b1f3a;
     }
 
     .blog-summary {
@@ -342,7 +342,7 @@ import { takeUntil } from 'rxjs/operators';
 
     .tag-chip {
       background-color: rgba(45, 212, 191, 0.1) !important;
-      color: #2dd4bf !important;
+      color: #0b1f3a !important;
       font-size: 0.75rem !important;
       height: 28px !important;
       border-radius: 14px !important;
