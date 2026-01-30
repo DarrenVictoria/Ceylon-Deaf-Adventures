@@ -19,7 +19,7 @@ import { MatIconModule } from '@angular/material/icon';
       <!-- Main Content -->
       <div class="launch-content" [class.fade-out]="curtainsOpen">
         <div class="logo-container">
-          <img src="/logo.png" alt="Ceylon Deaf Adventures Logo" class="logo" />
+          <img src="/logo-2.png" alt="Ceylon Deaf Adventures Logo" class="logo" />
         </div>
 
         <h1 class="tagline">

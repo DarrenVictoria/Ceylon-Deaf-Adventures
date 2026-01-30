@@ -16,7 +16,7 @@ import { MatButtonModule } from '@angular/material/button';
           
           <!-- Logo Section -->
           <a [routerLink]="['/']" class="brand-link">
-            <img src="logo.png" alt="Ceylon Deaf Adventures logo" class="logo-img" />
+            <img src="logo-2.png" alt="Ceylon Deaf Adventures logo" class="logo-img" />
           </a>
 
           <!-- Desktop Navigation (Centered) -->
