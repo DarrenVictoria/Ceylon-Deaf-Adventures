@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -89,20 +89,14 @@ import { DestinationsService } from '../../../services/destinations.service';
             </div>
             <div class="hero-image">
               <div class="video-container">
-                <video 
-                  #greenscreenVideo
-                  src="480p.mp4"
-                  class="welcome-video hidden"
-                  muted
-                  autoplay
-                  loop
-                  playsinline
-                  preload="auto"
-                ></video>
-                <canvas 
-                  #videoCanvas
+                <img
+                  src="/HomepageVideo.webp"
+                  alt="Welcome to Deaf-friendly tourism in Sri Lanka"
                   class="welcome-video-canvas"
-                ></canvas>
+                  loading="eager"
+                  fetchpriority="high"
+                  decoding="async"
+                />
               </div>
             </div>
           </div>
@@ -658,7 +652,7 @@ import { DestinationsService } from '../../../services/destinations.service';
       }
     }
 
-    /* Green Screen Video Styles */
+    /* Hero Media Styles */
     .hero-image {
       display: flex;
       align-items: flex-end;
@@ -687,16 +681,6 @@ import { DestinationsService } from '../../../services/destinations.service';
       pointer-events: none;
     }
 
-    .welcome-video {
-      position: absolute;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .welcome-video.hidden {
-      display: none;
-    }
-
     .welcome-video-canvas {
       width: auto;
       max-width: 100%;
@@ -714,29 +698,6 @@ import { DestinationsService } from '../../../services/destinations.service';
 
     .welcome-video-canvas:hover {
       transform: scale(1.02);
-    }
-
-    /* Loading state */
-    .video-container::before {
-      content: '';
-      position: absolute;
-      bottom: 50%;
-      left: 50%;
-      transform: translate(-50%, 50%);
-      width: 50px;
-      height: 50px;
-      border: 4px solid rgba(45, 212, 191, 0.3);
-      border-top-color: var(--primary-color);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    .video-container:has(.welcome-video-canvas[width])::before {
-      display: none;
-    }
-
-    @keyframes spin {
-      to { transform: translate(-50%, 50%) rotate(360deg); }
     }
 
     /* Glow effect behind video */
@@ -1816,10 +1777,7 @@ import { DestinationsService } from '../../../services/destinations.service';
     }
   `]
 })
-export class HomePageComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('greenscreenVideo') videoElement!: ElementRef<HTMLVideoElement>;
-  @ViewChild('videoCanvas') canvasElement!: ElementRef<HTMLCanvasElement>;
-
+export class HomePageComponent implements OnInit {
   private toursService = inject(ToursService);
   private blogsService = inject(BlogsService);
   private destinationsService = inject(DestinationsService);
@@ -1829,14 +1787,6 @@ export class HomePageComponent implements OnInit, AfterViewInit, OnDestroy {
   destinations: any[] = [];
 
   showShopLaunch = true;
-  private animationFrameId: number | null = null;
-  private ctx: CanvasRenderingContext2D | null = null;
-
-  private keyColor = { r: 79, g: 160, b: 141 };
-  private similarity = 0.45;     // Balanced keying strength
-  private smoothness = 0.15;     // Clean edges
-  private spill = 0.15;          // Minimal green tint removal
-  private minGreen = 100;
 
   ngOnInit() {
     this.toursService.listTours().subscribe({
@@ -1956,207 +1906,6 @@ export class HomePageComponent implements OnInit, AfterViewInit, OnDestroy {
       quote: 'We stayed near the airport on arrival and immediately knew we would return before departure—the warm, welcoming family made it special. Comfortable rooms, thoughtful meals, and their kindness (even taking me to a cricket match) made our stay unforgettable. Wishing them success, health, and continued warmth!'
     }
   ];
-
-  ngAfterViewInit() {
-    // Initialize video after view is ready
-    setTimeout(() => {
-      this.initGreenScreenVideo();
-    }, 100);
-  }
-
-  ngOnDestroy() {
-    // Clean up animation frame
-    if (this.animationFrameId) {
-      cancelAnimationFrame(this.animationFrameId);
-    }
-  }
-
-  initGreenScreenVideo() {
-    const video = this.videoElement.nativeElement;
-    const canvas = this.canvasElement.nativeElement;
-    this.ctx = canvas.getContext('2d', { willReadFrequently: true });
-
-    if (!this.ctx) {
-      console.error('Could not get canvas context');
-      return;
-    }
-
-    // Ensure video is muted
-    video.muted = true; // Programmatically set muted property
-    video.loop = true;
-
-    // Wait for video metadata to load
-    video.addEventListener('loadedmetadata', () => {
-      console.log('Video metadata loaded:', video.videoWidth, 'x', video.videoHeight);
-
-      // Set canvas size to match video dimensions
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-
-      // Start playing and processing
-      video.play().then(() => {
-        console.log('Video playing');
-        this.processVideo();
-      }).catch(err => {
-        console.error('Error playing video:', err);
-      });
-    });
-
-    // Additional check - if metadata is already loaded
-    if (video.readyState >= 2) {
-      console.log('Video already loaded, starting playback');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-
-      video.muted = true; // Ensure muted here as well
-      video.play().then(() => {
-        console.log('Video playing (immediate start)');
-        this.processVideo();
-      }).catch(err => {
-        console.error('Error playing video:', err);
-      });
-    }
-
-    // Ensure video plays after any user interaction
-    video.addEventListener('canplay', () => {
-      if (video.paused) {
-        console.log('Video can play, attempting to start');
-        video.muted = true; // Ensure muted on canplay
-        video.play().catch(err => {
-          console.error('Autoplay prevented:', err);
-        });
-      }
-    });
-
-    // Handle video end - ensure it loops and continues processing
-    video.addEventListener('ended', () => {
-      console.log('Video ended, restarting...');
-      video.currentTime = 0;
-      video.muted = true; // Ensure muted on loop
-      video.play().then(() => {
-        console.log('Video looped and playing again');
-        // Ensure processing continues
-        if (!this.animationFrameId) {
-          this.processVideo();
-        }
-      }).catch(err => {
-        console.error('Error restarting video:', err);
-      });
-    });
-
-    // Handle video errors
-    video.addEventListener('error', (e) => {
-      console.error('Video error:', e);
-      console.error('Error code:', video.error?.code);
-      console.error('Error message:', video.error?.message);
-    });
-
-    // Force load the video
-    video.load();
-  }
-
-
-  private processVideo() {
-    const video = this.videoElement.nativeElement;
-    const canvas = this.canvasElement.nativeElement;
-
-    // Always continue the animation loop, even if video temporarily paused
-    this.animationFrameId = requestAnimationFrame(() => this.processVideo());
-
-    // Check if video is ready and playing
-    if (!this.ctx || !video || video.readyState < 2) {
-      return;
-    }
-
-    // If video ended but loop didn't trigger, restart it
-    if (video.ended) {
-      console.log('Video ended in processVideo, restarting...');
-      video.currentTime = 0;
-      video.play().catch(err => console.error('Error restarting in processVideo:', err));
-      return;
-    }
-
-    // If video is paused (but not ended), try to resume
-    if (video.paused) {
-      video.play().catch(err => console.error('Error resuming video:', err));
-      return;
-    }
-
-    try {
-      // Draw the current video frame
-      this.ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      // Get image data
-      const frame = this.ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const data = frame.data;
-
-      // Process each pixel for chroma keying
-      for (let i = 0; i < data.length; i += 4) {
-        const r = data[i];
-        const g = data[i + 1];
-        const b = data[i + 2];
-
-        // CRITICAL: Only process pixels that are actually green
-        // This prevents blue/cyan colors from being keyed out
-        const isGreenDominant = g > r && g > b && g > this.minGreen;
-
-        if (!isGreenDominant) {
-          // Skip this pixel - it's not green enough
-          continue;
-        }
-
-        // Method 1: RGB Distance-based keying
-        const rDiff = (r - this.keyColor.r) / 255;
-        const gDiff = (g - this.keyColor.g) / 255;
-        const bDiff = (b - this.keyColor.b) / 255;
-
-        // Calculate distance in normalized color space
-        const distance = Math.sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
-
-        // Method 2: Greenness detection (works better for green screens)
-        const greenness = (2 * g - r - b) / 255;
-
-        // Combine both methods
-        let mask = 0;
-
-        // Check if pixel is green enough
-        if (greenness > 0.4) { // Increased threshold to be more selective
-          // Calculate how "green" it is relative to similarity threshold
-          mask = Math.min(1, greenness / this.similarity);
-        }
-
-        // Also check RGB distance
-        if (distance < this.similarity * 1.2) { // Reduced multiplier for tighter matching
-          const distanceMask = 1 - (distance / (this.similarity * 1.2));
-          mask = Math.max(mask, distanceMask);
-        }
-
-        // Apply smoothness for edge feathering
-        let alpha = 255;
-        if (mask > 0) {
-          if (mask > (1 - this.smoothness)) {
-            alpha = 0; // Fully transparent
-          } else {
-            // Smooth transition
-            alpha = Math.floor((1 - (mask / (1 - this.smoothness))) * 255);
-          }
-        }
-
-        // Green spill suppression (reduce green from remaining pixels)
-        if (alpha > 10 && g > r && g > b) {
-          const spillAmount = (g - Math.max(r, b)) * this.spill;
-          data[i + 1] = Math.max(0, g - spillAmount);
-        }
-
-        data[i + 3] = alpha;
-      }
-
-      // Put the processed frame back
-      this.ctx.putImageData(frame, 0, 0);
-    } catch (error) {
-      console.error('Error processing video frame:', error);
-    }
-  }
 
   closeShopLaunch() {
     this.showShopLaunch = false;
