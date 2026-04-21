@@ -591,8 +591,8 @@ import { DestinationsService } from '../../../services/destinations.service';
       display: grid;
       grid-template-columns: 1fr;
       gap: 48px;
-      align-items: center;
-      margin:3rem;
+      align-items: flex-end;
+      margin: 3rem 3rem 0;
     }
 
     @media (min-width: 1024px) {
@@ -657,7 +657,8 @@ import { DestinationsService } from '../../../services/destinations.service';
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      min-height: 400px;
+      min-height: 360px;
+      align-self: end;
       position: relative;
       z-index: 10;
       pointer-events: none;
@@ -665,23 +666,25 @@ import { DestinationsService } from '../../../services/destinations.service';
 
     @media (min-width: 1024px) {
       .hero-image {
-        min-height: 600px;
+        min-height: 560px;
       }
     }
 
     .video-container {
       position: relative;
       width: 100%;
-      height: 100%;
+      height: auto;
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      transform: scale(1.5);
+      transform: scale(1.2);
+      transform-origin: bottom center;
       z-index: 10;
       pointer-events: none;
     }
 
     .welcome-video-canvas {
+      display: block;
       width: auto;
       max-width: 100%;
       height: auto;
@@ -692,7 +695,7 @@ import { DestinationsService } from '../../../services/destinations.service';
       animation: fadeInUp 1s ease-out 0.6s both;
       filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5));
       transition: transform 0.3s ease;
-      margin-bottom: -3rem;
+      margin-bottom: 0;
       pointer-events: none;
     }
 
@@ -1400,11 +1403,15 @@ import { DestinationsService } from '../../../services/destinations.service';
       }
       
       .hero-image {
-        min-height: 350px;
+        min-height: 280px;
+      }
+
+      .video-container {
+        transform: scale(1.08);
       }
       
       .welcome-video-canvas {
-        max-height: 500px;
+        max-height: 420px;
       }
     }
 
@@ -1423,11 +1430,21 @@ import { DestinationsService } from '../../../services/destinations.service';
       }
       
       .hero-image {
-        min-height: 300px;
+        min-height: 240px;
+      }
+
+      .video-container {
+        transform: scale(1);
       }
       
       .welcome-video-canvas {
-        max-height: 400px;
+        max-height: 320px;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .video-container {
+        transform: scale(1.35);
       }
     }
 
