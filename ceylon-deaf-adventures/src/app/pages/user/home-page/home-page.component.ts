@@ -550,6 +550,8 @@ import { DestinationsService } from '../../../services/destinations.service';
 
     /* Hero Section */
     .hero-section {
+      --hero-media-bottom-trim: 28px;
+      --hero-media-bottom-pull: -12rem;
       position: relative;
       min-height: 100vh;
       display: flex;
@@ -590,7 +592,7 @@ import { DestinationsService } from '../../../services/destinations.service';
     .hero-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 48px;
+      gap: 28px;
       align-items: flex-end;
       margin: 3rem 3rem 0;
     }
@@ -696,12 +698,13 @@ import { DestinationsService } from '../../../services/destinations.service';
       filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5));
       transition: transform 0.3s ease;
       margin-bottom: 0;
-      transform: translateY(24px);
+      clip-path: inset(0 0 var(--hero-media-bottom-trim) 0);
+      margin-bottom: calc((var(--hero-media-bottom-trim) * -1) + var(--hero-media-bottom-pull));
       pointer-events: none;
     }
 
     .welcome-video-canvas:hover {
-      transform: translateY(24px) scale(1.02);
+      transform: scale(1.02);
     }
 
     /* Glow effect behind video */
@@ -1386,6 +1389,11 @@ import { DestinationsService } from '../../../services/destinations.service';
 
     /* Responsive Design */
     @media (max-width: 768px) {
+      .hero-section {
+        --hero-media-bottom-trim: 22px;
+        --hero-media-bottom-pull: -6rem;
+      }
+
       .hero-title {
         font-size: 2.5rem;
       }
@@ -1413,11 +1421,14 @@ import { DestinationsService } from '../../../services/destinations.service';
       
       .welcome-video-canvas {
         max-height: 420px;
-        transform: translateY(18px);
       }
     }
 
     @media (max-width: 480px) {
+      .hero-section {
+        --hero-media-bottom-trim: 16px;
+      }
+
       .hero-title {
         font-size: 2rem;
       }
@@ -1441,7 +1452,6 @@ import { DestinationsService } from '../../../services/destinations.service';
       
       .welcome-video-canvas {
         max-height: 320px;
-        transform: translateY(12px);
       }
     }
 
