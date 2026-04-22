@@ -470,6 +470,9 @@ import { DestinationsService } from '../../../services/destinations.service';
       --text-secondary: #6b7280;
       --text-muted: #9ca3af;
       display: block;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: clip;
     }
 
     .container {
@@ -594,7 +597,7 @@ import { DestinationsService } from '../../../services/destinations.service';
       grid-template-columns: 1fr;
       gap: 28px;
       align-items: flex-end;
-      margin: 3rem 3rem 0;
+      margin: 3rem 0 0;
     }
 
     @media (min-width: 1024px) {
@@ -1421,6 +1424,17 @@ import { DestinationsService } from '../../../services/destinations.service';
       
       .welcome-video-canvas {
         max-height: 420px;
+      }
+    }
+
+    /* Shorter mobile screens (e.g., iPhone 12 Pro) need less downward pull */
+    @media (max-width: 430px) and (max-height: 860px) {
+      .hero-section {
+        --hero-media-bottom-pull: -3.5rem;
+      }
+
+      .welcome-video-canvas {
+        max-height: 360px;
       }
     }
 
